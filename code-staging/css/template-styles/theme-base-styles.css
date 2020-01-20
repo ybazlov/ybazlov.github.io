@@ -1,0 +1,591 @@
+@charset "utf-8";
+/* Standards created by Stuart Anderson FSE elearning team */
+
+
+
+/***
+ *** THE BASE RULES WHICH PROVIDE THE MAIN STYLES AND LAYOUT FOR THE LOOK & FEEL OF THE DOCUMENT
+ ***/
+ 
+html {
+	/* Force relative font em sizes to map to pixel sizes, then use "rem" units in styles.
+	   This sizing means that 1.2em will be same as a 12px font for a typical modern browser. */
+	font-size: 62.5%;
+}
+body {
+	background-color: #EEE;
+	position: relative;
+	font-family: "Times New Roman", Times, serif;
+	font-size: 16px; /* fallback */
+	font-size: 1.6rem;
+	margin: 2px;
+	padding:  0 6px;
+	
+}
+
+/* Sets the main text colour background colour of the content area and navigation.  
+ * Might need to be altered to meet accessibility needs of specific students.
+ */
+header nav ul, 
+main {
+	color: #333;
+	background-color: #F9F9F9; 
+}
+
+
+
+
+
+
+/***
+ *** HEADER, MAIN & FOOTER LAYOUT AND STYLES
+ ***/
+header,
+main,
+footer {
+	box-sizing: border-box;
+	margin: 0 auto;
+}
+
+header {
+	 position: relative;
+}
+
+header h1 {
+	margin: 10px 0px 10px 0;
+	overflow: hidden;
+	padding: 0;
+	
+	font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 32px; /* fallback */
+	font-size: 3.2rem;
+    /*color: #355D8F;*/
+}
+
+
+/* Site navigation (a flattened list of links)
+ */
+header,
+header nav {
+	clear: both;
+}
+header nav {
+	display: inline-block;
+	border: solid #CCC;
+	border-width: 1px 1px 0 1px;
+	margin-bottom: -1px;
+}
+header nav ul {
+	padding: 5px 10px!important;
+	font-weight: bold;
+	font-size: 20px; /* fallback */
+	font-size: 2.0rem;
+}
+header nav ul li:first-child {
+	padding-left: 0;
+	margin-left: 0;
+}
+
+/* Site footer (a flattened list of links)
+ */
+footer ul li {
+	font-size: 14px; /* fallback */
+	font-size: 1.4rem;
+}
+footer {
+	text-align: right;
+}
+footer  {
+	margin-top: 4px;
+}
+footer {
+	color: #999;
+}
+footer a:link {
+	text-decoration: none;
+}
+footer,
+footer a:link, 
+footer a:visited {
+	color: #666;
+}
+footer a:hover {
+    color: #444;
+	text-decoration: underline;
+}
+
+
+/* The main content area border styling
+ */
+main {
+	border: 1px solid #CCC;
+	-webkit-box-shadow: 3px 3px 3px 0px rgba(50, 50, 50, 0.3);
+	-moz-box-shadow:    3px 3px 3px 0px rgba(50, 50, 50, 0.3);
+	box-shadow:         3px 3px 3px 0px rgba(50, 50, 50, 0.3);
+}
+
+
+
+
+
+
+
+
+/* 
+ * Header tag styling 
+ */
+
+main h1 {
+	margin: 1.5em 0 0.5em 0;
+    font-weight: normal;
+    position: relative;
+    font-size: 28px; /* fallback */
+	font-size: 2.8rem;
+	line-height: 32px; /* fallback */
+    line-height: 3.2rem;
+    color: #355681;
+
+}
+main h2 {
+	margin: 1.5em 0 0.5em 0;
+	padding-bottom: 0.2em;
+    font-weight: 600;
+    position: relative;
+	font-size: 20px; /* fallback */
+    font-size: 2rem;
+	line-height: 22px; /* fallback */
+    line-height: 2.2rem;
+    color: #355681;
+	border-bottom: 1px solid rgba(53,86,129, 0.75);
+}
+
+main h3 {
+	margin: 1.5em 0 0.5em 0;
+	padding-bottom: 4px;
+    font-weight: 600;
+    position: relative;
+    font-size: 18px; /* fallback */
+	font-size: 1.8rem;
+	line-height: 22px; /* fallback */
+    line-height: 2.2rem;
+}
+
+main h4 {
+	margin: 1.5em 0 0.5em 0;
+    font-weight: bold;
+    position: relative;
+    font-size: 16px; /* fallback */
+	font-size: 1.6rem; 
+    line-height: 20px; /* fallback */
+	line-height: 2.0rem;
+	padding-left: 5px;
+}
+main h1:first-child, 
+main h2:first-child, 
+main h3:first-child, 
+main h4:first-child {
+	margin-top: 0.5em;
+}
+
+main h5 {
+	font-size: 13px; /* fallback */
+	font-size: 1.3rem;
+	font-style: italic;
+	margin: 1.5em 0;
+}
+main h6 {
+	font-size: 12px; /* fallback */
+	font-size: 1.2rem;
+	margin: 1.67em 0;
+}
+
+
+
+
+/* 
+ * General content tags 
+ */
+
+p {
+	margin: 0.8em 0;
+	line-height: 20px; /* fallback */
+	line-height: 2.0rem;
+}
+
+dl {
+	margin: 1.5em 0;
+}
+dt {
+	font-weight: bold;
+	margin-top: 10px;
+}
+dd {
+	margin-top: 5px;
+	margin-left: 2em;
+}
+
+pre, code, var, samp, kbd {
+	font-size: 15px; /* fallback */
+	font-size: 1.5rem;
+}
+pre {
+    background-color: #F9F9F9;
+    border: 1px dashed #2F6FAB;
+    line-height: 1.1em;
+	margin: 1.5em 0;
+	-moz-tab-size: 4;
+    tab-size: 4;
+}
+
+hr {
+    background: #333;
+    background-image: linear-gradient(to right, #ccc, #333, #ccc);
+}
+
+/* for two levels of nested quotations */
+q {quotes: '\201C' '\201D' '\2018' '\2019';}
+/* extra content definitions for pre-2011 WebKit */
+q:before {content: '\201C'; content: open-quote;}
+q:after {content: '\201D'; content: close-quote;}
+q q:before {content: '\2018'; content: open-quote;}
+q q:after {content: '\2019'; content: close-quote;}
+
+/* q in blockquote */
+blockquote q:before {content: '\2018'; content: open-quote;}
+blockquote q:after {content: '\2019'; content: close-quote;}
+blockquote q q:before {content: '\201C'; content: open-quote;}
+blockquote q q:after {content: '\201D'; content: close-quote;}
+
+/* blockquote hanging opening quote */
+blockquote q:before {
+	display: block; 
+	height: 0; 
+	content: "\201C";  
+	margin-left: -1em; 
+	font: italic 400%/1 Georgia,"Times New Roman",serif; 
+	color: #999;
+}
+blockquote q {
+    padding: 0em 0.5em 0.1em 1em;
+	display: block;
+	border-left: 0.5em solid #DDD;
+}
+
+blockquote {
+	margin: 0.5em 0 0.5em 2em;
+    padding: 0em 0.5em 0.1em 1em;
+	line-height: 24px; /* fallback */
+	line-height: 2.4rem;
+}
+
+/* Flattened lists - IMPORTANT - used for navigation styling */
+ul.flatten {
+    list-style-image:none;
+    list-style-position:outside;
+    list-style-type:none;
+    margin:0;
+    padding:0;
+    text-indent:0;
+}
+ul.flatten li {
+    display: inline;
+    padding-left: 4px;
+	margin-left: 4px;
+}
+
+/* Link lists with a border separater */
+ul.flatten li {
+    border-left-style: solid;
+    border-left-width: 1px;
+}
+ 
+ul.flatten li:first-child {
+    border: none;
+}
+
+
+
+ul li, ol li {
+	margin-top: 0.25em;
+	margin-bottom: 0.25em;
+	line-height: 20px; /* fallback */
+	line-height: 2.0rem;
+}
+
+ol { list-style-type: decimal; } /* default */
+ol li ol li { list-style-type: lower-latin; }
+ol li ol li ol li { list-style-type: lower-roman; }
+ol li ol li ol li ol li { list-style-type: decimal; }
+
+
+
+/***
+ *** LINK STYLES
+ ***/
+ 
+/* For handling long URLs (Forcing Breaks, Hyphenation, Ellipsis, etc) */
+main a,
+main table.break-links a {
+
+  /* These are technically the same, but use both */
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+
+  -ms-word-break: break-all;
+  /* This is the dangerous one in WebKit, as it breaks things wherever */
+  word-break: break-all;
+  /* Instead use this non-standard one: */
+  word-break: break-word;
+
+  /* Adds a hyphen where the word breaks, if supported (No Blink) */
+  -ms-hyphens: auto;
+  -moz-hyphens: auto;
+  -webkit-hyphens: auto;
+  hyphens: auto;
+}
+/* Exclusions */
+main table a {
+  /* These are technically the same, but use both */
+  overflow-wrap: initial;
+  word-wrap: initial;
+  -ms-word-break: initial;
+  word-break: initial;
+  /* Adds a hyphen where the word breaks, if supported (No Blink) */
+  -ms-hyphens: none;
+  -moz-hyphens: none ;
+  -webkit-hyphens: none ;
+  hyphens: none;
+}
+ 
+ 
+/* Links must provide contrast and be visually distinct 
+   to meet W3C accessibility recommendations (AA standards). */ 
+main a[href],
+nav a[href] {
+	color: #3344dd;
+	text-decoration: none;
+    border-bottom: 1px solid #3344dd;
+}
+main a[href]:hover, main a[href]:active, main a[href]:focus,
+nav a[href]:hover, nav a[href]:active, nav a[href]:focus {
+	color: #bb1122;
+	border-bottom: 2px solid #bb1122;
+}
+main a[href]:hover,
+nav a[href]:hover {
+	background: #ffa;
+}
+main a[href]:visited {
+	color: #884488;
+	border-bottom: 1px solid #884488;
+}
+
+
+
+
+
+/***
+ *** FIGURES, FIGURE IMAGES AND IMAGE/TABLE CAPTION STYLING
+ ***/
+
+
+figure figcaption,
+table caption {
+	font-size: 13px; /* fallback */
+	font-size: 1.3rem;
+	font-style: italic;
+	padding: 0 3px 3px 3px;
+}
+
+/* Give all images responsive behaviour */
+img {
+	max-width: 100%;
+	height: auto;
+}
+
+
+/***
+ *** VIDEO
+ ***/
+ 
+ /* Give all video elements responsive behaviour */
+video {
+	max-width: 100%    !important;
+	height: auto   !important;
+	margin: 0.5em 0;
+}
+
+
+
+
+
+/**
+ ** TABLES
+ **/
+table {
+	margin: 0.5em 0;
+	position: relative;
+	display: table;
+	vertical-align: top;
+	max-width: 100%;
+}
+table caption {
+	text-align: left;
+}
+
+table th,
+table td {
+	border: 1px solid #CCC; /* fallback */
+	border-color: rgba(102,102,102,0.15);
+}
+table th,
+table td {
+	padding: 3px;
+}
+table th {
+	background-color: #E7E7E7; /* fallback */
+	background-color: rgba(200,200,200,0.5);
+}
+thead td, th {
+	font-weight: bold;
+}
+
+
+
+/* Responsive Tables */
+table.scrolling {
+	padding-top: 25px;
+	display: block;
+	overflow-x: auto;
+}
+
+table.scrolling::after {
+	content: "◀ scroll ▶";
+	position: absolute;
+	top: 0;
+	left: 45%;
+	font-weight: bold;
+	font-size: 1.8rem;
+	color: #808080;
+}
+
+
+
+
+/***
+ *** MEDIA STYLES TO GIVE MOBILE (RESPONSIVE) LAYOUT
+ ***/
+  
+/* Below Portrait tablet (mobile phones) */
+@media (max-width: 550px) { 
+	body {
+		margin: 10px 0;
+		padding: 0;
+		
+		font-size: 16px; /* fallback */
+		font-size: 1.6rem;
+	}
+	
+	/* Careful management of banner layout */
+	header h1 {
+		font-size: 20px; /* fallback */
+		font-size: 2.0rem;
+		margin-left: 10px;
+		
+		display: inline-block;
+		line-height: 110%;
+	}
+
+	main {
+		padding: 10px;
+		border-width: 1px 0;
+		
+		-webkit-box-shadow: none;
+		-moz-box-shadow: none;
+		box-shadow: none;
+		border-left: none;
+		border-right: none;
+	}
+	
+	footer {
+		padding-left: 5px;
+		padding-right: 5px;
+	}
+	header nav ul.flatten li,
+	footer ul.flatten li {
+		display: block;
+		border-left: none;
+		margin-left: 0;
+		padding-left: 0;
+	}
+	
+	h1 {
+		font-size: 22px; /* fallback */
+		font-size: 2.2rem;
+		line-height: 26px; /* fallback */
+		line-height: 2.6rem;
+	}
+	
+}
+/* Portrait tablet  */
+@media (min-width: 551px) { 
+	/* Careful management of banner layout */
+	header h1 {
+		font-size: 28px; /* fallback */
+		font-size: 2.8rem;
+		
+		margin-left: 5px;
+		margin-top: 20px;
+		margin-bottom: 20px;
+
+	}
+	main {
+		padding: 10px 10px;
+	}
+	footer {
+		margin-bottom: 5px;
+	}
+}
+ 
+/* Picked up by both landscape and normal and large desktops */
+@media (min-width: 768px) {
+	/* Careful management of banner layout */
+	header h1 {
+		font-size: 32px; /* fallback */
+		font-size: 3.2rem;
+	}
+	main {
+		padding: 10px 10px 30px 10px;
+	}  
+	footer {
+		margin-bottom: 25px;
+	}
+	header,
+	main,
+	footer {
+		max-width: 1000px;
+	}
+}
+
+
+/*------------------------------------------------------------------------------------------------------------*/
+/*	HELPER CLASSES - For accessibility and layout				 		  						  	  	  	  */
+/*------------------------------------------------------------------------------------------------------------*/
+
+/* Float collapse fix */
+.clearfix:after {
+    visibility: hidden;
+    display: block;
+    font-size: 0;
+    content: " ";
+    clear: both;
+    height: 0;
+}
+
+.off-screen						{position:absolute; top:-9999px; left:-9999px}
+.hidden							{display: none !important; visibility: hidden;}
+.no-scroll						{overflow:hidden;}
+
+.printonly						{display: none;}
+@media only print {	.printonly	{display: inherit;}}
+

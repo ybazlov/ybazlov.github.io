@@ -1,0 +1,206 @@
+/* First line must import font styles */
+@import url('//fonts.googleapis.com/css?family=Open+Sans:400,300,600,700|Archivo+Narrow:400,700');
+
+/* Standards created by Stuart Anderson FSE elearning team */
+/* CSS Document */
+@charset "utf-8";
+
+/*
+ * The default colours should be copies of the default colours from the main stylesheet. 
+ * These are used to applied the default style in the switch options.
+ */
+.defaultColours {
+	background-color: #F9F9F9;
+	color: #333;
+}
+
+
+/***
+ *** Alternative colour schemes.  See contrast-widget configuration.
+ ***/
+.altColours1,
+.altColours1 nav ul,
+.altColours1 main,
+.altColours1 main h1, .altColours1 main h2 {
+	background-color: #000;
+	color: #FFF;
+}
+.altColours2,
+.altColours2 nav ul,
+.altColours2 main,
+.altColours2 main h1, .altColours2 main h2 {
+	background-color: #000;
+	color: #FF9;
+}
+.altColours3,
+.altColours3 nav ul,
+.altColours3 main  {
+	background-color: #99F;
+	color: #000;
+}
+.altColours4,
+.altColours4 nav ul,
+.altColours4 main  {
+	background-color: #FFF5CD;
+	color: #000;
+}
+
+
+
+/*
+ * For some colour combinations the link colours should also be changed
+ */
+.darkStyle main a[href],
+.darkStyle nav a[href] {
+	color: cyan;
+    border-bottom-color: cyan;
+
+
+}
+.darkStyle main a[href]:hover, .darkStyle main a[href]:visited:hover,
+.darkStyle main a[href]:active, .darkStyle main a[href]:focus,
+.darkStyle nav a[href]:hover, .darkStyle nav a[href]:visited:hover,
+.darkStyle nav a[href]:active, .darkStyle nav a[href]:focus {
+	color: #CC0000; 
+	background: #ff0;
+	border-bottom-color: #CC0000;
+}
+.darkStyle main a[href]:visited {
+	color: #C8A2C8;
+	border-bottom-color: #C8A2C8;
+}
+
+.darkStyle pre,
+.darkStyle table th{
+	background-color: #222;
+}
+
+
+
+
+/***
+ *** Alternative typefaces
+ ***/
+.defaultFont {
+	font-family: "Times New Roman", Times, serif;
+}
+.altFont1 {
+	font-family: 'Open Sans', sans-serif;
+}
+body.altFont1 {
+	font-size: 15px; /* fallback */
+	font-size: 1.5rem;
+}
+
+
+
+
+/***
+ *** Contrast switcher styling
+ ***/
+#contrast-switcher {
+	position: relative;
+	float: right;
+	z-index: 1;
+}
+
+#contrast-switcher button {
+	padding: 3px 4px 3px 0;
+	text-align: right;
+	font-family: sans-serif;
+	color: #FFF;
+	background-color: #666;
+	border: 1px solid #CCC;
+}
+#contrast-switcher button span {
+	background-color: #000;
+	color: #FFF;
+	font-weight: bold;
+	font-family: serif;
+	padding: 3px;
+}
+
+#contrast-switcher ul {
+	display: none;
+	position: absolute;
+	right: 0;
+	z-index: 2;
+	padding: 10px;
+	margin: 0;
+	-webkit-box-shadow: 3px 3px 3px 0px rgba(50, 50, 50, 0.3);
+	-moz-box-shadow:    3px 3px 3px 0px rgba(50, 50, 50, 0.3);
+	box-shadow:         3px 3px 3px 0px rgba(50, 50, 50, 0.3);
+	background-color: #FFF;
+	border: 4px solid #AAA;
+	font-family: sans-serif;
+}
+#contrast-switcher ul.show {
+	display: block;
+}
+#contrast-switcher ul li {
+	margin: 8px 4px;
+	padding: 2px 4px;
+	min-width: 200px;
+	list-style-image:none;
+    list-style-position:outside;
+    list-style-type:none;
+    text-indent:0;
+}
+#contrast-switcher ul li:first-of-type,
+#contrast-switcher ul li:last-of-type {
+	margin: 0;
+}
+#contrast-switcher ul li.group-title {
+	color: #000!important;
+	font-weight: bold;
+}
+#contrast-switcher ul li.option {
+	border: 2px solid #CCC;
+	text-align: center;
+}
+#contrast-switcher ul li.option a {
+	position: relative;
+	display: inline-block;
+	width: 80%;
+	color: inherit;
+	text-decoration: none;
+}
+#contrast-switcher ul li.font-option {
+	color: #000;
+}
+#contrast-switcher ul li.option span {
+	display: inline-block;
+	width: 1em;
+	height:1em;
+	float: right;
+}
+
+#contrast-switcher .accessiblity-disclaimer {
+	border: 1px dashed #999;
+	margin-top: 10px;
+	font-size: 0.75em;
+	color: #000;
+}
+
+
+/* Below Portrait tablet (mobile phones) */
+@media (max-width: 550px) { 
+	#contrast-switcher {
+		margin: 5px 5px 0 5px;
+	}
+	
+}
+/* Portrait tablet  */
+@media (min-width: 551px) { 
+	#contrast-switcher {
+		margin: 5px 5px 0 5px;
+	}
+	main {
+		margin-top: 0;
+	}
+}
+@media (min-width: 768px) {
+	#contrast-switcher {
+		margin: 0 0 5px 5px;
+	}
+}

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <title>UIM2019 Coding Theory - About the course</title>
+        <meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+	<link href="https://ybazlov.github.io/UIM2019/css/import-styles.css" media="all" rel="stylesheet" type="text/css" />
+	<link href="https://ybazlov.github.io/UIM2019/css/html4css1.css" media="all" rel="stylesheet" type="text/css" />
+	<link href="https://ybazlov.github.io/UIM2019/images/f_2_16x16pixels.png" rel="icon">
+	<!-- Accessibility screen options -->
+	<link href="https://ybazlov.github.io/UIM2019/css/accessibility/import-accessibility-styles.css" media="all" rel="stylesheet" type="text/css" />
+	<script src="https://ybazlov.github.io/UIM2019/js/contrast-widget.js"></script>
+</head>
+
+<body id="index" class="home">
+<!-- Hidden navigation for accessibility -->
+<a href="#main-content" class="off-screen">Skip to main content</a>
+<a href="#main-navigation" class="off-screen">Skip to main navigation</a>
+
+<!-- Site title banner -->
+        <header id="banner" class="body">
+                <h1>UIM2019 Coding Theory</h1>
+        <nav id="main-navigation"><ul class="flatten">
+            <li><a href="index.html">Course materials</a></li>
+            <li><a href="about.html">About the course</a></li>
+            <li><a href="feedback.html">Assessment &amp; feedback</a></li>
+        </ul></nav><!-- /#menu -->
+	<div id="contrast-switcher"></div>
+        </header><!-- /#banner -->
+	<main id="main-content">
+    <h1>About the course</h1>
+
+    <div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Teaching materials are provided via the <a class="reference external" href="index.html">course materials page</a>.</p>
+</div>
+<div class="section" id="what-is-coding-theory-about">
+<span id="about"></span><h2>What is Coding Theory about?</h2>
+<p><em>Coding theory</em> is not about writing computer code, and is not about
+cryptography. The purpose of coding theory is to generate mathematical
+ideas and methods that can be used to <em>transmit information</em> more
+reliably. The main concept of coding theory is <em>error correcting code</em>.</p>
+</div>
+<div class="section" id="why-is-error-correction-needed">
+<h2>Why is error correction needed?</h2>
+<p>When information (message) is passed from a sender to a receiver, there
+is a chance that some parts of that message are changed or lost. This is
+often due to random noise  – think of atmospheric noise interfering with
+radio transmision, gamma-ray bursts affecting satellite feed, crosstalk
+in Ethernet cables, scratches on a DVD, etc. One would like to recover
+the original message after it has been affected by noise.</p>
+</div>
+<div class="section" id="how-can-one-possibly-correct-errors-in-the-transmitted-messages">
+<h2>How can one possibly correct errors in the transmitted messages?</h2>
+<p>One wants to design messages in such a way that they are &quot;far&quot; from each
+other. Then, if a message is changed slightly, it still does not
+coincide with any other message, and can be recovered.
+The precise meaning of &quot;far&quot; can be formalised in terms of <em>Hamming
+distance</em>, but here is an easy example.</p>
+<div class="admonition admonition-example">
+<p class="first admonition-title">Example</p>
+<p class="last">Suppose that we want to transmit one of the two messages: 0 (NO) or 1
+(YES). If we send just one bit, 0 or 1, it can arrive corrupted so that
+NO changes to YES and vice versa – there is no way to know that an error
+occurred. We will transmit the <em>codeword</em> 00000 for NO and the codeword
+11111 for YES. That way, because it is much less likely that more than
+two bits will change in a transmitted codeword due to noise, the
+received word 01000 can be fairly safely interpreted to mean NO.</p>
+</div>
+<p>We have just seen an example of an error correcting code called
+<em>repetition code</em>, which is quite inefficient: we had to send five bits
+instead of one. In the course, we will see how to design much more
+efficient codes.</p>
+</div>
+<div class="section" id="what-mathematical-ideas-are-used-to-design-codes">
+<h2>What mathematical ideas are used to design codes?</h2>
+<p>We will use <em>algebra</em> and, to some extent, <em>geometry</em> and <em>logic</em> to do
+this. Coding theorists work with vectors, matrices and projective spaces
+over finite fields, polynomials and the Boolean algebra, and we will
+see some of these objects in action. We will prove
+general facts about codes. We will also see some codes which were used
+by NASA to transmit messages to the deep space missions, and codes used
+in modern telecommunication networks, alongside more peculiar historical
+applications of codes in sports betting.</p>
+<p>It should be noted that, while the above serves as a background or
+motivation to the study of codes, all the examinable material in this
+course is purely mathematical. Students' knowledge of electrical
+engineering or sports will not be assessed.</p>
+</div>
+
+
+	<span class="clearfix"></span>
+	</main>
+        <footer id="contentinfo" class="body">
+	<ul class="flatten">
+		<li>Prepared by <a href="https://bazlov.uk" target="_blank">Y Bazlov</a></li>
+		<li>prototype by S Anderson</li>
+		<li><a href="http://www.manchester.ac.uk" target="_blank">UoM</a></li>
+		<li><script>date=new Date(document.lastModified); document.writeln('Updated: '+date.getDate()+'/'+(date.getMonth()+1)+'/'+date.getFullYear());</script>	
+	</ul>
+	</footer><!-- /#contentinfo -->
+</body>
+</html>

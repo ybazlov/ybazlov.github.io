@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <title>MATH32032 Coding Theory 2018/19 - About the course</title>
+        <meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+	<link href="css/import-styles.css" media="all" rel="stylesheet" type="text/css" />
+	<link href="css/html4css1.css" media="all" rel="stylesheet" type="text/css" />
+	<link href="images/f_2_16x16pixels.png" rel="icon">
+	<!-- Accessibility screen options -->
+	<link href="css/accessibility/import-accessibility-styles.css" media="all" rel="stylesheet" type="text/css" />
+	<script src="js/contrast-widget.js"></script>
+</head>
+
+<body id="index" class="home">
+<!-- Hidden navigation for accessibility -->
+<a href="#main-content" class="off-screen">Skip to main content</a>
+<a href="#main-navigation" class="off-screen">Skip to main navigation</a>
+
+<!-- Site title banner -->
+        <header id="banner" class="body">
+                <h1>MATH32032 Coding Theory 2018/19</h1>
+        <nav id="main-navigation"><ul class="flatten">
+            <li><a href="index.html">Course materials</a></li>
+            <li><a href="about.html">About the course</a></li>
+            <li><a href="feedback.html">Assessment &amp; feedback</a></li>
+        </ul></nav><!-- /#menu -->
+	<div id="contrast-switcher"></div>
+        </header><!-- /#banner -->
+	<main id="main-content">
+    <h1>About the course</h1>
+
+    <div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Information on this page will not change throughout the year.
+Teaching materials are provided via the <a class="reference external" href="index.html">course materials page</a>.</p>
+</div>
+<div class="section" id="who-is-this-page-for">
+<h2>Who is this page for?</h2>
+<ul class="simple">
+<li><strong>Students who are considering taking MATH32032.</strong>
+Read what the course will be <a class="reference internal" href="#about">about</a>
+and what skills you will be expected to
+gain by taking it, listed as   <a class="reference internal" href="#intended-learning-outcomes-ilo">Intended Learning Outcomes (ILO)</a>.</li>
+<li><strong>Current MATH32032 students.</strong>
+Visit the <a class="reference external" href="index.html">course materials page</a> for up-to-date
+information. If you wish, refer to the <a class="reference internal" href="#intended-learning-outcomes-ilo">Intended Learning Outcomes (ILO)</a>
+below to check your progress.</li>
+</ul>
+<p>Before reading further, check the official <a class="reference external" href="https://www.manchester.ac.uk/study/undergraduate/courses/2019/00590/bsc-mathematics/course-details/MATH32032#course-unit-details">course description</a>.
+What I write below will hopefully give you some further insight.</p>
+</div>
+<div class="section" id="what-is-coding-theory-about">
+<span id="about"></span><h2>What is Coding Theory about?</h2>
+<p><em>Coding theory</em> is not about writing computer code, and is not about
+cryptography. The purpose of coding theory is to generate mathematical
+ideas and methods that can be used to <em>transmit information</em> more
+reliably. The main concept of coding theory is <em>error correcting code</em>.</p>
+</div>
+<div class="section" id="why-is-error-correction-needed">
+<h2>Why is error correction needed?</h2>
+<p>When information (message) is passed from a sender to a receiver, there
+is a chance that some parts of that message are changed or lost. This is
+often due to random noise  – think of atmospheric noise interfering with
+radio transmision, gamma-ray bursts affecting satellite feed, crosstalk
+in Ethernet cables, scratches on a DVD, etc. One would like to recover
+the original message after it has been affected by noise.</p>
+</div>
+<div class="section" id="how-can-one-possibly-correct-errors-in-the-transmitted-messages">
+<h2>How can one possibly correct errors in the transmitted messages?</h2>
+<p>One wants to design messages in such a way that they are &quot;far&quot; from each
+other. Then, if a message is changed slightly, it still does not
+coincide with any other message, and can be recovered.
+The precise meaning of &quot;far&quot; can be formalised in terms of <em>Hamming
+distance</em>, but here is an easy example.</p>
+<div class="admonition admonition-example">
+<p class="first admonition-title">Example</p>
+<p class="last">Suppose that we want to transmit one of the two messages: 0 (NO) or 1
+(YES). If we send just one bit, 0 or 1, it can arrive corrupted so that
+NO changes to YES and vice versa – there is no way to know that an error
+occurred. We will transmit the <em>codeword</em> 00000 for NO and the codeword
+11111 for YES. That way, because it is much less likely that more than
+two bits will change in a transmitted codeword due to noise, the
+received word 01000 can be fairly safely interpreted to mean NO.</p>
+</div>
+<p>We have just seen an example of an error correcting code called
+<em>repetition code</em>, which is quite inefficient: we had to send five bits
+instead of one. In the course, we will see how to design much more
+efficient codes.</p>
+</div>
+<div class="section" id="what-mathematical-ideas-are-used-to-design-codes">
+<h2>What mathematical ideas are used to design codes?</h2>
+<p>We will use <em>algebra</em> and, to some extent, <em>geometry</em> and <em>logic</em> to do
+this, and will have to work with vectors, matrices and projective spaces
+over finite fields, polynomials and the Boolean algebra. We will prove
+general facts about codes. We will also see some codes which were used
+by NASA to transmit messages to the deep space missions, and codes used
+in modern telecommunication networks, alongside more peculiar historical
+applications of codes in sports betting.</p>
+<p>It should be noted that, while the above serves as a background or
+motivation to the study of codes, all the examinable material in this
+course is purely mathematical. Students' knowledge of electrical
+engineering or sports will not be assessed.</p>
+</div>
+<div class="section" id="syllabus">
+<h2>Syllabus</h2>
+<p>You can find a brief syllabus of MATH32032 in the official <a class="reference external" href="https://www.manchester.ac.uk/study/undergraduate/courses/2019/00590/bsc-mathematics/course-details/MATH32032#course-unit-details">course
+description</a>.</p>
+</div>
+<div class="section" id="intended-learning-outcomes-ilo">
+<h2>Intended Learning Outcomes (ILO)</h2>
+<p>Just following the lectures is great, but
+you should be able to assess how well you mastered the course – and
+we should be able to assess you. The University wants us to use
+a list of things you should be able to <em>do</em> – the ILO – and the assessment
+must be organised around them.
+As from 2018, model solutions to <a class="reference external" href="feedback.html#past-papers">past papers</a> refer to the
+following ILO.</p>
+<p><em>On successful completion of the Coding Theory course, students should be
+able to:</em></p>
+<ol class="arabic simple">
+<li>Define and illustrate main concepts and prove fundamental theorems concerning
+error-correcting codes given in the course;</li>
+<li>calculate the parameters of given codes and their dual codes using
+standard matrix and polynomial operations;</li>
+<li>encode and decode information by applying algorithms associated with
+well-known codes;</li>
+<li>compare the error-detecting/correcting facilities of given codes for
+a given binary symmetric channel;</li>
+<li>design simple linear or cyclic codes with required properties;</li>
+<li>solve mathematical problems involving error-correcting codes by
+linking them to concepts from elementary number theory,
+combinatorics, linear algebra and elementary calculus.</li>
+</ol>
+</div>
+<div class="section" id="how-to-succeed-in-math32032-and-how-not-to-succeed">
+<h2>How to succeed in MATH32032 (and how not to succeed!)</h2>
+<p>The following advice is based on my past experience of teaching this course.</p>
+<p><strong>Typically, successful students:</strong></p>
+<ul class="simple">
+<li>attended all lectures and examples classes;</li>
+<li>asked questions - in class, on the <a class="reference external" href="feedback.html#online-discussion-forum">Online Discussion Forum</a>, by email,
+in my office hour;</li>
+<li>took part in the <a class="reference external" href="feedback.html#feedback-quizzes">feedback quizzes</a> which I organised in the examples
+classes and handed in their quizzes to receive feedback from me or my
+teaching assistant;</li>
+<li>attempted the <a class="reference external" href="index.html#exercises-and-solutions">exercises</a> <strong>in advance of</strong> examples classes;</li>
+<li>invested a lot of time and effort in the <a class="reference external" href="feedback.html#midterm-coursework">midterm coursework</a> and then acted
+upon my feedback on their work;</li>
+<li>invested time and effort in the <a class="reference external" href="feedback.html#online-test">online test</a> and carefully read feedback provided online;</li>
+<li>started revising the exam material <strong>already during the Easter break</strong>, for example
+by attempting <a class="reference external" href="feedback.html#past-papers">past papers</a>, and raised meaningful queries
+during the last two weeks of the semester.</li>
+</ul>
+<p><strong>Here are some things done by past students who were not successful:</strong></p>
+<ul>
+<li><p class="first">Students did not learn the language of Coding Theory (i.e., definitions) and lost many marks in the exam
+because they could not reproduce definitions and failed to understand the questions on the exam paper.</p>
+</li>
+<li><p class="first">Students collaborated on the <a class="reference external" href="feedback.html#midterm-coursework">midterm coursework</a> which led to me reporting them to the Faculty
+for academic malpractice, and sanctions being applied (as a minimum, zero marks for the coursework).</p>
+</li>
+<li><p class="first">Students who ignored my (written or audio) feedback on their midterm coursework and repeated their
+mistakes in the final exam.</p>
+</li>
+<li><p class="first">Students who did not know one or more of the following basic topics well and did not care to brush up their knowledge
+during the semester:</p>
+<blockquote>
+<ul class="simple">
+<li>Linear algebra</li>
+<li>Addition and multiplication modulo <em>p</em></li>
+<li>Powers of 2 and binomial coefficients</li>
+</ul>
+</blockquote>
+</li>
+</ul>
+<p>Make sure that you <strong>are not</strong> one of these students!</p>
+</div>
+
+
+	<span class="clearfix"></span>
+	</main>
+        <footer id="contentinfo" class="body">
+	<ul class="flatten">
+		<li>Prepared by <a href="https://bazlov.uk" target="_blank">Y Bazlov</a></li>
+		<li>prototype by S Anderson</li>
+		<li><a href="http://www.manchester.ac.uk" target="_blank">UoM</a></li>
+		<script>date=new Date(document.lastModified); document.writeln('<li>Updated: '+date.getDate()+'/'+(date.getMonth()+1)+'/'+date.getFullYear()+'</li>');</script>	
+	</ul>
+	</footer><!-- /#contentinfo -->
+</body>
+</html>
