@@ -16,3 +16,9 @@
 2022/11/26 15:02:58 [96610] rsync: connection unexpectedly closed (0 bytes received so far) [sender]
 2022/11/26 15:02:58 [96610] sent 0 bytes  received 0 bytes  total size 0
 2022/11/26 15:02:58 [96610] rsync error: unexplained error (code 255) at io.c(228) [sender=3.2.3]
+2022/11/26 15:03:02 [96659] rsync: connection unexpectedly closed (0 bytes received so far) [sender]
+2022/11/26 15:03:02 [96659] sent 0 bytes  received 0 bytes  total size 0
+2022/11/26 15:03:02 [96659] rsync error: unexplained error (code 255) at io.c(228) [sender=3.2.3]
+2022/11/26 15:03:10 [96662] rsync: connection unexpectedly closed (0 bytes received so far) [sender]
+2022/11/26 15:03:10 [96662] sent 0 bytes  received 0 bytes  total size 0
+2022/11/26 15:03:10 [96662] rsync error: unexplained error (code 255) at io.c(228) [sender=3.2.3]
