@@ -1,0 +1,636 @@
+
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="UTF-8" />
+<meta name="generator" content="LaTeX Lwarp package" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<!--[if lt IE 9]>
+<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+<link rel="stylesheet" type="text/css" href="bazlovstyle.css" />
+
+<script>
+// Lwarp MathJax emulation code
+//
+// Based on code by Davide P. Cervone.
+// Equation numbering: https://github.com/mathjax/MathJax/issues/2427
+// Starred and ifnextchar macros: https://github.com/mathjax/MathJax/issues/2428
+// \left, \right delimiters: https://github.com/mathjax/MathJax/issues/2535
+//
+// Modified by Brian Dunn to adjust equation numbering and add subequations.
+//
+// LaTeX can use \seteqnumber{subequations?}{section}{number} before each equation.
+// subequations? is 0 usually, 1 if inside subequations.
+// section is a string printed as-is, or empty.
+// number is auto-incremented by MathJax between equations.
+//
+MathJax = {
+    subequations: "0",
+    section: "",
+    loader: {
+        load: ['[tex]/tagformat', '[tex]/textmacros'],
+    },
+    startup: {
+        ready() {
+            //      These would be replaced by import commands if you wanted to make
+            //      a proper extension.
+            const Configuration = MathJax._.input.tex.Configuration.Configuration;
+            const CommandMap = MathJax._.input.tex.SymbolMap.CommandMap;
+            const Macro = MathJax._.input.tex.Symbol.Macro;
+            const TexError = MathJax._.input.tex.TexError.default;
+            const ParseUtil = MathJax._.input.tex.ParseUtil.default;
+            const expandable = MathJax._.util.Options.expandable;
+
+
+            //      Insert the replacement string into the TeX string, and check
+            //      that there haven't been too many maxro substitutions (prevents
+            //      infinite loops).
+            const useArgument = (parser, text) => {
+                parser.string = ParseUtil.addArgs(parser, text, parser.string.slice(parser.i));
+                parser.i = 0;
+                if (++parser.macroCount > parser.configuration.options.maxMacros) {
+                    throw new TexError('MaxMacroSub1',
+                    'MathJax maximum macro substitution count exceeded; ' +
+                    'is there a recursive macro call?');
+                }
+            }
+
+
+            //      Create the command map for:
+            //          \ifstar, \ifnextchar, \ifblank, \ifstrequal, \gsub, \seteqnumber
+            new CommandMap('Lwarp-macros', {
+                ifstar: 'IfstarFunction',
+                ifnextchar: 'IfnextcharFunction',
+                ifblank: 'IfblankFunction',
+                ifstrequal: 'IfstrequalFunction',
+                gsubstitute: 'GsubstituteFunction',
+                seteqnumber: 'SeteqnumberFunction'
+            }, {
+                //      This function implements an ifstar macro.
+                IfstarFunction(parser, name) {
+                    const resultstar = parser.GetArgument(name);
+                    const resultnostar = parser.GetArgument(name);
+                    const star = parser.GetStar();                      // true if there is a *
+                    useArgument(parser, star ? resultstar : resultnostar);
+                },
+
+
+                //      This function implements an ifnextchar macro.
+                IfnextcharFunction(parser, name) {
+                    let whichchar = parser.GetArgument(name);
+                    if (whichchar.match(/^(?:0x[0-9A-F]+|[0-9]+)$/i)) {
+                        // $ syntax highlighting
+                        whichchar = String.fromCodePoint(parseInt(whichchar));
+                    }
+                    const resultnextchar = parser.GetArgument(name);
+                    const resultnotnextchar = parser.GetArgument(name);
+                    const gotchar = (parser.GetNext() === whichchar);
+                    useArgument(parser, gotchar ? resultnextchar : resultnotnextchar);
+                },
+
+
+                // This function implements an ifblank macro.
+                IfblankFunction(parser, name) {
+                    const blankarg = parser.GetArgument(name);
+                    const resultblank = parser.GetArgument(name);
+                    const resultnotblank = parser.GetArgument(name);
+                    const isblank = (blankarg.trim() == "");
+                    useArgument(parser, isblank ? resultblank : resultnotblank);
+                },
+
+
+                // This function implements an ifstrequal macro.
+                IfstrequalFunction(parser, name) {
+                    const strequalfirst = parser.GetArgument(name);
+                    const strequalsecond = parser.GetArgument(name);
+                    const resultequal = parser.GetArgument(name);
+                    const resultnotequal = parser.GetArgument(name);
+                    const isequal = (strequalfirst == strequalsecond);
+                    useArgument(parser, isequal ? resultequal : resultnotequal);
+                },
+
+
+                // This function implements a gsub macro.
+                GsubstituteFunction(parser, name) {
+                    const gsubfirst = parser.GetArgument(name);
+                    const gsubsecond = parser.GetArgument(name);
+                    const gsubthird = parser.GetArgument(name);
+                    let gsubresult=gsubfirst.replace(gsubsecond, gsubthird);
+                    useArgument(parser, gsubresult);
+                },
+
+
+                //      This function modifies the equation numbers.
+                SeteqnumberFunction(parser, name) {
+                        //   Get the macro parameters
+                        const star = parser.GetStar();                    // true if there is a *
+                        const optBrackets = parser.GetBrackets(name);     // contents of optional brackets
+                        const newsubequations = parser.GetArgument(name);    // the subequations argument
+                        const neweqsection = parser.GetArgument(name);    // the eq section argument
+                        const neweqnumber = parser.GetArgument(name);     // the eq number argument
+                        MathJax.config.subequations=newsubequations ;     // a string with boolean meaning
+                        MathJax.config.section=neweqsection ;             // a string with numeric meaning
+                        parser.tags.counter = parser.tags.allCounter = neweqnumber ;
+                }
+
+
+            });
+
+
+            //      Create the Lwarp-macros package
+            Configuration.create('Lwarp-macros', {
+                handler: {macro: ['Lwarp-macros']}
+            });
+
+
+            MathJax.startup.defaultReady();
+
+
+            // For forward references:
+            MathJax.startup.input[0].preFilters.add(({math}) => {
+                if (math.inputData.recompile){
+                        MathJax.config.subequations = math.inputData.recompile.subequations;
+                        MathJax.config.section = math.inputData.recompile.section;
+                }
+            });
+            MathJax.startup.input[0].postFilters.add(({math}) => {
+                if (math.inputData.recompile){
+                        math.inputData.recompile.subequations = MathJax.config.subequations;
+                        math.inputData.recompile.section = MathJax.config.section;
+                }
+            });
+
+
+                // For \left, \right with unicode-math:
+                const {DelimiterMap} = MathJax._.input.tex.SymbolMap;
+                const {Symbol} = MathJax._.input.tex.Symbol;
+                const {MapHandler} = MathJax._.input.tex.MapHandler;
+                const delimiter = MapHandler.getMap('delimiter');
+                delimiter.add('\\lBrack', new Symbol('\\lBrack', '\u27E6'));
+                delimiter.add('\\rBrack', new Symbol('\\rBrack', '\u27E7'));
+                delimiter.add('\\lAngle', new Symbol('\\lAngle', '\u27EA'));
+                delimiter.add('\\rAngle', new Symbol('\\rAngle', '\u27EB'));
+                delimiter.add('\\lbrbrak', new Symbol('\\lbrbrak', '\u2772'));
+                delimiter.add('\\rbrbrak', new Symbol('\\rbrbrak', '\u2773'));
+                delimiter.add('\\lbag', new Symbol('\\lbag', '\u27C5'));
+                delimiter.add('\\rbag', new Symbol('\\rbag', '\u27C6'));
+                delimiter.add('\\llparenthesis', new Symbol('\\llparenthesis', '\u2987'));
+                delimiter.add('\\rrparenthesis', new Symbol('\\rrparenthesis', '\u2988'));
+                delimiter.add('\\llangle', new Symbol('\\llangle', '\u2989'));
+                delimiter.add('\\rrangle', new Symbol('\\rrangle', '\u298A'));
+                delimiter.add('\\Lbrbrak', new Symbol('\\Lbrbrak', '\u27EC'));
+                delimiter.add('\\Rbrbrak', new Symbol('\\Rbrbrak', '\u27ED'));
+                delimiter.add('\\lBrace', new Symbol('\\lBrace', '\u2983'));
+                delimiter.add('\\rBrace', new Symbol('\\rBrace', '\u2984'));
+                delimiter.add('\\lParen', new Symbol('\\lParen', '\u2985'));
+                delimiter.add('\\rParen', new Symbol('\\rParen', '\u2986'));
+                delimiter.add('\\lbrackubar', new Symbol('\\lbrackubar', '\u298B'));
+                delimiter.add('\\rbrackubar', new Symbol('\\rbrackubar', '\u298C'));
+                delimiter.add('\\lbrackultick', new Symbol('\\lbrackultick', '\u298D'));
+                delimiter.add('\\rbracklrtick', new Symbol('\\rbracklrtick', '\u298E'));
+                delimiter.add('\\lbracklltick', new Symbol('\\lbracklltick', '\u298F'));
+                delimiter.add('\\rbrackurtick', new Symbol('\\rbrackurtick', '\u2990'));
+                delimiter.add('\\langledot', new Symbol('\\langledot', '\u2991'));
+                delimiter.add('\\rangledot', new Symbol('\\rangledot', '\u2992'));
+                delimiter.add('\\lparenless', new Symbol('\\lparenless', '\u2993'));
+                delimiter.add('\\rparengtr', new Symbol('\\rparengtr', '\u2994'));
+                delimiter.add('\\Lparengtr', new Symbol('\\Lparengtr', '\u2995'));
+                delimiter.add('\\Rparenless', new Symbol('\\Rparenless', '\u2996'));
+                delimiter.add('\\lblkbrbrak', new Symbol('\\lblkbrbrak', '\u2997'));
+                delimiter.add('\\rblkbrbrak', new Symbol('\\rblkbrbrak', '\u2998'));
+                delimiter.add('\\lvzigzag', new Symbol('\\lvzigzag', '\u29D8'));
+                delimiter.add('\\rvzigzag', new Symbol('\\rvzigzag', '\u29D9'));
+                delimiter.add('\\Lvzigzag', new Symbol('\\Lvzigzag', '\u29DA'));
+                delimiter.add('\\Rvzigzag', new Symbol('\\Rvzigzag', '\u29DB'));
+                delimiter.add('\\lcurvyangle', new Symbol('\\lcurvyangle', '\u29FC'));
+                delimiter.add('\\rcurvyangle', new Symbol('\\rcurvyangle', '\u29FD'));
+                delimiter.add('\\Vvert', new Symbol('\\Vvert', '\u2980'));
+        }        // ready
+    },           // startup
+
+
+    tex: {
+        packages: {'[+]': ['tagformat', 'Lwarp-macros', 'textmacros']},
+        tags: "ams",
+                tagformat: {
+                        number: function (n) {
+                             if(MathJax.config.subequations==0)
+                                 return(MathJax.config.section + n);
+                             else
+                                 return(MathJax.config.section + String.fromCharCode(96+n));
+                        },
+                },
+    }
+}
+</script>
+
+
+<script
+        id="MathJax-script"
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+></script>
+
+</head>
+<body>
+
+
+<a id="lecnotes_html-autopage-7"></a>
+<nav class="topnavigation"><a href="lecnotes_html.html" class="linkhome" >
+Home</a></nav>
+
+
+<div class="bodyandsidetoc">
+<div class="sidetoccontainer">
+
+
+<nav class="sidetoc">
+
+
+<div class="sidetoctitle">
+
+<p>
+Contents
+</p>
+</div>
+
+
+<div class="sidetoccontents">
+
+<p>
+<a href="lecnotes_html.html" class="linkhome" >
+Home</a>
+</p>
+
+</div>
+
+</nav>
+
+</div>
+
+
+<main class="bodycontainer">
+
+
+<section class="textbody">
+
+<!--MathJax customizations:-->
+
+
+<div class="hidden">
+
+\(\newcommand{\footnotename}{footnote}\)
+
+\(\def \LWRfootnote {1}\)
+
+\(\newcommand {\footnote }[2][\LWRfootnote ]{{}^{\mathrm {#1}}}\)
+
+\(\newcommand {\footnotemark }[1][\LWRfootnote ]{{}^{\mathrm {#1}}}\)
+
+\(\let \LWRorighspace \hspace \)
+
+\(\renewcommand {\hspace }{\ifstar \LWRorighspace \LWRorighspace }\)
+
+\(\newcommand {\mathnormal }[1]{{#1}}\)
+
+\(\newcommand \ensuremath [1]{#1}\)
+
+\(\newcommand {\LWRframebox }[2][]{\fbox {#2}} \newcommand {\framebox }[1][]{\LWRframebox } \)
+
+\(\newcommand {\setlength }[2]{}\)
+
+\(\newcommand {\addtolength }[2]{}\)
+
+\(\newcommand {\setcounter }[2]{}\)
+
+\(\newcommand {\addtocounter }[2]{}\)
+
+\(\newcommand {\arabic }[1]{}\)
+
+\(\newcommand {\number }[1]{}\)
+
+\(\newcommand {\noalign }[1]{\text {#1}\notag \\}\)
+
+\(\newcommand {\cline }[1]{}\)
+
+\(\newcommand {\directlua }[1]{\text {(directlua)}}\)
+
+\(\newcommand {\luatexdirectlua }[1]{\text {(directlua)}}\)
+
+\(\newcommand {\protect }{}\)
+
+\(\def \LWRabsorbnumber #1 {}\)
+
+\(\def \LWRabsorbquotenumber &quot;#1 {}\)
+
+\(\newcommand {\LWRabsorboption }[1][]{}\)
+
+\(\newcommand {\LWRabsorbtwooptions }[1][]{\LWRabsorboption }\)
+
+\(\def \mathchar {\ifnextchar &quot;\LWRabsorbquotenumber \LWRabsorbnumber }\)
+
+\(\def \mathcode #1={\mathchar }\)
+
+\(\let \delcode \mathcode \)
+
+\(\let \delimiter \mathchar \)
+
+\(\def \oe {\unicode {x0153}}\)
+
+\(\def \OE {\unicode {x0152}}\)
+
+\(\def \ae {\unicode {x00E6}}\)
+
+\(\def \AE {\unicode {x00C6}}\)
+
+\(\def \aa {\unicode {x00E5}}\)
+
+\(\def \AA {\unicode {x00C5}}\)
+
+\(\def \o {\unicode {x00F8}}\)
+
+\(\def \O {\unicode {x00D8}}\)
+
+\(\def \l {\unicode {x0142}}\)
+
+\(\def \L {\unicode {x0141}}\)
+
+\(\def \ss {\unicode {x00DF}}\)
+
+\(\def \SS {\unicode {x1E9E}}\)
+
+\(\def \dag {\unicode {x2020}}\)
+
+\(\def \ddag {\unicode {x2021}}\)
+
+\(\def \P {\unicode {x00B6}}\)
+
+\(\def \copyright {\unicode {x00A9}}\)
+
+\(\def \pounds {\unicode {x00A3}}\)
+
+\(\let \LWRref \ref \)
+
+\(\renewcommand {\ref }{\ifstar \LWRref \LWRref }\)
+
+\( \newcommand {\multicolumn }[3]{#3}\)
+
+\(\require {textcomp}\)
+
+\(\newcommand {\intertext }[1]{\text {#1}\notag \\}\)
+
+\(\let \Hat \hat \)
+
+\(\let \Check \check \)
+
+\(\let \Tilde \tilde \)
+
+\(\let \Acute \acute \)
+
+\(\let \Grave \grave \)
+
+\(\let \Dot \dot \)
+
+\(\let \Ddot \ddot \)
+
+\(\let \Breve \breve \)
+
+\(\let \Bar \bar \)
+
+\(\let \Vec \vec \)
+
+\(\newcommand {\real }{\mathbb {R}} \)
+
+\(\newcommand {\RR }{\mathbb {R}} \)
+
+\(\newcommand {\ZZ }{\mathbb Z} \)
+
+\(\newcommand {\F }{\mathbb F} \)
+
+\(\newcommand {\Ham }{\mathrm {Ham}}\)
+
+\(\newcommand {\PP }{\mathbb P}\)
+
+\(\newcommand {\co }[1]{\overline {#1}} \)
+
+\(\newcommand {\ul }[1]{\underline {#1}} \)
+
+\(\newcommand {\bo }[1]{\mathbf {#1}} \)
+
+\(\newcommand {\concat }[2]{[\, #1 \,|\, #2 \,]} \)
+
+\(\newcommand {\Encode }{\texttt {ENCODE}} \)
+
+\(\newcommand {\Decode }{\texttt {DECODE}} \)
+
+\(\newcommand {\RM }{R} \)
+
+\(\newcommand {\Rep }{\text {Rep}} \)
+
+</div>
+
+<p>
+<!--
+...... chapter ch5exans ......
+-->
+<h3 id="autosec-8">Chapter&nbsp;<span class="sectionnumber">5&#x2003;</span>Exercises to Chapter 5 — solutions</h3>
+<a id="lecnotes_html-autopage-8"></a>
+<a id="lecnotes_html-autofile-15"></a>
+
+<p>
+Version 2022-10-18. <a href="lecnotes_html.pdf" target="_blank" >To PDF version of the notes</a>
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-2"></a>
+<span class="amsthmnamedefinition">Exercise</span><span class="amsthmnumberdefinition"> <span class="textup">5.1</span></span>.           Let \(C\) be a linear code of length \(n\) and weight 1. Show: \(C^\perp \) has no codevectors of
+weight&nbsp;\(n.\)
+</p>
+
+</li>
+
+</ul>
+
+</div>
+
+<p>
+<b>Answer to E5.1. </b> [<a href="ch5ex.html#.">These exercises without answers</a>]
+</p>
+
+<p>
+Let \(\ul c= (0,\ldots ,0,\lambda ,0,\ldots ,0)\) be a vector of weight \(1\) in \(C,\) where the only non-zero symbol \(\lambda \) is in \(i\)th position. Then for any \(\ul x=(x_1,\ldots ,x_n)\in C^\perp \) one has \(\ul x \cdot
+\ul c = 0\) which reads \(\lambda x_i =0.\) Because \(\lambda \ne 0,\) this is equivalent to \(x_i=0.\) Hence the weight of \(\ul x\) is at most \(n-1,\) because at least one symbol in \(\ul x\) is zero.
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-3"></a>
+<span class="amsthmnamedefinition">Exercise</span><span class="amsthmnumberdefinition"> <span class="textup">5.2</span></span>.              Use Theorem&nbsp;<a href="ch5.html#thm:dual-prop">5.1</a> to show that \((C^\perp )^\perp
+=C\) for every linear code \(C.\)
+</p>
+
+</li>
+
+</ul>
+
+</div>
+
+<p>
+<b>Answer to E5.2. </b> [<a href="ch5ex.html#.">These exercises without answers</a>]
+</p>
+
+<p>
+Let \(C\subseteq \F _q^n\) be a linear code of dimension \(k.\) Take \(\ul c\in C\) and \(\ul v\in C^\perp .\) By definition of the dual code, \(\ul c \cdot \ul v=0.\) Since this is true for all \(\ul v\in C^\perp ,\) by definition of the
+dual code again, \(\ul c\in (C^\perp )^\perp .\) We proved that \(C\subseteq (C^\perp )^\perp .\) Since \(\dim C = k = n-(n-k)\) which is \(\dim (C^\perp )^\perp \) by Theorem&nbsp;<a href="ch5.html#thm:dual-prop">5.1</a>,
+one has \(C=(C^\perp )^\perp .\)
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-4"></a>
+<span class="amsthmnamedefinition">Exercise</span><span class="amsthmnumberdefinition"> <span class="textup">5.3</span></span>.                    A linear code \(C\) is called <b><i>self-orthogonal</i></b> if \(C\subseteq C^\perp ,\) and
+<b><i>self-dual</i></b> if \(C=C^\perp .\) Clearly, a self-dual code is self-orthogonal.
+</p>
+
+<p>
+(a) Show: \(C\) is self-orthogonal, if and only if \(\forall \ul v,\ul w\in C,\) \(\ul v\cdot \ul w=0.\)
+</p>
+
+<p>
+(b) Let \(G\) be a generator matrix for \(C.\) Show: \(C\) is self-orthogonal \(\iff \) \(GG^T=\mathbf 0\) (zero matrix).
+</p>
+
+<p>
+(c) [<i>2013 exam, B6b</i>] Show that <i>binary</i> self-orthogonal codes have even weight. <i>Hint</i>: if \(\ul c\in C,\) what is \(\ul c \cdot \ul c\)?
+</p>
+
+<p>
+(d) [<i>2016 B5f</i>] Show that <i>ternary</i> self-orthogonal codes have weight divisible by \(3.\) (Same hint as in (c).)
+</p>
+
+<p>
+(e) Which of the following codes are self-orthogonal: \(\Rep (n,\F _2),\) \(E_n\)?
+</p>
+
+</li>
+
+</ul>
+
+</div>
+
+<p>
+<b>Answer to E5.3. </b> [<a href="ch5ex.html#.">These exercises without answers</a>]
+</p>
+
+<p>
+(a) \(C\) is self-orthogonal iff \(C\subseteq C^\perp ,\) by definition. Recall that \(C^\perp \) is the set of all vectors \(\ul v\) such that \(\forall \ul w\in C,\) \(\ul v \cdot \ul w=0.\) Hence the condition \(C\subseteq C^\perp \) is
+equivalent to \(\forall \ul v\in C,\) \(\forall \ul w\in C,\) \(\ul v \cdot \ul w=0,\) as claimed.
+</p>
+
+<p>
+(b) Recall that \(C=\{\ul uG: \ul u\in \F _q^k\}.\) So by (a), \(C\) is self-orthogonal iff \(\forall \ul u,\ul v \in \F _q^k,\) \((\ul u G)\cdot (\ul v G)=\ul u G G^T \ul v^T = 0.\) The latter is true iff \(GG^T\) is the \(k\times k\)
+zero matrix (by taking \(\ul u,\ul v\) to be vector units, \(\ul u G G^T \ul v^T\) can be equal to each entry of \(GG^T\)).
+</p>
+
+<p>
+(c) Let \(C\subseteq \F _2^n\) be a self-orthogonal binary code. Then in particular, \(\ul c \cdot \ul c=0\) for all \(\ul c \in C,\) see (a). The inner product \(\ul c \cdot \ul c \) rewrites as \(c_1^2+c_2^2 +\dots + c_n^2=0.\) Note
+that in the field \(\F _2\) one has \(x^2=x\) for all \(x.\) Hence \(c_1+c_2+\dots +c_n=0\) for all \(\ul c\in C.\) But this says that the vector \(\ul c\) is of even weight. We proved that if \(C\) is self-orthogonal, then all codevectors of \(C\)
+are of even weight. In particular, \(w(C),\) the minimum positive weight of a codevector of \(C,\) is even.
+</p>
+
+<p>
+(d) Let \(\ul c\in C\) be the vector of weight \(w(C).\) Since \(C\) is self-orthogonal, \(\ul c\cdot \ul c =0\) in \(\F _3.\) Note that \(\ul c\cdot \ul c = c_1^2+c_2^2+\dots +c_n^2\) is obtained by adding up the squares of all non-zero
+symbols in \(\ul c.\) But the square of any non-zero symbol is 1: \(1^2=2^2=1\) in \(\F _3.\) Hence \(\ul c\cdot \ul c\) is equal to the sum of \(w(C)\) 1s in \(\F _3\); thus, \(w(C)\) is zero in \(\F _3,\) meaning that \(w(C)\) is a multiple
+of 3.
+</p>
+
+<p>
+(e) The repetition code \(\Rep (n,\F _2)\) consists of two vectors, \(\ul 0\) and \(111\dots 11,\) so the code is self-orthogonal iff the vector \(111\dots 11\) (all ones) is orthogonal to itself. Yet the inner product \(111\dots 11\cdot 111\dots
+11\) is equal to \(n\) mod \(2.\) Hence \(\Rep (n,\F _2)\) is self-orthogonal, if and only if \(n\) is even.
+</p>
+
+<p>
+Consider the vectors \(\ul u=1100\dots 00\) and \(\ul v = 0110\dots 00,\) of weight 2, in the even weight code \(E_n.\) Note that the inner product \(\ul u \cdot \ul v\) is \(1.\) Therefore, \(E_n\) is not self-orthogonal... The only gap in
+this argument is that to construct such vectors \(\ul u\) and \(\ul v,\) we need \(n\ge 3.\) And if \(n=2,\) \(E_2=\{00,11\}=\Rep (2,\F _2)\) is self-orthogonal. If \(n\ge 3,\) then \(E_n\) is not self-orthogonal.
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-5"></a>
+<span class="amsthmnamedefinition">Exercise</span><span class="amsthmnumberdefinition"> <span class="textup">5.4</span></span>.
+</p>
+
+<p>
+(a) Show: a linear \([n,k,d]_q\)-code \(C\) is self-dual \(\iff \) \(C\) is self-orthogonal and \(k=n/2.\) Deduce that self-dual codes have even length.
+</p>
+
+<p>
+(b) [<i>2013 B6c</i>] Show that a binary code generated by \(\begin {bmatrix}1&amp;0&amp;1&amp;0 \\ 0&amp;1&amp;0&amp;1\end {bmatrix}\) is self-dual.
+</p>
+
+<p>
+(c) [<i>2015 B4g</i>] Prove that for every even \(n\) there exists a 5-ary self-dual code of length&nbsp;\(n.\) (<i>Hint</i>: look for a matrix.)
+</p>
+
+<p>
+
+
+</p>
+
+</li>
+
+</ul>
+
+</div>
+
+<p>
+<b>Answer to E5.4. </b> [<a href="ch5ex.html#.">These exercises without answers</a>]
+</p>
+
+<p>
+(a) Self-orthogonal is equivalent to \(C\subseteq C^\perp .\) Self-dual means \(C=C^\perp \); this is equivalent to \(C\subseteq C^\perp \) AND \(\dim C = \dim C^\perp .\) The equality of dimensions reads \(k=n-k,\) i.e., \(n=2k.\) Thus,
+the length of a self-dual code is twice its dimension; in particular, the length is even.
+</p>
+
+<p>
+(b) The code is self-orthogonal because \(G=\begin {bmatrix}1&amp;0&amp;1&amp;0 \\ 0&amp;1&amp;0&amp;1\end {bmatrix}\) satisfies \(GG^T=\begin {bmatrix} 0&amp;0\\ 0&amp;0\end {bmatrix},\) see&nbsp;(b). We have \(n=2k\) as
+\(4=2\times 2\) so by&nbsp;(a) the code is self-dual.
+</p>
+
+<p>
+(c) Consider the matrix \(G=\begin {bmatrix} &amp; I_k &amp; | &amp; 2I_k &amp; \end {bmatrix}\) over the field \(\F _5,\) where \(n=2k.\) Note that \(GG^T=I_k^2+4I_k^2=5I_k^2=0\) so the code \(C,\) generated by the matrix \(G,\) is
+self-orthogonal. Moreover, \(C\) is self-dual as \(n=2k.\)
+</p>
+</section>
+
+</main>
+
+</div>
+
+
+<nav class="botnavigation"><a href="lecnotes_html.html" class="linkhome" >
+Home</a></nav>
+
+</body>
+</html>

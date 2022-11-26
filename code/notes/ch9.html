@@ -1,0 +1,1133 @@
+
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="UTF-8" />
+<meta name="generator" content="LaTeX Lwarp package" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<!--[if lt IE 9]>
+<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+<link rel="stylesheet" type="text/css" href="bazlovstyle.css" />
+
+<script>
+// Lwarp MathJax emulation code
+//
+// Based on code by Davide P. Cervone.
+// Equation numbering: https://github.com/mathjax/MathJax/issues/2427
+// Starred and ifnextchar macros: https://github.com/mathjax/MathJax/issues/2428
+// \left, \right delimiters: https://github.com/mathjax/MathJax/issues/2535
+//
+// Modified by Brian Dunn to adjust equation numbering and add subequations.
+//
+// LaTeX can use \seteqnumber{subequations?}{section}{number} before each equation.
+// subequations? is 0 usually, 1 if inside subequations.
+// section is a string printed as-is, or empty.
+// number is auto-incremented by MathJax between equations.
+//
+MathJax = {
+    subequations: "0",
+    section: "",
+    loader: {
+        load: ['[tex]/tagformat', '[tex]/textmacros'],
+    },
+    startup: {
+        ready() {
+            //      These would be replaced by import commands if you wanted to make
+            //      a proper extension.
+            const Configuration = MathJax._.input.tex.Configuration.Configuration;
+            const CommandMap = MathJax._.input.tex.SymbolMap.CommandMap;
+            const Macro = MathJax._.input.tex.Symbol.Macro;
+            const TexError = MathJax._.input.tex.TexError.default;
+            const ParseUtil = MathJax._.input.tex.ParseUtil.default;
+            const expandable = MathJax._.util.Options.expandable;
+
+
+            //      Insert the replacement string into the TeX string, and check
+            //      that there haven't been too many maxro substitutions (prevents
+            //      infinite loops).
+            const useArgument = (parser, text) => {
+                parser.string = ParseUtil.addArgs(parser, text, parser.string.slice(parser.i));
+                parser.i = 0;
+                if (++parser.macroCount > parser.configuration.options.maxMacros) {
+                    throw new TexError('MaxMacroSub1',
+                    'MathJax maximum macro substitution count exceeded; ' +
+                    'is there a recursive macro call?');
+                }
+            }
+
+
+            //      Create the command map for:
+            //          \ifstar, \ifnextchar, \ifblank, \ifstrequal, \gsub, \seteqnumber
+            new CommandMap('Lwarp-macros', {
+                ifstar: 'IfstarFunction',
+                ifnextchar: 'IfnextcharFunction',
+                ifblank: 'IfblankFunction',
+                ifstrequal: 'IfstrequalFunction',
+                gsubstitute: 'GsubstituteFunction',
+                seteqnumber: 'SeteqnumberFunction'
+            }, {
+                //      This function implements an ifstar macro.
+                IfstarFunction(parser, name) {
+                    const resultstar = parser.GetArgument(name);
+                    const resultnostar = parser.GetArgument(name);
+                    const star = parser.GetStar();                      // true if there is a *
+                    useArgument(parser, star ? resultstar : resultnostar);
+                },
+
+
+                //      This function implements an ifnextchar macro.
+                IfnextcharFunction(parser, name) {
+                    let whichchar = parser.GetArgument(name);
+                    if (whichchar.match(/^(?:0x[0-9A-F]+|[0-9]+)$/i)) {
+                        // $ syntax highlighting
+                        whichchar = String.fromCodePoint(parseInt(whichchar));
+                    }
+                    const resultnextchar = parser.GetArgument(name);
+                    const resultnotnextchar = parser.GetArgument(name);
+                    const gotchar = (parser.GetNext() === whichchar);
+                    useArgument(parser, gotchar ? resultnextchar : resultnotnextchar);
+                },
+
+
+                // This function implements an ifblank macro.
+                IfblankFunction(parser, name) {
+                    const blankarg = parser.GetArgument(name);
+                    const resultblank = parser.GetArgument(name);
+                    const resultnotblank = parser.GetArgument(name);
+                    const isblank = (blankarg.trim() == "");
+                    useArgument(parser, isblank ? resultblank : resultnotblank);
+                },
+
+
+                // This function implements an ifstrequal macro.
+                IfstrequalFunction(parser, name) {
+                    const strequalfirst = parser.GetArgument(name);
+                    const strequalsecond = parser.GetArgument(name);
+                    const resultequal = parser.GetArgument(name);
+                    const resultnotequal = parser.GetArgument(name);
+                    const isequal = (strequalfirst == strequalsecond);
+                    useArgument(parser, isequal ? resultequal : resultnotequal);
+                },
+
+
+                // This function implements a gsub macro.
+                GsubstituteFunction(parser, name) {
+                    const gsubfirst = parser.GetArgument(name);
+                    const gsubsecond = parser.GetArgument(name);
+                    const gsubthird = parser.GetArgument(name);
+                    let gsubresult=gsubfirst.replace(gsubsecond, gsubthird);
+                    useArgument(parser, gsubresult);
+                },
+
+
+                //      This function modifies the equation numbers.
+                SeteqnumberFunction(parser, name) {
+                        //   Get the macro parameters
+                        const star = parser.GetStar();                    // true if there is a *
+                        const optBrackets = parser.GetBrackets(name);     // contents of optional brackets
+                        const newsubequations = parser.GetArgument(name);    // the subequations argument
+                        const neweqsection = parser.GetArgument(name);    // the eq section argument
+                        const neweqnumber = parser.GetArgument(name);     // the eq number argument
+                        MathJax.config.subequations=newsubequations ;     // a string with boolean meaning
+                        MathJax.config.section=neweqsection ;             // a string with numeric meaning
+                        parser.tags.counter = parser.tags.allCounter = neweqnumber ;
+                }
+
+
+            });
+
+
+            //      Create the Lwarp-macros package
+            Configuration.create('Lwarp-macros', {
+                handler: {macro: ['Lwarp-macros']}
+            });
+
+
+            MathJax.startup.defaultReady();
+
+
+            // For forward references:
+            MathJax.startup.input[0].preFilters.add(({math}) => {
+                if (math.inputData.recompile){
+                        MathJax.config.subequations = math.inputData.recompile.subequations;
+                        MathJax.config.section = math.inputData.recompile.section;
+                }
+            });
+            MathJax.startup.input[0].postFilters.add(({math}) => {
+                if (math.inputData.recompile){
+                        math.inputData.recompile.subequations = MathJax.config.subequations;
+                        math.inputData.recompile.section = MathJax.config.section;
+                }
+            });
+
+
+                // For \left, \right with unicode-math:
+                const {DelimiterMap} = MathJax._.input.tex.SymbolMap;
+                const {Symbol} = MathJax._.input.tex.Symbol;
+                const {MapHandler} = MathJax._.input.tex.MapHandler;
+                const delimiter = MapHandler.getMap('delimiter');
+                delimiter.add('\\lBrack', new Symbol('\\lBrack', '\u27E6'));
+                delimiter.add('\\rBrack', new Symbol('\\rBrack', '\u27E7'));
+                delimiter.add('\\lAngle', new Symbol('\\lAngle', '\u27EA'));
+                delimiter.add('\\rAngle', new Symbol('\\rAngle', '\u27EB'));
+                delimiter.add('\\lbrbrak', new Symbol('\\lbrbrak', '\u2772'));
+                delimiter.add('\\rbrbrak', new Symbol('\\rbrbrak', '\u2773'));
+                delimiter.add('\\lbag', new Symbol('\\lbag', '\u27C5'));
+                delimiter.add('\\rbag', new Symbol('\\rbag', '\u27C6'));
+                delimiter.add('\\llparenthesis', new Symbol('\\llparenthesis', '\u2987'));
+                delimiter.add('\\rrparenthesis', new Symbol('\\rrparenthesis', '\u2988'));
+                delimiter.add('\\llangle', new Symbol('\\llangle', '\u2989'));
+                delimiter.add('\\rrangle', new Symbol('\\rrangle', '\u298A'));
+                delimiter.add('\\Lbrbrak', new Symbol('\\Lbrbrak', '\u27EC'));
+                delimiter.add('\\Rbrbrak', new Symbol('\\Rbrbrak', '\u27ED'));
+                delimiter.add('\\lBrace', new Symbol('\\lBrace', '\u2983'));
+                delimiter.add('\\rBrace', new Symbol('\\rBrace', '\u2984'));
+                delimiter.add('\\lParen', new Symbol('\\lParen', '\u2985'));
+                delimiter.add('\\rParen', new Symbol('\\rParen', '\u2986'));
+                delimiter.add('\\lbrackubar', new Symbol('\\lbrackubar', '\u298B'));
+                delimiter.add('\\rbrackubar', new Symbol('\\rbrackubar', '\u298C'));
+                delimiter.add('\\lbrackultick', new Symbol('\\lbrackultick', '\u298D'));
+                delimiter.add('\\rbracklrtick', new Symbol('\\rbracklrtick', '\u298E'));
+                delimiter.add('\\lbracklltick', new Symbol('\\lbracklltick', '\u298F'));
+                delimiter.add('\\rbrackurtick', new Symbol('\\rbrackurtick', '\u2990'));
+                delimiter.add('\\langledot', new Symbol('\\langledot', '\u2991'));
+                delimiter.add('\\rangledot', new Symbol('\\rangledot', '\u2992'));
+                delimiter.add('\\lparenless', new Symbol('\\lparenless', '\u2993'));
+                delimiter.add('\\rparengtr', new Symbol('\\rparengtr', '\u2994'));
+                delimiter.add('\\Lparengtr', new Symbol('\\Lparengtr', '\u2995'));
+                delimiter.add('\\Rparenless', new Symbol('\\Rparenless', '\u2996'));
+                delimiter.add('\\lblkbrbrak', new Symbol('\\lblkbrbrak', '\u2997'));
+                delimiter.add('\\rblkbrbrak', new Symbol('\\rblkbrbrak', '\u2998'));
+                delimiter.add('\\lvzigzag', new Symbol('\\lvzigzag', '\u29D8'));
+                delimiter.add('\\rvzigzag', new Symbol('\\rvzigzag', '\u29D9'));
+                delimiter.add('\\Lvzigzag', new Symbol('\\Lvzigzag', '\u29DA'));
+                delimiter.add('\\Rvzigzag', new Symbol('\\Rvzigzag', '\u29DB'));
+                delimiter.add('\\lcurvyangle', new Symbol('\\lcurvyangle', '\u29FC'));
+                delimiter.add('\\rcurvyangle', new Symbol('\\rcurvyangle', '\u29FD'));
+                delimiter.add('\\Vvert', new Symbol('\\Vvert', '\u2980'));
+        }        // ready
+    },           // startup
+
+
+    tex: {
+        packages: {'[+]': ['tagformat', 'Lwarp-macros', 'textmacros']},
+        tags: "ams",
+                tagformat: {
+                        number: function (n) {
+                             if(MathJax.config.subequations==0)
+                                 return(MathJax.config.section + n);
+                             else
+                                 return(MathJax.config.section + String.fromCharCode(96+n));
+                        },
+                },
+    }
+}
+</script>
+
+
+<script
+        id="MathJax-script"
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+></script>
+
+</head>
+<body>
+
+
+<a id="lecnotes_html-autopage-9"></a>
+<nav class="topnavigation"><a href="lecnotes_html.html" class="linkhome" >
+Home</a></nav>
+
+
+<div class="bodyandsidetoc">
+<div class="sidetoccontainer">
+
+
+<nav class="sidetoc">
+
+
+<div class="sidetoctitle">
+
+<p>
+Contents
+</p>
+</div>
+
+
+<div class="sidetoccontents">
+
+<p>
+<a href="lecnotes_html.html" class="linkhome" >
+Home</a>
+</p>
+
+</div>
+
+</nav>
+
+</div>
+
+
+<main class="bodycontainer">
+
+
+<section class="textbody">
+
+<!--MathJax customizations:-->
+
+
+<div class="hidden">
+
+\(\newcommand{\footnotename}{footnote}\)
+
+\(\def \LWRfootnote {1}\)
+
+\(\newcommand {\footnote }[2][\LWRfootnote ]{{}^{\mathrm {#1}}}\)
+
+\(\newcommand {\footnotemark }[1][\LWRfootnote ]{{}^{\mathrm {#1}}}\)
+
+\(\let \LWRorighspace \hspace \)
+
+\(\renewcommand {\hspace }{\ifstar \LWRorighspace \LWRorighspace }\)
+
+\(\newcommand {\mathnormal }[1]{{#1}}\)
+
+\(\newcommand \ensuremath [1]{#1}\)
+
+\(\newcommand {\LWRframebox }[2][]{\fbox {#2}} \newcommand {\framebox }[1][]{\LWRframebox } \)
+
+\(\newcommand {\setlength }[2]{}\)
+
+\(\newcommand {\addtolength }[2]{}\)
+
+\(\newcommand {\setcounter }[2]{}\)
+
+\(\newcommand {\addtocounter }[2]{}\)
+
+\(\newcommand {\arabic }[1]{}\)
+
+\(\newcommand {\number }[1]{}\)
+
+\(\newcommand {\noalign }[1]{\text {#1}\notag \\}\)
+
+\(\newcommand {\cline }[1]{}\)
+
+\(\newcommand {\directlua }[1]{\text {(directlua)}}\)
+
+\(\newcommand {\luatexdirectlua }[1]{\text {(directlua)}}\)
+
+\(\newcommand {\protect }{}\)
+
+\(\def \LWRabsorbnumber #1 {}\)
+
+\(\def \LWRabsorbquotenumber &quot;#1 {}\)
+
+\(\newcommand {\LWRabsorboption }[1][]{}\)
+
+\(\newcommand {\LWRabsorbtwooptions }[1][]{\LWRabsorboption }\)
+
+\(\def \mathchar {\ifnextchar &quot;\LWRabsorbquotenumber \LWRabsorbnumber }\)
+
+\(\def \mathcode #1={\mathchar }\)
+
+\(\let \delcode \mathcode \)
+
+\(\let \delimiter \mathchar \)
+
+\(\def \oe {\unicode {x0153}}\)
+
+\(\def \OE {\unicode {x0152}}\)
+
+\(\def \ae {\unicode {x00E6}}\)
+
+\(\def \AE {\unicode {x00C6}}\)
+
+\(\def \aa {\unicode {x00E5}}\)
+
+\(\def \AA {\unicode {x00C5}}\)
+
+\(\def \o {\unicode {x00F8}}\)
+
+\(\def \O {\unicode {x00D8}}\)
+
+\(\def \l {\unicode {x0142}}\)
+
+\(\def \L {\unicode {x0141}}\)
+
+\(\def \ss {\unicode {x00DF}}\)
+
+\(\def \SS {\unicode {x1E9E}}\)
+
+\(\def \dag {\unicode {x2020}}\)
+
+\(\def \ddag {\unicode {x2021}}\)
+
+\(\def \P {\unicode {x00B6}}\)
+
+\(\def \copyright {\unicode {x00A9}}\)
+
+\(\def \pounds {\unicode {x00A3}}\)
+
+\(\let \LWRref \ref \)
+
+\(\renewcommand {\ref }{\ifstar \LWRref \LWRref }\)
+
+\( \newcommand {\multicolumn }[3]{#3}\)
+
+\(\require {textcomp}\)
+
+\(\newcommand {\intertext }[1]{\text {#1}\notag \\}\)
+
+\(\let \Hat \hat \)
+
+\(\let \Check \check \)
+
+\(\let \Tilde \tilde \)
+
+\(\let \Acute \acute \)
+
+\(\let \Grave \grave \)
+
+\(\let \Dot \dot \)
+
+\(\let \Ddot \ddot \)
+
+\(\let \Breve \breve \)
+
+\(\let \Bar \bar \)
+
+\(\let \Vec \vec \)
+
+\(\newcommand {\real }{\mathbb {R}} \)
+
+\(\newcommand {\RR }{\mathbb {R}} \)
+
+\(\newcommand {\ZZ }{\mathbb Z} \)
+
+\(\newcommand {\F }{\mathbb F} \)
+
+\(\newcommand {\Ham }{\mathrm {Ham}}\)
+
+\(\newcommand {\PP }{\mathbb P}\)
+
+\(\newcommand {\co }[1]{\overline {#1}} \)
+
+\(\newcommand {\ul }[1]{\underline {#1}} \)
+
+\(\newcommand {\bo }[1]{\mathbf {#1}} \)
+
+\(\newcommand {\concat }[2]{[\, #1 \,|\, #2 \,]} \)
+
+\(\newcommand {\Encode }{\texttt {ENCODE}} \)
+
+\(\newcommand {\Decode }{\texttt {DECODE}} \)
+
+\(\newcommand {\RM }{R} \)
+
+\(\newcommand {\Rep }{\text {Rep}} \)
+
+</div>
+
+<p>
+<!--
+...... chapter ch9 ......
+-->
+<h3 id="autosec-10">Chapter&nbsp;<span class="sectionnumber">9&#x2003;</span>Cyclic codes</h3>
+<a id="lecnotes_html-autopage-10"></a>
+<a id="lecnotes_html-autofile-23"></a>
+
+<p>
+Version 2022-11-16. <a href="lecnotes_html.pdf" target="_blank" >To PDF version of the notes</a>
+</p>
+
+<p>
+<b>Synopsis.</b> <i>Cyclic codes form a subclass of linear codes. Cyclic codes are easy to define, but to reveal their advantages, one needs to study them using polynomials. We identify \(\F _q^n\) with the space \(R_n\) of polynomials in \(\F
+_q[x]\) of degree less than \(n\), so that a linear code of length \(n\) becomes a subspace of \(R_n\). We prove that cyclic codes are subspaces of very special form: a cyclic code \(C\) consists of all multiples, in \(R_n\), of its generator polynomial
+\(g(x)\). We also define a check polynomial of \(C\). We can classify cyclic codes of length \(n\) by listing all monic divisors of the polynomial \(x^n-1\) in \(\F _q[x]\). Theory and applications of cyclic codes are underpinned by the Division
+Theorem for polynomials and the long division algorithm, which we review here.</i>
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-11"></a>
+<span class="amsthmnamedefinition">Definition</span><span class="amsthmnotedefinition"> (cyclic shift, cyclic code)</span>.     For a vector \(\ul a = (a_0,a_1,\ldots ,a_{n-1})\in \F _q^n\), we denote \(s(\ul a)=
+(a_{n-1},a_0,\ldots ,a_{n-2})\) and call the vector \(s(\ul a)\) the <b><em>cyclic shift</em></b> of \(\ul a\).
+</p>
+
+<p>
+A <b><i>cyclic code</i></b> in \(\F _q^n\) is a linear code \(C\) such that
+</p>
+
+<p>
+\[ \ul a\in C \qquad \implies \qquad s(\ul a) \in C. \]
+</p>
+
+<p>
+Equivalently, a cyclic code is a linear code \(C\) such that \(s(C)=C\).
+</p>
+
+</li>
+
+</ul>
+
+</div>
+
+<p>
+<b>Remark:</b> We can iterate the cyclic shift, so if a cyclic code \(C\) contains the vector \((a_0,a_1,\ldots ,a_{n-1})\), then \(C\) also contains \((a_{n-2},a_{n-1},a_0,\ldots ,a_{n-3})\), \(\dots \), \((a_1,\ldots ,a_{n-1},a_0)\).
+</p>
+<!--
+...... subsection Vectors as polynomials ......
+-->
+<h5 id="autosec-12">Vectors as polynomials</h5>
+<a id="lecnotes_html-autopage-12"></a>
+
+
+<p>
+To study cyclic codes, we will identify <b>vectors of length \(n\)</b> with <b>polynomials of degree \(&lt;n\)</b> with coefficients in the field \(\F _q\):
+</p>
+
+<p>
+\[ \ul a=(a_0,a_1,\ldots ,a_{n-1}) \quad \mapsto \quad a(x) = a_0+a_1x+\ldots +a_{n-1}x^{n-1} \quad \in \F _q[x] \]
+</p>
+
+<p>
+Here \(\F _q[x]\) is the <b>ring of polynomials</b> in one variable, \(x\), with coefficients in \(\F _q\).
+</p>
+
+<p>
+<i>Notation</i>: if \(n\) is given and \(a(x)\) is a polynomial of degree less than \(n\), \(\ul a\) (same letter, underlined) will denote the vector which corresponds to \(a(x)\) in&nbsp;\(\F _q^n.\)
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-13"></a>
+<span class="amsthmnamedefinition">Example</span><span class="amsthmnotedefinition"> (\(E_3\))</span>.
+</p>
+
+<p>
+Consider the binary even weight code
+</p>
+
+<p>
+\[ E_3 = \{000, 110, 011, 101\} \subseteq \F _2^3.          \]
+</p>
+
+<p>
+It is a linear code, and is closed under the cyclic shift: \(000\) is invariant under the cyclic shift, and \(110 \to 011 \to 101\). Hence \(E_3\) is a cyclic code. It consists of the following <b><i>code polynomials</i></b>:
+</p>
+<div class="center">
+<table>
+
+<tr style="display:none"><th>.</th></tr>
+
+
+<tr>
+<td colspan="2" class="tdc tvertbarr" style="border-right:            1px solid black">Codevector</td>
+<td colspan="2" class="tdc tvertbarr" style="border-right:            1px solid black">Code polynomial</td>
+<td class="tdl">Remark</td>
+</tr>
+
+
+<tr class="hline">
+<td class="tdr"></td>
+<td class="tdl tvertbarr" style="border-right:          1px solid black">\(000\)</td>
+<td class="tdr"></td>
+<td class="tdl tvertbarr" style="border-right:          1px solid black">\(0\)</td>
+<td class="tdl"></td>
+</tr>
+
+
+<tr>
+<td class="tdr"></td>
+<td class="tdl tvertbarr" style="border-right:          1px solid black">\(110\)</td>
+<td class="tdr"></td>
+<td class="tdl tvertbarr" style="border-right:          1px solid black">\(1+x\)</td>
+<td class="tdl"></td>
+</tr>
+
+
+<tr>
+<td class="tdr"></td>
+<td class="tdl tvertbarr" style="border-right:          1px solid black">\(011\)</td>
+<td class="tdr"></td>
+<td class="tdl tvertbarr" style="border-right:          1px solid black">\(x+x^2\)</td>
+<td class="tdl">\(= x(1+x)\)</td>
+</tr>
+
+
+<tr>
+<td class="tdr"></td>
+<td class="tdl tvertbarr" style="border-right:          1px solid black">\(101\)</td>
+<td class="tdr"></td>
+<td class="tdl tvertbarr" style="border-right:          1px solid black">\(1+x^2\)</td>
+<td class="tdl">\(= (1+x)(1+x)\)</td>
+</tr>
+</table>
+
+</div>
+
+<p>
+Note that <b>multiplication of polynomials</b> is an extremely important operation on \(\F _q[x]\) which is not “visible” in \(\F _q^n\). Our goal in this chapter will be to make sense of this operation in coding theory — in particular, we will
+explain the mysterious fact that all the code polynomials of \(E_3\) are multiples of \(1+x\).
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<!--
+...... subsection The Division Theorem for polynomials ......
+-->
+<h5 id="autosec-16">The Division Theorem for polynomials</h5>
+<a id="lecnotes_html-autopage-16"></a>
+
+
+<p>
+In general we cannot divide \(f(x)\) by \(g(x)\) in \(\F _q[x]\) and expect to get a polynomial. However, just as the ring \(\mathbb Z\) of integers, the ring \(\F _q[x]\) has an extra operation called <b><i>division with remainder</i></b>,
+as per the following
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-17"></a>
+<span class="amsthmnamedefinition">Theorem</span><span class="amsthmnumberdefinition"> <span class="textup">9.1</span></span><span class="amsthmnotedefinition"> (Division Theorem for polynomials)</span>.                    For all
+\(f(x)\in \F _q[x]\), \(g(x)\in \F _q[x]\setminus \{0\}\), there exist unique \(Q(x),r(x)\in \F _q[x]\) such that
+</p>
+
+<p>
+\[ f(x) = g(x)Q(x)+r(x)\qquad \text {and}\qquad \deg r(x)&lt;\deg g(x) \ (\text {possibly }r(x)=0).             \]
+</p>
+
+<p>
+In this case the polynomial \(Q(x)\) is the <b><i>quotient</i></b>, and \(r(x)\) the <b><i>remainder</i></b>, of \(f(x)\) when divided by \(g(x)\).
+</p>
+
+</li>
+
+</ul>
+
+</div>
+
+<p>
+We will <b>not</b> prove the Division Theorem but we will note and use the practical algorithm for finding the quotient and the remainder, known as <b>long division of polynomials</b>. Example of long division: divide \(x^5+1\) by
+\(x^2+x+1\) in \(\F _2[x]\), finding the quotient and the remainder.
+</p>
+<div class="center">
+
+<p>
+
+<a href="PolynomialLongDivision.svg" target="_blank" ><img
+    src="PolynomialLongDivision.svg"
+    class="inlineimage"
+    alt="(image)"
+></a>
+</p>
+</div>
+
+<p>
+Hence \(x^5+1=(x^2+x+1)Q(x)+r(x)\) in \(\F _2[x]\), with \(Q(x)=x^3+x^2+1\) and \(r(x)=x\).
+</p>
+
+<p>
+This example shows long division of polynomials over \(\F _2\). Division by a fixed binary polynomial is widely implemented in electronic circuits at hardware level, by means of shift feedback registers. We will soon see why such implementations
+are needed.
+</p>
+<!--
+...... subsection The generator polynomial of a cyclic code ......
+-->
+<h5 id="autosec-19">The generator polynomial of a cyclic code</h5>
+<a id="lecnotes_html-autopage-19"></a>
+
+
+<p>
+To every cyclic code in \(C\subseteq R_n\) we associate a polynomial as follows.
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-20"></a>
+<span class="amsthmnamedefinition">Definition</span>.        A <b><i>generator polynomial</i></b> of a cyclic code \(C\subseteq R_n\), \(C\ne \{\ul 0\}\}\) is a monic polynomial of least degree in \(C\). By convention, the generator
+polynomial of the zero code, \(\{0\}\subseteq R_n\), is \(x^n-1\).
+</p>
+
+<p>
+(<em>Monic</em> means: the coefficient of the highest power of \(x\) in \(g\) is \(1\).)
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-21"></a>
+<span class="amsthmnamedefinition">Lemma</span><span class="amsthmnumberdefinition"> <span class="textup">9.2</span></span>.   <a id="lem:generator_unique"></a> Every cyclic code \(C\) has a unique generator polynomial
+\(g(x)\).
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmproof">
+
+<a id="lecnotes_html-autopage-22"></a>
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<span class="amsthmproofname">Proof.</span> <i>Existence</i>: If \(C=\{0\}\), by definition \(x^n-1\) is the unique generator polynomial of \(\{0\}\). So we assume \(C\ne \{0\}\). Take \(g(x)\in C\) to be a non-zero polynomial of lowest
+degree in \(C\). Make \(g(x)\) monic by dividing it by its leading coefficient. This does not change the degree, so we now have a monic polynomial of lowest degree in \(C\). Existence is proved.
+</p>
+
+<p>
+<i>Uniqueness</i>: Let now \(g_1(x)\in C\) be another generator polynomial, then by definition \(g_1(x)\) is monic and has the same degree as \(g(x)\). So \(f(x)=g_1(x)-g(x)\) has degree less than \(\deg g(x)\) (because the leading term
+\(x^{\deg g}\) cancels due to subtraction). Note that \(f(x)\in C\) because \(C\) is linear. If \(f(x)\ne 0\), divide \(f(x)\) by its leading coefficient and obtain a monic polynomial, again in \(C\), of degree less than \(\deg g\). This contradicts
+the choice of \(g(x)\). Hence \(f(x)\) must be \(0\), and \(g_1(x)=g(x)\). Uniqueness is proved. <span class="theoremendmark">&#x25A1;</span>
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-23"></a>
+<span class="amsthmnamedefinition">Theorem</span><span class="amsthmnumberdefinition"> <span class="textup">9.3</span></span>.   <a id="thm:generator"></a> Let \(C\subseteq R_n\) be a cyclic code with generator polynomial
+\(g(x)\). Write \(\deg g=n-k\). Then
+</p>
+<ul style="list-style-type:none">
+
+
+<li>
+<p>
+1. \(C=\{u(x)g(x):   u(x)\in R_k\}\), i.e., the code polynomials of \(C\) are multiples of \(g(x)\) of degree less than \(n\).
+</p>
+
+
+</li>
+<li>
+
+
+<p>
+2. \(g(x)\) is a monic factor of the polynomial \(x^n-1\) in \(\F _q[x]\).
+</p>
+</li>
+</ul>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmproof">
+
+<a id="lecnotes_html-autopage-24"></a>
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<span class="amsthmproofname">Proof.</span> Both claims are trivially true when \(C=\{\ul 0\}\) and \(g(x)=x^n-1\), so we assume \(C\ne \{\ul 0\}\).
+</p>
+
+<p>
+1. Observe that, writing elements of \(C\) as vectors, we have
+</p>
+
+<p>
+\[ \ul g = (g_0,g_1,\dots ,g_{n-k},\underbrace {0,0,\dots ,0}_{k-1 \text { zeros}}) \]
+</p>
+
+<p>
+and, as long as \(i\le k-1\),
+</p>
+
+<p>
+\[ \ul {x^i g} = (\underbrace {0,\dots ,0}_{i \text { zeros}},g_0,g_1,\dots ,g_{n-k},\underbrace {0,\dots ,0}_{k-1-i \text { zeros}}).                   \]
+</p>
+
+<p>
+That is, \(\ul {x^i g}\) is obtained from \(\ul g\) by applying the cyclic shift \(i\) times. Since \(C\) is cyclic, this means that \(xg(x),\dots ,x^{k-1}g(x)\in C.\)
+</p>
+
+<p>
+Now, every polynomial \(u(x)\in R_k\) — that is, a polynomial of degree less than \(k\) — is written as \(u_0+u_1x+\dots + u_{k-1}x^{k-1}\) for some \(u_0,\dots ,u_{k-1}\in \F _q.\) Hence \(u(x)g(x)\) is a linear combination of the
+polynomials \(g(x)\), \(xg(x),\dots ,x^{k-1}g(x)\) which are in \(C\), and, since \(C\) is linear, \(u(x)g(x)\in C\). We proved that \(C\supseteq \{u(x)g(x):       u(x)\in R_k\}\).
+</p>
+
+<p>
+Let us show that \(C\supseteq \{u(x)g(x):      u(x)\in R_k\}\). Take \(f(x)\in C\) and apply the Division Theorem for polynomials to write \(r(x) = f(x)-g(x)Q(x)\) where \(\deg r(x)&lt;\deg g(x)\). Observe that we will get \(\deg
+Q=\deg f - \deg g &lt;n-(n-k)=k\) and so, by what has already been proved, \(g(x)Q(x)\in C\). Then by linearity \(r(x)\in C\). We have seen already that there cannot be a non-zero polynomial in \(C\) of degree strictly less than \(\deg g\),
+so \(r(x)=0\) and \(f(x)=g(x)Q(x)\) is a multiple of \(g(x)\), as claimed. Part 1 of the Theorem is proved.
+</p>
+
+<p>
+2. Continuing from the above, observe that
+</p>
+
+<p>
+\[ s(\ul {x^{k-1}g}) = (g_{n-k},\underbrace {0,\dots ,0}_{k-1 \text { zeros}},g_0,g_1,\dots ,g_{n-k-1}) \]
+</p>
+
+<p>
+where \(s\) is the cyclic shift. Hence the vector \(s(\ul {x^{k-1}g})\) corresponds to the polynomial
+</p>
+
+<p>
+\[ g_{n-k}+x^k(g_0+g_1x+\dots + g_{n-k-1}x^{n-k-1}) = g_{n-k}+x^k g(x) - g_{n-k} x^n = x^k g(x) - (x^n-1), \]
+</p>
+
+<p>
+as \(g_{n-k}=1\) given that \(g(x)\) is monic. Since \(C\) is cyclic, \(s(\ul {x^{k-1}g})\in C\) and so \(x^k g(x) - (x^n-1)\in C\). Then by Part 1, \(x^k g(x) - (x^n-1)=u(x)g(x)\) for some polynomial \(u(x)\), and so
+\(x^n-1=(x^k-u(x))g(x)\) which shows that \(g(x)\) is indeed a factor of \(x^n-1\). <span class="theoremendmark">&#x25A1;</span>
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-25"></a>
+<span class="amsthmnamedefinition">Example</span><span class="amsthmnotedefinition"> (\(E_3\) continued)</span>.
+</p>
+
+<p>
+Recall that the code \(E_3\), viewed as a subspace of \(R_3\), consists of polynomials \(0\), \(1+x\), \(x+x^2=x(1+x)\) and \(1+x^2=(1+x)^2\), of degree \(&lt;3\). The monic code polynomial of lowest degree is \(1+x\) — this is the generator
+polynomial of \(E_3\). Observe that all the code polynomials are multiples of \(1+x\).
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<!--
+...... subsection Error detection by a cyclic code ......
+-->
+<h5 id="autosec-26">Error detection by a cyclic code</h5>
+<a id="lecnotes_html-autopage-26"></a>
+
+
+<p>
+Theorem <a href="ch9.html#thm:generator">9.3</a> means that if \(C\) is a cyclic code, there is no need to store a check matrix for <i>error detection</i>. To determine whether the received vector \(\ul y\) is a codevector, divide the
+polynomial \(y(x)\) by the generator polynomial \(g(x)\); the remainder is \(0\), if and only if \(\ul y\in C\).
+</p>
+
+<p>
+This is how error detection is implemented in practice for binary codes (e.g., in Ethernet networks). Long division by \(g(x)\) is implemented by circuitry.
+</p>
+
+<p>
+Nevertheless, for theoretical purposes we would like to have generator and check matrices for a cyclic code with a given generator polynomial.
+</p>
+<!--
+...... subsection The check polynomial ......
+-->
+<h5 id="autosec-27">The check polynomial</h5>
+<a id="lecnotes_html-autopage-27"></a>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-28"></a>
+<span class="amsthmnamedefinition">Definition</span><span class="amsthmnotedefinition"> (check polynomial)</span>.         Let \(g(x)\) be the generator polynomial of a cyclic code \(C\). The polynomial \(h(x)\) such that
+\(g(x)h(x)=x^n-1\) is called the <b><i>check polynomial</i></b> of \(C\). If \(\deg g(x)=n-k\), then \(\deg h(x)=k\), and \(h\) is monic.
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-29"></a>
+<span class="amsthmnamedefinition">Theorem</span><span class="amsthmnumberdefinition"> <span class="textup">9.4</span></span><span class="amsthmnotedefinition"> (a generator matrix and a check matrix for a cyclic
+code)</span>.   <a id="thm:gen-check"></a> Let \(C\subseteq \F _q^n\) be a cyclic code with generator polynomial \(g(x)=g_0+g_1x +\ldots +g_{n-k} x^{n-k}\) and check polynomial \(h(x)=h_0+h_1x+\ldots +h_kx^k\).
+</p>
+
+<p>
+• the vector \(\ul g=[g_0 \ g_1 \ \ldots \ g_{n-k} \ 0 \ \ldots \ 0]\in \F _q^n\) which corresponds to \(g(x)\), and its next \(k-1\) cyclic shifts, form a generator matrix for \(C\):
+</p>
+
+<p>
+\[ G=\left [\begin {matrix} g_0 &amp; g_1 &amp; \ldots &amp; \ldots &amp; g_{n-k} &amp; 0 &amp; \ldots &amp; 0 \\ 0 &amp; g_0 &amp; g_1 &amp; \ldots &amp; \ldots &amp; g_{n-k} &amp; \ddots &amp; 0 \\ \vdots &amp;
+\ddots &amp; \ddots &amp; &amp; &amp; &amp; &amp; \ddots &amp; \\ 0 &amp; \ldots &amp; 0 &amp; g_0 &amp; \ldots &amp; \ldots &amp; &amp; g_{n-k} \end {matrix}\right ] \qquad (k\text { rows}); \]
+</p>
+
+<p>
+• the vector corresponding to the polynomial
+</p>
+
+<p>
+\[ \overleftarrow h(x) = h_k + h_{k-1}x + \ldots + h_0 x^k, \]
+</p>
+
+<p>
+obtained from \(h(x)\) by reversing the order of the coefficients, i.e., the vector \(\ul {\overleftarrow h} = \) \([ h_k \ h_{k-1} \ \ldots \ h_0 \ 0 \ \ldots \ 0 ]\), and its next \(n-k-1\) shifts form a check matrix for&nbsp;\(C\):
+</p>
+
+<p>
+\[ H=\left [\begin {matrix} 1 &amp; h_{k-1} &amp; \ldots &amp; \ldots &amp; h_1 &amp; h_0 &amp; 0 &amp; \ldots &amp; 0 \\ \vdots &amp; \ddots &amp; \ddots &amp; &amp; &amp; &amp; &amp; \ddots &amp; &amp; \\ 0 &amp;
+\ddots &amp; 1 &amp; h_{k-1} &amp; \ldots &amp; \ldots &amp; h_1 &amp; h_0 &amp; 0 \\ 0 &amp; \ldots &amp; 0 &amp; 1 &amp; \ldots &amp; \ldots &amp; &amp; h_1 &amp; h_0 \end {matrix}\right ]\qquad (n-k\text {
+rows}).   \]
+</p>
+
+<p>
+
+
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmproof">
+
+<a id="lecnotes_html-autopage-30"></a>
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<span class="amsthmproofname">Proof.</span> Observe that the rows of \(G\) are linearly independent and the rows of \(H\) are linearly independent. This is obvious for \(H\) because \(H\) is a matrix in a row echelon form, with no zero rows.
+This is clear for \(G\) as well, because it is also in row echelon form up to scaling its rows by a non-zero scalar \(g_0\): note that \(g_0h_0 = g(0)h(0)=0^n-1\ne 0\).
+</p>
+
+<p>
+Now, by definition, \(C=\{u(x)g(x):    \deg (u(x)g(x))&lt;n\}=\{u(x)g(x):\deg u(x)&lt;n-r=k\}\), so \(C\) is spaned by \(g(x),xg(x),\ldots ,x^{k-1}g(x)\). Written as vectors, these are exactly the cyclic shifts of \(\ul g\) listed above.
+We proved that the rows of \(G\) span \(C\), and, since they are linearly independent, they form a basis for \(C\) and so \(G\) is a generator matrix for \(C\).
+</p>
+
+<p>
+Since \(H\) has \(n-k\) linearly independent rows and \(\dim C^\perp =n-k\), to show that \(H\) is a check matrix it is enough to show that \(HG^T=0\), in the same way as in the proof of Theorem&nbsp;<a
+href="ch7.html#thm:checkmatrix">7.1</a>. We rely on the following observation linking the inner product of vectors and their representation as polynomials: if \(\ul a,\ul b\in \F _q^n\), then
+</p>
+
+<p>
+\[ \ul a \cdot \ul {\overleftarrow b} = \text {coefficient of }x^{n-1} \text { in }a(x)b(x).                 \]
+</p>
+
+<p>
+Indeed, with \(\ul a=(a_0,a_1,\dots ,a_{n-1})\) and \(\ul {\overleftarrow b}=(b_{n-1},\dots ,b_1,b_0)\) one has \(\ul a \cdot \ul {\overleftarrow b}=a_0b_{n-1} + \dots + a_{n-1}b_0\) which is exactly the coefficient of
+\(x^{n-1}\) in the product of the polynomials \(a(x)\) and \(b(x)\).
+</p>
+
+<p>
+It remains to observe that the rows of \(G\) correspond to polynomials \(x^i g(x)\) for \(i=0,1,\dots ,k-1\), while the rows of \(H\) are obtained by writing backwards the vectors which correspond to polynomials \(x^j h(x)\) for \(j=0,1,\dots
+,n-k-1\). The \((j,i)\)-entry of \(HG^T\) is the inner product of the \(i\)th row of \(G\) and the \(j\)th row of \(H\), hence is the coefficient of \(x^{n-1}\) in \(x^i g(x)x^j h(x)=x^{n+i+j}-x^{i+j}\). But since \(n+i+j&gt;n-1\) and
+\(i+j&lt;n-1\), this coefficient is zero, proving \(HG^T=0\). <span class="theoremendmark">&#x25A1;</span>
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-31"></a>
+<span class="amsthmnamedefinition">Remark</span>.   This is not the only generator matrix (resp., check matrix) for \(C\). As we know, a generator matrix is not unique. Moreover, these matrices are not usually in standard form. Note that a
+generator polynomial of \(C\) is unique.
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-32"></a>
+<span class="amsthmnamedefinition">Corollary</span><span class="amsthmnumberdefinition"> <span class="textup">9.5</span></span>.      The Theorem implies that \(C^\perp \) is also a cyclic code with generator polynomial
+\(h_0^{-1}\overleftarrow h(x)\). Scaling by \(h_0^{-1}\) is necessary because the generator polynomial must by definition be monic.
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-33"></a>
+<span class="amsthmnamedefinition">Example</span>.             Use Theorem <a href="ch9.html#thm:generator">9.3</a> and Theorem <a href="ch9.html#thm:gen-check">9.4</a> to find all the cyclic binary codes of length&nbsp;\(3\).
+</p>
+
+<p>
+<b>Solution.</b> Generator polynomials are <i>monic factors of \(x^n-1\) in \(\F _q[x]\)</i>. The first step is to factorise \(x^n-1\) into <b>irreducible monic polynomials</b> in \(\F _q[x]\). A polynomial is irreducible if it cannot be
+written as a product of two polynomials of positive degree.
+</p>
+
+<p>
+Note that the polynomial \(x^n-1\) is <b>not</b> irreducible in \(\F _q[x]\), for all \(n&gt;1\) and for all \(q\). Indeed, \(x^n-1=(x-1)(x^{n-1}+\dots +x+1)\).
+</p>
+
+<p>
+We work over the field \(\F _2\) and observe:
+</p>
+
+<p>
+\[ x^3-1 = (x - 1)(x^2+ x + 1).         \]
+</p>
+
+<p>
+The polynomial \(x-1=x+1\) is irreducible, because it is of degree \(1\).
+</p>
+
+<p>
+Can we factorise the polynomial \(x^2+x+1\) in \(\F _2[x]\)? If we could, we would have a factorisation \((x+a)(x+b)\). But then \(ab=1\) which means \(a=b=1\) in \(\F _2\). Note that \((x+1)^2=x^2+1\) in \(\F _2[x]\). We have shown that
+\(x^2+x+1\) is irreducible in \(\F _2[x]\).
+</p>
+
+<p>
+So the possible monic factors of \(x^3-1\) in \(\F _2[x]\) are:
+</p>
+
+<p>
+\[ 1; \qquad 1 + x; \qquad 1+x+x^2; \qquad 1+x^3.             \]
+</p>
+
+<p>
+We can now list all the cyclic codes in \(\F _2^3\) as ideals of \(R_3\) generated by each of the above polynomials. For each code we give a generator matrix \(G\), state the minimum distance \(d\) and a well-known name of the code, and point out
+its dual code (which is also cyclic).
+</p>
+<ul style="list-style-type:none">
+
+
+<li>
+<p>
+• \(g(x) = 1\), \(G=\begin {bmatrix}1&amp;0&amp;0\\0&amp;1&amp;0\\0&amp;0&amp;1\end {bmatrix}\) which corresponds to the <i>trivial binary code</i> of length&nbsp;\(3\): \(\{000,100,010,001,110,101,011,111\}=\F _2^3\) with
+\(d=1\). The dual code of \(\F _2^3\) is the zero code (see below).
+</p>
+
+
+</li>
+<li>
+
+
+<p>
+• \(g(x) = 1+x\), \(G=\begin {bmatrix}1&amp;1&amp;0\\0&amp;1&amp;1\end {bmatrix}\). This is \(\{000,110,011,101\}=E_3\), the binary even weight code of length \(3\) which has \(d=2\). The dual of \(E_3\) is \(\text {Rep}(3,2)\) (see
+below).
+</p>
+
+
+</li>
+<li>
+
+
+<p>
+• \(g(x)=1+x+x^2\), \(G=\begin {bmatrix}1&amp;1&amp;1 \end {bmatrix}\). This is \(\{000,111\}=\text {Rep}(3,2)\), the binary repetition code of length&nbsp;\(3\) with \(d=3\). This code is \((E_3)^\perp \).
+</p>
+
+
+</li>
+<li>
+
+
+<p>
+• \(g(x)=1+x^3\). Theorem <a href="ch9.html#thm:gen-check">9.4</a> returns matrix \(G\) with \(k=3-3=0\) rows, \(G=[\ \ \ \ \ \ ]\). And indeed, by definition \(1+x^3\) is the generator polynomial of the zero code, \(\{000\}\), which
+has empty generator matrix. It is a useless code but formally it is a linear and cyclic code, so we have to allow it for reasons of consistency. The minimum distance of the zero code is undefined. This code is \((\F _2^3)^\perp \).
+</p>
+</li>
+</ul>
+
+</li>
+
+</ul>
+
+</div>
+</section>
+
+</main>
+
+</div>
+
+
+<nav class="botnavigation"><a href="lecnotes_html.html" class="linkhome" >
+Home</a></nav>
+
+</body>
+</html>

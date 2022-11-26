@@ -1,0 +1,1211 @@
+
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="UTF-8" />
+<meta name="generator" content="LaTeX Lwarp package" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<!--[if lt IE 9]>
+<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+<link rel="stylesheet" type="text/css" href="bazlovstyle.css" />
+
+<script>
+// Lwarp MathJax emulation code
+//
+// Based on code by Davide P. Cervone.
+// Equation numbering: https://github.com/mathjax/MathJax/issues/2427
+// Starred and ifnextchar macros: https://github.com/mathjax/MathJax/issues/2428
+// \left, \right delimiters: https://github.com/mathjax/MathJax/issues/2535
+//
+// Modified by Brian Dunn to adjust equation numbering and add subequations.
+//
+// LaTeX can use \seteqnumber{subequations?}{section}{number} before each equation.
+// subequations? is 0 usually, 1 if inside subequations.
+// section is a string printed as-is, or empty.
+// number is auto-incremented by MathJax between equations.
+//
+MathJax = {
+    subequations: "0",
+    section: "",
+    loader: {
+        load: ['[tex]/tagformat', '[tex]/textmacros'],
+    },
+    startup: {
+        ready() {
+            //      These would be replaced by import commands if you wanted to make
+            //      a proper extension.
+            const Configuration = MathJax._.input.tex.Configuration.Configuration;
+            const CommandMap = MathJax._.input.tex.SymbolMap.CommandMap;
+            const Macro = MathJax._.input.tex.Symbol.Macro;
+            const TexError = MathJax._.input.tex.TexError.default;
+            const ParseUtil = MathJax._.input.tex.ParseUtil.default;
+            const expandable = MathJax._.util.Options.expandable;
+
+
+            //      Insert the replacement string into the TeX string, and check
+            //      that there haven't been too many maxro substitutions (prevents
+            //      infinite loops).
+            const useArgument = (parser, text) => {
+                parser.string = ParseUtil.addArgs(parser, text, parser.string.slice(parser.i));
+                parser.i = 0;
+                if (++parser.macroCount > parser.configuration.options.maxMacros) {
+                    throw new TexError('MaxMacroSub1',
+                    'MathJax maximum macro substitution count exceeded; ' +
+                    'is there a recursive macro call?');
+                }
+            }
+
+
+            //      Create the command map for:
+            //          \ifstar, \ifnextchar, \ifblank, \ifstrequal, \gsub, \seteqnumber
+            new CommandMap('Lwarp-macros', {
+                ifstar: 'IfstarFunction',
+                ifnextchar: 'IfnextcharFunction',
+                ifblank: 'IfblankFunction',
+                ifstrequal: 'IfstrequalFunction',
+                gsubstitute: 'GsubstituteFunction',
+                seteqnumber: 'SeteqnumberFunction'
+            }, {
+                //      This function implements an ifstar macro.
+                IfstarFunction(parser, name) {
+                    const resultstar = parser.GetArgument(name);
+                    const resultnostar = parser.GetArgument(name);
+                    const star = parser.GetStar();                      // true if there is a *
+                    useArgument(parser, star ? resultstar : resultnostar);
+                },
+
+
+                //      This function implements an ifnextchar macro.
+                IfnextcharFunction(parser, name) {
+                    let whichchar = parser.GetArgument(name);
+                    if (whichchar.match(/^(?:0x[0-9A-F]+|[0-9]+)$/i)) {
+                        // $ syntax highlighting
+                        whichchar = String.fromCodePoint(parseInt(whichchar));
+                    }
+                    const resultnextchar = parser.GetArgument(name);
+                    const resultnotnextchar = parser.GetArgument(name);
+                    const gotchar = (parser.GetNext() === whichchar);
+                    useArgument(parser, gotchar ? resultnextchar : resultnotnextchar);
+                },
+
+
+                // This function implements an ifblank macro.
+                IfblankFunction(parser, name) {
+                    const blankarg = parser.GetArgument(name);
+                    const resultblank = parser.GetArgument(name);
+                    const resultnotblank = parser.GetArgument(name);
+                    const isblank = (blankarg.trim() == "");
+                    useArgument(parser, isblank ? resultblank : resultnotblank);
+                },
+
+
+                // This function implements an ifstrequal macro.
+                IfstrequalFunction(parser, name) {
+                    const strequalfirst = parser.GetArgument(name);
+                    const strequalsecond = parser.GetArgument(name);
+                    const resultequal = parser.GetArgument(name);
+                    const resultnotequal = parser.GetArgument(name);
+                    const isequal = (strequalfirst == strequalsecond);
+                    useArgument(parser, isequal ? resultequal : resultnotequal);
+                },
+
+
+                // This function implements a gsub macro.
+                GsubstituteFunction(parser, name) {
+                    const gsubfirst = parser.GetArgument(name);
+                    const gsubsecond = parser.GetArgument(name);
+                    const gsubthird = parser.GetArgument(name);
+                    let gsubresult=gsubfirst.replace(gsubsecond, gsubthird);
+                    useArgument(parser, gsubresult);
+                },
+
+
+                //      This function modifies the equation numbers.
+                SeteqnumberFunction(parser, name) {
+                        //   Get the macro parameters
+                        const star = parser.GetStar();                    // true if there is a *
+                        const optBrackets = parser.GetBrackets(name);     // contents of optional brackets
+                        const newsubequations = parser.GetArgument(name);    // the subequations argument
+                        const neweqsection = parser.GetArgument(name);    // the eq section argument
+                        const neweqnumber = parser.GetArgument(name);     // the eq number argument
+                        MathJax.config.subequations=newsubequations ;     // a string with boolean meaning
+                        MathJax.config.section=neweqsection ;             // a string with numeric meaning
+                        parser.tags.counter = parser.tags.allCounter = neweqnumber ;
+                }
+
+
+            });
+
+
+            //      Create the Lwarp-macros package
+            Configuration.create('Lwarp-macros', {
+                handler: {macro: ['Lwarp-macros']}
+            });
+
+
+            MathJax.startup.defaultReady();
+
+
+            // For forward references:
+            MathJax.startup.input[0].preFilters.add(({math}) => {
+                if (math.inputData.recompile){
+                        MathJax.config.subequations = math.inputData.recompile.subequations;
+                        MathJax.config.section = math.inputData.recompile.section;
+                }
+            });
+            MathJax.startup.input[0].postFilters.add(({math}) => {
+                if (math.inputData.recompile){
+                        math.inputData.recompile.subequations = MathJax.config.subequations;
+                        math.inputData.recompile.section = MathJax.config.section;
+                }
+            });
+
+
+                // For \left, \right with unicode-math:
+                const {DelimiterMap} = MathJax._.input.tex.SymbolMap;
+                const {Symbol} = MathJax._.input.tex.Symbol;
+                const {MapHandler} = MathJax._.input.tex.MapHandler;
+                const delimiter = MapHandler.getMap('delimiter');
+                delimiter.add('\\lBrack', new Symbol('\\lBrack', '\u27E6'));
+                delimiter.add('\\rBrack', new Symbol('\\rBrack', '\u27E7'));
+                delimiter.add('\\lAngle', new Symbol('\\lAngle', '\u27EA'));
+                delimiter.add('\\rAngle', new Symbol('\\rAngle', '\u27EB'));
+                delimiter.add('\\lbrbrak', new Symbol('\\lbrbrak', '\u2772'));
+                delimiter.add('\\rbrbrak', new Symbol('\\rbrbrak', '\u2773'));
+                delimiter.add('\\lbag', new Symbol('\\lbag', '\u27C5'));
+                delimiter.add('\\rbag', new Symbol('\\rbag', '\u27C6'));
+                delimiter.add('\\llparenthesis', new Symbol('\\llparenthesis', '\u2987'));
+                delimiter.add('\\rrparenthesis', new Symbol('\\rrparenthesis', '\u2988'));
+                delimiter.add('\\llangle', new Symbol('\\llangle', '\u2989'));
+                delimiter.add('\\rrangle', new Symbol('\\rrangle', '\u298A'));
+                delimiter.add('\\Lbrbrak', new Symbol('\\Lbrbrak', '\u27EC'));
+                delimiter.add('\\Rbrbrak', new Symbol('\\Rbrbrak', '\u27ED'));
+                delimiter.add('\\lBrace', new Symbol('\\lBrace', '\u2983'));
+                delimiter.add('\\rBrace', new Symbol('\\rBrace', '\u2984'));
+                delimiter.add('\\lParen', new Symbol('\\lParen', '\u2985'));
+                delimiter.add('\\rParen', new Symbol('\\rParen', '\u2986'));
+                delimiter.add('\\lbrackubar', new Symbol('\\lbrackubar', '\u298B'));
+                delimiter.add('\\rbrackubar', new Symbol('\\rbrackubar', '\u298C'));
+                delimiter.add('\\lbrackultick', new Symbol('\\lbrackultick', '\u298D'));
+                delimiter.add('\\rbracklrtick', new Symbol('\\rbracklrtick', '\u298E'));
+                delimiter.add('\\lbracklltick', new Symbol('\\lbracklltick', '\u298F'));
+                delimiter.add('\\rbrackurtick', new Symbol('\\rbrackurtick', '\u2990'));
+                delimiter.add('\\langledot', new Symbol('\\langledot', '\u2991'));
+                delimiter.add('\\rangledot', new Symbol('\\rangledot', '\u2992'));
+                delimiter.add('\\lparenless', new Symbol('\\lparenless', '\u2993'));
+                delimiter.add('\\rparengtr', new Symbol('\\rparengtr', '\u2994'));
+                delimiter.add('\\Lparengtr', new Symbol('\\Lparengtr', '\u2995'));
+                delimiter.add('\\Rparenless', new Symbol('\\Rparenless', '\u2996'));
+                delimiter.add('\\lblkbrbrak', new Symbol('\\lblkbrbrak', '\u2997'));
+                delimiter.add('\\rblkbrbrak', new Symbol('\\rblkbrbrak', '\u2998'));
+                delimiter.add('\\lvzigzag', new Symbol('\\lvzigzag', '\u29D8'));
+                delimiter.add('\\rvzigzag', new Symbol('\\rvzigzag', '\u29D9'));
+                delimiter.add('\\Lvzigzag', new Symbol('\\Lvzigzag', '\u29DA'));
+                delimiter.add('\\Rvzigzag', new Symbol('\\Rvzigzag', '\u29DB'));
+                delimiter.add('\\lcurvyangle', new Symbol('\\lcurvyangle', '\u29FC'));
+                delimiter.add('\\rcurvyangle', new Symbol('\\rcurvyangle', '\u29FD'));
+                delimiter.add('\\Vvert', new Symbol('\\Vvert', '\u2980'));
+        }        // ready
+    },           // startup
+
+
+    tex: {
+        packages: {'[+]': ['tagformat', 'Lwarp-macros', 'textmacros']},
+        tags: "ams",
+                tagformat: {
+                        number: function (n) {
+                             if(MathJax.config.subequations==0)
+                                 return(MathJax.config.section + n);
+                             else
+                                 return(MathJax.config.section + String.fromCharCode(96+n));
+                        },
+                },
+    }
+}
+</script>
+
+
+<script
+        id="MathJax-script"
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+></script>
+
+</head>
+<body>
+
+
+<a id="lecnotes_html-autopage-6"></a>
+<nav class="topnavigation"><a href="lecnotes_html.html" class="linkhome" >
+Home</a></nav>
+
+
+<div class="bodyandsidetoc">
+<div class="sidetoccontainer">
+
+
+<nav class="sidetoc">
+
+
+<div class="sidetoctitle">
+
+<p>
+Contents
+</p>
+</div>
+
+
+<div class="sidetoccontents">
+
+<p>
+<a href="lecnotes_html.html" class="linkhome" >
+Home</a>
+</p>
+
+</div>
+
+</nav>
+
+</div>
+
+
+<main class="bodycontainer">
+
+
+<section class="textbody">
+
+<!--MathJax customizations:-->
+
+
+<div class="hidden">
+
+\(\newcommand{\footnotename}{footnote}\)
+
+\(\def \LWRfootnote {1}\)
+
+\(\newcommand {\footnote }[2][\LWRfootnote ]{{}^{\mathrm {#1}}}\)
+
+\(\newcommand {\footnotemark }[1][\LWRfootnote ]{{}^{\mathrm {#1}}}\)
+
+\(\let \LWRorighspace \hspace \)
+
+\(\renewcommand {\hspace }{\ifstar \LWRorighspace \LWRorighspace }\)
+
+\(\newcommand {\mathnormal }[1]{{#1}}\)
+
+\(\newcommand \ensuremath [1]{#1}\)
+
+\(\newcommand {\LWRframebox }[2][]{\fbox {#2}} \newcommand {\framebox }[1][]{\LWRframebox } \)
+
+\(\newcommand {\setlength }[2]{}\)
+
+\(\newcommand {\addtolength }[2]{}\)
+
+\(\newcommand {\setcounter }[2]{}\)
+
+\(\newcommand {\addtocounter }[2]{}\)
+
+\(\newcommand {\arabic }[1]{}\)
+
+\(\newcommand {\number }[1]{}\)
+
+\(\newcommand {\noalign }[1]{\text {#1}\notag \\}\)
+
+\(\newcommand {\cline }[1]{}\)
+
+\(\newcommand {\directlua }[1]{\text {(directlua)}}\)
+
+\(\newcommand {\luatexdirectlua }[1]{\text {(directlua)}}\)
+
+\(\newcommand {\protect }{}\)
+
+\(\def \LWRabsorbnumber #1 {}\)
+
+\(\def \LWRabsorbquotenumber &quot;#1 {}\)
+
+\(\newcommand {\LWRabsorboption }[1][]{}\)
+
+\(\newcommand {\LWRabsorbtwooptions }[1][]{\LWRabsorboption }\)
+
+\(\def \mathchar {\ifnextchar &quot;\LWRabsorbquotenumber \LWRabsorbnumber }\)
+
+\(\def \mathcode #1={\mathchar }\)
+
+\(\let \delcode \mathcode \)
+
+\(\let \delimiter \mathchar \)
+
+\(\def \oe {\unicode {x0153}}\)
+
+\(\def \OE {\unicode {x0152}}\)
+
+\(\def \ae {\unicode {x00E6}}\)
+
+\(\def \AE {\unicode {x00C6}}\)
+
+\(\def \aa {\unicode {x00E5}}\)
+
+\(\def \AA {\unicode {x00C5}}\)
+
+\(\def \o {\unicode {x00F8}}\)
+
+\(\def \O {\unicode {x00D8}}\)
+
+\(\def \l {\unicode {x0142}}\)
+
+\(\def \L {\unicode {x0141}}\)
+
+\(\def \ss {\unicode {x00DF}}\)
+
+\(\def \SS {\unicode {x1E9E}}\)
+
+\(\def \dag {\unicode {x2020}}\)
+
+\(\def \ddag {\unicode {x2021}}\)
+
+\(\def \P {\unicode {x00B6}}\)
+
+\(\def \copyright {\unicode {x00A9}}\)
+
+\(\def \pounds {\unicode {x00A3}}\)
+
+\(\let \LWRref \ref \)
+
+\(\renewcommand {\ref }{\ifstar \LWRref \LWRref }\)
+
+\( \newcommand {\multicolumn }[3]{#3}\)
+
+\(\require {textcomp}\)
+
+\(\newcommand {\intertext }[1]{\text {#1}\notag \\}\)
+
+\(\let \Hat \hat \)
+
+\(\let \Check \check \)
+
+\(\let \Tilde \tilde \)
+
+\(\let \Acute \acute \)
+
+\(\let \Grave \grave \)
+
+\(\let \Dot \dot \)
+
+\(\let \Ddot \ddot \)
+
+\(\let \Breve \breve \)
+
+\(\let \Bar \bar \)
+
+\(\let \Vec \vec \)
+
+\(\newcommand {\real }{\mathbb {R}} \)
+
+\(\newcommand {\RR }{\mathbb {R}} \)
+
+\(\newcommand {\ZZ }{\mathbb Z} \)
+
+\(\newcommand {\F }{\mathbb F} \)
+
+\(\newcommand {\Ham }{\mathrm {Ham}}\)
+
+\(\newcommand {\PP }{\mathbb P}\)
+
+\(\newcommand {\co }[1]{\overline {#1}} \)
+
+\(\newcommand {\ul }[1]{\underline {#1}} \)
+
+\(\newcommand {\bo }[1]{\mathbf {#1}} \)
+
+\(\newcommand {\concat }[2]{[\, #1 \,|\, #2 \,]} \)
+
+\(\newcommand {\Encode }{\texttt {ENCODE}} \)
+
+\(\newcommand {\Decode }{\texttt {DECODE}} \)
+
+\(\newcommand {\RM }{R} \)
+
+\(\newcommand {\Rep }{\text {Rep}} \)
+
+</div>
+
+<p>
+<!--
+...... chapter ch5 ......
+-->
+<h3 id="autosec-7">Chapter&nbsp;<span class="sectionnumber">5&#x2003;</span>The dual code. Syndrome decoding</h3>
+<a id="lecnotes_html-autopage-7"></a>
+<a id="lecnotes_html-autofile-13"></a>
+
+<p>
+Version 2022-10-18. <a href="lecnotes_html.pdf" target="_blank" >To PDF version of the notes</a>
+</p>
+
+<p>
+<b>Synopsis.</b> <i>Every linear code \(C\) has a dual code, \(C^\perp \), and check matrices. While a generator matrix \(G\) is used to encode messages into codevectors, a check matrix \(H\) serves to detect errors — and to correct them using
+syndrome decoding.</i>
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-8"></a>
+<span class="amsthmnamedefinition">Discussion</span>.
+</p>
+
+<p>
+Without a complete list of codevectors of a linear code \(C\), it is not clear how to detect errors. Given a received vector \(\ul y\), how to test whether \(\ul y\in C\)? Error correction seems to require a whole standard array. Neither is an option
+for codes of large length and dimension, whose use is dictated by modern applications to low-noise channels; in this case, generator matrices are of not much help.
+</p>
+
+<p>
+Some codes, however, are defined by a single <i>checksum</i> — recall the even weight code and the ISBN-10 code. Extending this approach, we introduce a <i>check matrix</i> which generates the <i>dual code</i>.
+</p>
+
+<p>
+
+
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<!--
+...... section The inner product of two vectors ......
+-->
+<h4 id="autosec-9">The inner product of two vectors</h4>
+<a id="lecnotes_html-autopage-9"></a>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-10"></a>
+<span class="amsthmnamedefinition">Definition</span><span class="amsthmnotedefinition"> (inner product)</span>.            For \(\ul u, \ul v \in \F _q^n\), the scalar (element of \(\F _q\)) defined as \(\ul u \cdot \ul v =\sum _{i=1}^n
+u_i v_i \) is called the <b><i>inner product</i></b> of the vectors \(\ul u\) and \(\ul v\).
+</p>
+
+</li>
+
+</ul>
+
+</div>
+
+<p>
+<b>Example:</b> in \(\F _2^3\), the inner product of the vector \(111\) with itself is \(111\cdot 111=1+1+1=1\) (it is an element of \(\F _2\)).
+</p>
+
+<p>
+<b>Notation:</b> if \(C\subset \F _q^n\) is a set, \(\ul v\in \F _q^n\), we may write \(\ul v \cdot C\) to denote the set \(\{\ul v \cdot \ul c \mid \ul c\in C\}\). Furthermore, for two sets \(C,D\subseteq \F _q^n\) we may write
+\(C\cdot D\) for the set \(\{\ul c \cdot \ul d\mid \ul c\in C,\ul d\in D\}\).
+</p>
+<!--
+...... subsection Properties of the inner product ......
+-->
+<h5 id="autosec-11">Properties of the inner product</h5>
+<a id="lecnotes_html-autopage-11"></a>
+
+
+<p>
+(1) <b>Expression as a matrix product:</b> \(\ul u \cdot \ul v = \ul u \,\ul v^T\).
+</p>
+
+<p>
+<b>Explanation:</b> we write elements of \(\F _q^n\) as row vectors. Thus, \(\ul u\) is a row vector \((u_1,\ldots ,u_n)\), and \(\ul v^T\) is the transpose of \(\ul v\), so a column vector \(\left (\begin {smallmatrix} v_1\\ v_2 \\
+\vdots \\ v_n \end {smallmatrix}\right )\). Multiplying \(\ul u\) and \(\ul v^T\) as matrices (an \(1\times n\) matrix by an \(n\times 1\) matrix), we obtain a \(1\times 1\) matrix, which we identify with a scalar in \(\F _q\).
+</p>
+
+<p>
+(2) <b>Symmetry:</b> \(\ul u\cdot \ul v=\ul v \cdot \ul u\).
+</p>
+
+<p>
+<b>Explanation:</b> is easily seen from the definition.
+</p>
+
+<p>
+(3) <b>Bilinearity:</b> for a scalar \(\lambda \in \F _q\) we have \((\ul u + \lambda \ul w) \cdot \ul v = \ul u \cdot \ul v + \lambda (\ul w \cdot \ul v)\) and \(\ul u\cdot (\ul v + \lambda w) = \ul u \cdot \ul v +
+\lambda (\ul u \cdot \ul w)\).
+</p>
+
+<p>
+<b>Explanation:</b> we know from linear algebra that the matrix product in \(\ul u \,\ul v ^T\) is bilinear.
+</p>
+
+<p>
+(4) <b>Non-degeneracy:</b> \(\ul u\cdot \F _q^n=\{0\}\), if and only if \(\ul u=0\).
+</p>
+
+<p>
+<b>Explanation:</b> let \(\ul \epsilon _i=(0,\ldots ,0,1,0,\ldots ,0)\) be the vector whose \(i\)th symbol is \(1\) and all other symbols are \(0\). Then \(\ul u\cdot \ul \epsilon _i=u_i\). So if \(\ul u\cdot \F _q^n=\{0\}\), then
+in particular \(\ul u\cdot \ul \epsilon _i=0\) hence \(u_i=0\), for all \(i\) — meaning that \(\ul u\) is the zero vector. And of course if \(\ul u=\ul 0\), then \(\ul u\cdot \ul c=0\) for all \(\ul c\in \F _q^n\).
+</p>
+<!--
+...... section The dual code ......
+-->
+<h4 id="autosec-12">The dual code</h4>
+<a id="lecnotes_html-autopage-12"></a>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-13"></a>
+<span class="amsthmnamedefinition">Definition</span><span class="amsthmnotedefinition"> (dual code)</span>.         Given a code \(C \subseteq \F _q^n\), we define the <b><i>dual code</i></b> \(C^\perp \) as
+</p>
+
+<p>
+\[ C^\perp = \{\ul v \in \F _q^n \mid \ul v \cdot C = \{0\}\} .        \]
+</p>
+
+<p>
+We can say that \(C^\perp \) consists of all vectors <i><b>orthogonal</b></i> to the code \(C\) (where \(\ul v\) orthogonal to \(C\) means \(\ul v\cdot C=\{0\}\)).
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-14"></a>
+<span class="amsthmnamedefinition">Exercise</span>.   Using bilinearity of the inner product, show that \(C^\perp \) is a <i>linear</i> code.
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-15"></a>
+<span class="amsthmnamedefinition">Example</span><span class="amsthmnotedefinition"> (the dual code of the binary repetition code)</span>.       We work out the code \(\text {Rep}(n,2)^\perp \) using the definition. Recall that \(\text
+{Rep}(n,2)=\{00\ldots 0, 11\ldots 1\}\subseteq \F _2^n\) is the binary repetition code of length \(n.\)
+</p>
+
+<p>
+By definition, \(\text {Rep}(n,2)^\perp = \{\ul v\in \F _2^n \mid \ul v \cdot 00\ldots 0=0, \ \ul v\cdot 11\ldots 1=0\}\). The first condition, \(\ul v\cdot 00\ldots 0=0\) is vacuous (holds for all vectors \(\ul v\in \F _2^n\)).
+The second condition, \(\ul v\cdot 11\ldots 1\), means \(v_1+v_2+\ldots +v_n=0\) in \(\F _2\), i.e., \(\ul v\in E_n\), the binary even weight code of length&nbsp;\(n\). Thus, \(\text {Rep}(n,2)^\perp = E_n\).
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-16"></a>
+<span class="amsthmnamedefinition">Definition</span><span class="amsthmnotedefinition"> (check matrix)</span>.
+</p>
+
+<p>
+A <b><i>check matrix</i></b> for a linear code \(C\) means a generator matrix for \(C^\perp \).
+</p>
+
+<p>
+One sometimes says <i>parity check matrix</i> (the term arose decades ago from applications of binary codes).
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-17"></a>
+<span class="amsthmnamedefinition">Theorem</span><span class="amsthmnumberdefinition"> <span class="textup">5.1</span></span>.   <a id="thm:dual-prop"></a> If \(C\subseteq \F _q^n\) is a linear code of dimension \(k\), then:
+</p>
+<ul style="list-style-type:none">
+
+
+<li>
+<p>
+i. \(\dim C^\perp =n-k\);
+</p>
+
+
+</li>
+<li>
+
+
+<p>
+ii. \(C=\{\ul v\in \F _q^n:   \ul v H^T=\ul 0\}\) for any check matrix \(H\) of \(C\).
+</p>
+</li>
+</ul>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmproof">
+
+<a id="lecnotes_html-autopage-18"></a>
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<span class="amsthmproofname">Proof.</span> We recall the <i>Rank-Nullity Theorem</i> from Linear Algebra: if \(M\) is a matrix with \(n\) columns, then
+</p>
+
+<p>
+\[ \mathrm {rank}(M)+\dim \mathrm {Nullspace}(M)=n, \]
+</p>
+
+<p>
+where \(\mathrm {rank}(M)\) is the dimension of the span of the rows of \(M\), and \(\mathrm {Nullspace}(M)\) can be written as \(\{\ul v\in \F _q^n:    M\ul v^T=\overline 0\}\).
+</p>
+
+<p>
+i. Consider the matrix \(\begin {bmatrix}C\end {bmatrix}\) made up of <i>all</i> codevectors of \(C\) used as rows. The \(\mathrm {Nullspace}(\begin {bmatrix}C\end {bmatrix})\) is the set \(\{\ul v:         \begin {bmatrix}C\end
+{bmatrix}\ul v^T=\overline 0\}\). Note that the column vector \(\begin {bmatrix}C\end {bmatrix}\ul v^T\) is \(\begin {bmatrix} \ul c_1 \ul v^T \\ \ul c_2 \ul v^T \\ \vdots \end {bmatrix} = \begin {bmatrix} \ul c_1 \cdot
+\ul v \\ \ul c_2 \cdot \ul v\\ \vdots \end {bmatrix}\), which is zero if and only if the inner product \(\ul c \cdot \ul v\) is \(0\) for all rows \(\ul c\) of \(\begin {bmatrix} C \end {bmatrix}\), i.e., for all codevectors \(\ul c\) of
+\(C\). By definition of the dual code, this happens exactly when \(\ul v\in C^\perp \), so \(\mathrm {Nullspace}(\begin {bmatrix}C\end {bmatrix}) = C^\perp \). By rank-nullity, \(\dim C^\perp = n - \mathrm {rank}(\begin
+{bmatrix}C\end {bmatrix})\). Since the rows of \(\begin {bmatrix}C\end {bmatrix}\) span \(C\), one has \(\mathrm {rank}(\begin {bmatrix}C\end {bmatrix})=\dim C=k\) and so \(\dim C^\perp = n - k\).
+</p>
+
+<p>
+ii. By definition \(H\) generates the code \(C^\perp \); so by i., \(H\) has \(n-k\) rows, \(H=\begin {bmatrix} \ul r_1 \\ \vdots \\ \ul r_{n-k} \end {bmatrix}\). Thus, \(\mathrm {rank}(H)=\dim C^\perp =n-k\), and so by rank-nullity,
+\(\dim \mathrm {Nullspace}(H)=n-(n-k)=k\). Note that \(C\subseteq \mathrm {Nullspace}(H)\): indeed, if \(\ul c\in C\), then \(\ul r_i \ul c^T = \ul r_i \cdot \ul c = 0\) for all \(i\) because \(\ul r_i\in C^\perp \), which means
+that \(H\ul c^T=\overline 0\). Since \(\dim C = \dim \mathrm {Nullspace}(H)\), it follows that \(C=\mathrm {Nullspace}(H)\), which is \(\{\ul v:       H\ul v^T=\overline 0\}\).
+</p>
+
+<p>
+Using the law \((AB)^T=B^TA^T\) for product of matrices, \((\ul vH^T)^T=H\ul v^T\), and so \(H\ul v^T\) is zero iff \(\ul vH^T\) is. Thus, \(C=\{\ul v\in \F _q^n:   \ul v H^T=\ul 0\}\) as claimed. <span
+class="theoremendmark">&#x25A1;</span>
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<!--
+...... section Syndrome decoding ......
+-->
+<h4 id="autosec-19">Syndrome decoding</h4>
+<a id="lecnotes_html-autopage-19"></a>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-20"></a>
+<span class="amsthmnamedefinition">Definition</span><span class="amsthmnotedefinition"> (syndrome)</span>.
+</p>
+
+<p>
+Let \(H\) be a check matrix for a linear code \(C\subseteq \F _q^n\). Let \(\ul y\in \F _q^n\). The vector
+</p>
+
+<p>
+\[ S(\ul y)=\ul y H^T \]
+</p>
+
+<p>
+is called the <b><i>syndrome</i></b> of \(\ul y\). The linear map
+</p>
+
+<p>
+\[ S\colon \F _q^n \to \F _q^{n-k} \]
+</p>
+
+<p>
+is the <b><i>syndrome map</i></b>.
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-21"></a>
+<span class="amsthmnamedefinition">Proposition</span><span class="amsthmnumberdefinition"> <span class="textup">5.2</span></span>.   Let \(S\) be a syndrome map for a linear code \(C\subseteq \F _q^n\). If \(\ul v,\ul y\in \F
+_q^n\),
+</p>
+<ul style="list-style-type:none">
+
+
+<li>
+<p>
+• \(S(\ul v)=S(\ul y)\) \(\iff \) \(\ul v,\ul y\) are in the same coset of \(C\);
+</p>
+
+
+</li>
+<li>
+
+
+<p>
+• \(S(\ul v)=\ul 0\) \(\iff \) \(\ul v\in C\).
+</p>
+</li>
+</ul>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmproof">
+
+<a id="lecnotes_html-autopage-22"></a>
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<span class="amsthmproofname">Proof.</span> \(\ul yH^T=\ul vH^T\) \(\iff \) \((\ul y - \ul v)H^T=\ul 0\) \(\iff \) \(\ul y-\ul v\in C\). By definition of cosets, this means that \(\ul v\) is in the coset of \(\ul y\). In particular,
+\(S(\ul v)=\ul 0\) means \(\ul v\in \ul 0+C=C\). <span class="theoremendmark">&#x25A1;</span>
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<!--
+...... subsection The use of syndromes in error detection ......
+-->
+<h5 id="autosec-23">The use of syndromes in error detection</h5>
+<a id="lecnotes_html-autopage-23"></a>
+
+
+<p>
+If \(S(\ul y)\ne 0\), \(\ul y\) is not a codevector, so the syndrome map can <i>detect</i> errors in the received vector.
+</p>
+<!--
+...... subsection The use of syndromes in error correction ......
+-->
+<h5 id="autosec-24">The use of syndromes in error correction</h5>
+<a id="lecnotes_html-autopage-24"></a>
+
+
+<p>
+To correct errors, we need to construct a decoder for the linear code \(C\). If we know a check matrix \(H\) for \(C\), we can improve the standard array decoder for \(C\). We will write the same decoder differently; it will require much less memory
+but more calculations.
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-25"></a>
+<span class="amsthmnamedefinition">Algorithm</span><span class="amsthmnumberdefinition"> <span class="textup">5.3</span></span><span class="amsthmnotedefinition"> (the syndrome decoder)</span>.
+</p>
+
+<p>
+<i>Preparation</i>. Construct a <i>table of syndromes</i>, with \(q^{n-k}\) rows, of the form
+</p>
+<div class="center">
+<table>
+
+<tr style="display:none"><th>.</th></tr>
+
+
+<tr>
+<td class="tdc tvertbarl tvertbarr" style="border-left:          1px solid black; border-right:      1px solid black"></td>
+<td class="tdc tvertbarr" style="border-right:        1px solid black"></td>
+</tr>
+
+
+<tr class="hline">
+<td class="tdc tvertbarl tvertbarr" style="border-left:          1px solid black; border-right:      1px solid black">Coset leader \(\ul a_i\)</td>
+<td class="tdc tvertbarr" style="border-right:        1px solid black">\(S(\ul a_i)\)</td>
+</tr>
+
+
+<tr class="hline">
+<td class="tdc tvertbarl tvertbarr" style="border-left:          1px solid black; border-right:      1px solid black"></td>
+<td class="tdc tvertbarr" style="border-right:        1px solid black"></td>
+</tr>
+
+
+</table>
+
+</div>
+
+<p>
+The top row contains the codeword \(\ul 0\) and its syndrome \(S(\ul 0)=\ul 0\).
+</p>
+
+<p>
+At each step, choose a vector \(\ul a_i\in \F _q^n\) of smallest weight such that \(S(\ul a_i)\) does not appear in the table; then \(\ul a_i\) is a coset leader of a new coset.
+</p>
+
+<p>
+<i>Decoding</i>.
+</p>
+<ul style="list-style-type:none">
+
+
+<li>
+<p>
+• Receive a vector \(\ul y\in \F _q^n\).
+</p>
+
+
+</li>
+<li>
+
+
+<p>
+• Calculate \(S(\ul y)=\ul y H^T\).
+</p>
+
+
+</li>
+<li>
+
+
+<p>
+• In the table, find \(\ul a_i\) with \(S(\ul a_i)=S(\ul y)\). Then \(\ul a_i\) is the coset leader of the coset of&nbsp;\(\ul y\).
+</p>
+
+
+</li>
+<li>
+
+
+<p>
+• Return \(\Decode (\ul y)=\ul y-\ul a_i\).
+</p>
+</li>
+</ul>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-28"></a>
+<span class="amsthmnamedefinition">Remark</span>.
+</p>
+
+<p>
+The syndrome decoder is based on a choice of one coset leader in every coset. This is the same as for the standard array decoder.
+</p>
+
+<p>
+In fact, if the same coset leaders are chosen in both decoders, both decoders with yield <i>the same</i> function \(\Decode \colon \F _q^n \to C\). They differ only in the way this function is computed.
+</p>
+
+<p>
+The number of arithmetic operations required to calculate the syndrome \(S(\ul y)=\ul y H^T\) can be of order \(n^2\), whereas the standard array decoder requires \(\sim n\) operations to look up a vector. On the other hand, the amount of
+memory required by the syndrome decoder is proportional to \(q^{n-k}\) which is better than \(q^n\) for the standard array. The advantage is especially significant for codes with high code rate \(\dfrac kn\).
+</p>
+
+<p>
+Nevertheless, for codes which have more algebraic structure (than just linear codes), decoding algorithms exist which require even less storage, but the computation complexity is higher compared to syndrome decoding. Some examples will appear
+from the next chapter onwards.
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-29"></a>
+<span class="amsthmnamedefinition">Example</span><span class="amsthmnotedefinition"> (example of syndrome decoding)</span>.
+</p>
+
+<p>
+Let \(C\) be the binary linear code with check matrix \(H=\left [\begin {array}{cc|cccc} 0&amp;0&amp;1&amp;0&amp;0&amp;0\\ 1&amp;0&amp; 0&amp;1&amp;0&amp;0 \\ 1&amp;1&amp;0&amp;0&amp;1&amp;0\\
+0&amp;1&amp;0&amp;0&amp;0&amp;1 \end {array}\right ]\).
+</p>
+<ul style="list-style-type:none">
+
+
+<li>
+<p>
+(a) Construct the table of syndromes for \(D\) using the matrix \(H\).
+</p>
+</li>
+<li>
+
+
+<p>
+(b) Using the table of syndromes, decode the received vector \(\ul y=111111\).
+</p>
+</li>
+</ul>
+
+<p>
+<b>Solution.</b>
+</p>
+
+<p>
+(a) When calculating syndromes, it is useful to observe that the syndrome of a vector \(0\ldots 010\ldots 0\) (with \(1\) in position \(i\) and \(0\)s elsewhere) is equal to the \(i\)th column of \(H\), transposed.
+</p>
+
+<p>
+The syndrome map is linear, so the syndrome of a sum of two vectors is the sum of their syndromes, etc.
+</p>
+
+<p>
+For example, \(S(011000) = 0011+1000=1011\) (the sum of the second and the third columns of \(H\), transposed).
+</p>
+<div class="center">
+<table>
+
+<tr style="display:none"><th>.</th></tr>
+
+
+<tr class="hline">
+<td class="tdc tvertbarl tvertbarr" style="border-left:            1px solid black; border-right:       1px solid black">vector</td>
+<td class="tdc tvertbarr" style="border-right:          1px solid black">syndrome</td>
+<td class="tdl tvertbarr" style="border-right:          1px solid black">leader?</td>
+</tr>
+
+
+<tr class="hline">
+<td class="tdc tvertbarl tvertbarr" style="border-left:            1px solid black; border-right:       1px solid black">\(000000\)</td>
+<td class="tdc tvertbarr" style="border-right:          1px solid black">\(0000\)</td>
+<td class="tdl tvertbarr" style="border-right:          1px solid black">yes                                 </td>
+</tr>
+
+
+<tr>
+<td class="tdc tvertbarl tvertbarr" style="border-left:            1px solid black; border-right:       1px solid black">\(000001\)</td>
+<td class="tdc tvertbarr" style="border-right:          1px solid black">\(0001\)</td>
+<td class="tdl tvertbarr" style="border-right:          1px solid black">yes</td>
+</tr>
+
+
+<tr>
+<td class="tdc tvertbarl tvertbarr" style="border-left:            1px solid black; border-right:       1px solid black">\(000010\)</td>
+<td class="tdc tvertbarr" style="border-right:          1px solid black">\(0010\)</td>
+<td class="tdl tvertbarr" style="border-right:          1px solid black">yes</td>
+</tr>
+
+
+<tr>
+<td class="tdc tvertbarl tvertbarr" style="border-left:            1px solid black; border-right:       1px solid black">\(000100\)</td>
+<td class="tdc tvertbarr" style="border-right:          1px solid black">\(0100\)</td>
+<td class="tdl tvertbarr" style="border-right:          1px solid black">yes</td>
+</tr>
+
+
+<tr>
+<td class="tdc tvertbarl tvertbarr" style="border-left:            1px solid black; border-right:       1px solid black">\(001000\)</td>
+<td class="tdc tvertbarr" style="border-right:          1px solid black">\(1000\)</td>
+<td class="tdl tvertbarr" style="border-right:          1px solid black">yes</td>
+</tr>
+
+
+<tr>
+<td class="tdc tvertbarl tvertbarr" style="border-left:            1px solid black; border-right:       1px solid black">\(010000\)</td>
+<td class="tdc tvertbarr" style="border-right:          1px solid black">\(0011\)</td>
+<td class="tdl tvertbarr" style="border-right:          1px solid black">yes</td>
+</tr>
+
+
+<tr>
+<td class="tdc tvertbarl tvertbarr" style="border-left:            1px solid black; border-right:       1px solid black">\(100000\)</td>
+<td class="tdc tvertbarr" style="border-right:          1px solid black">\(0110\)</td>
+<td class="tdl tvertbarr" style="border-right:          1px solid black">yes</td>
+</tr>
+</table>
+
+</div>
+
+<p>
+All vectors of weight \(1\) have different syndromes, so they all are coset leaders. We need more coset leaders, hence we start looking at vectors of weight \(2\), then weight \(3\):
+</p>
+<div class="center">
+<table>
+
+<tr style="display:none"><th>.</th></tr>
+
+
+<tr>
+<td class="tdc tvertbarl tvertbarr" style="border-left:           1px solid black; border-right:       1px solid black">         </td>
+<td class="tdc tvertbarr" style="border-right:         1px solid black">             </td>
+<td class="tdl tvertbarr" style="border-right:         1px solid black">          </td>
+</tr>
+
+
+<tr>
+<td class="tdc tvertbarl tvertbarr" style="border-left:           1px solid black; border-right:       1px solid black">\(000011\)</td>
+<td class="tdc tvertbarr" style="border-right:         1px solid black">\(0011\)</td>
+<td class="tdl tvertbarr" style="border-right:         1px solid black">no, syndrome already in the table</td>
+</tr>
+
+
+<tr>
+<td class="tdc tvertbarl tvertbarr" style="border-left:           1px solid black; border-right:       1px solid black">\(000101\)</td>
+<td class="tdc tvertbarr" style="border-right:         1px solid black">\(0101\)</td>
+<td class="tdl tvertbarr" style="border-right:         1px solid black">yes</td>
+</tr>
+
+
+<tr>
+<td class="tdc tvertbarl tvertbarr" style="border-left:           1px solid black; border-right:       1px solid black">\(001001\)</td>
+<td class="tdc tvertbarr" style="border-right:         1px solid black">\(1001\)</td>
+<td class="tdl tvertbarr" style="border-right:         1px solid black">yes</td>
+</tr>
+
+
+<tr>
+<td class="tdc tvertbarl tvertbarr" style="border-left:           1px solid black; border-right:       1px solid black">\(001010\)</td>
+<td class="tdc tvertbarr" style="border-right:         1px solid black">\(1010\)</td>
+<td class="tdl tvertbarr" style="border-right:         1px solid black">yes</td>
+</tr>
+
+
+<tr>
+<td class="tdc tvertbarl tvertbarr" style="border-left:           1px solid black; border-right:       1px solid black">\(001100\)</td>
+<td class="tdc tvertbarr" style="border-right:         1px solid black">\(1100\)</td>
+<td class="tdl tvertbarr" style="border-right:         1px solid black">yes</td>
+</tr>
+
+
+<tr>
+<td class="tdc tvertbarl tvertbarr" style="border-left:           1px solid black; border-right:       1px solid black">\(010100\)</td>
+<td class="tdc tvertbarr" style="border-right:         1px solid black">\(0111\)</td>
+<td class="tdl tvertbarr" style="border-right:         1px solid black">yes</td>
+</tr>
+
+
+<tr>
+<td class="tdc tvertbarl tvertbarr" style="border-left:           1px solid black; border-right:       1px solid black">\(011000\)</td>
+<td class="tdc tvertbarr" style="border-right:         1px solid black">\(1011\)</td>
+<td class="tdl tvertbarr" style="border-right:         1px solid black">yes</td>
+</tr>
+
+
+<tr>
+<td class="tdc tvertbarl tvertbarr" style="border-left:           1px solid black; border-right:       1px solid black">\(101000\)</td>
+<td class="tdc tvertbarr" style="border-right:         1px solid black">\(1110\)</td>
+<td class="tdl tvertbarr" style="border-right:         1px solid black">yes</td>
+</tr>
+
+
+<tr>
+<td class="tdc tvertbarl tvertbarr" style="border-left:           1px solid black; border-right:       1px solid black">\(001101\)</td>
+<td class="tdc tvertbarr" style="border-right:         1px solid black">\(1101\)</td>
+<td class="tdl tvertbarr" style="border-right:         1px solid black">yes</td>
+</tr>
+
+
+<tr>
+<td class="tdc tvertbarl tvertbarr" style="border-left:           1px solid black; border-right:       1px solid black">\(011100\)</td>
+<td class="tdc tvertbarr" style="border-right:         1px solid black">\(1111\)</td>
+<td class="tdl tvertbarr" style="border-right:         1px solid black">yes</td>
+</tr>
+
+
+<tr class="hline" aria-hidden="true">
+<td class="tdc"></td>
+<td class="tdc"></td>
+<td class="tdl"></td>
+</tr>
+</table>
+
+</div>
+
+<p>
+When we try a vector, say of weight \(2\), and find that is syndrome is already in the table, we ignore that vector and try another one.
+</p>
+
+<p>
+We found \(16=2^{6-2}\) coset leaders so we stop.
+</p>
+
+<p>
+(b) \(S(111111)=1010\) which is the syndrome of the coset leader \(001010\) in the table. Therefore, \(\Decode (111111)=111111-001010=110101\).
+</p>
+
+</li>
+
+</ul>
+
+</div>
+</section>
+
+</main>
+
+</div>
+
+
+<nav class="botnavigation"><a href="lecnotes_html.html" class="linkhome" >
+Home</a></nav>
+
+</body>
+</html>

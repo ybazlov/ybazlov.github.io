@@ -1,0 +1,621 @@
+
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="UTF-8" />
+<meta name="generator" content="LaTeX Lwarp package" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<!--[if lt IE 9]>
+<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+<link rel="stylesheet" type="text/css" href="bazlovstyle.css" />
+
+<script>
+// Lwarp MathJax emulation code
+//
+// Based on code by Davide P. Cervone.
+// Equation numbering: https://github.com/mathjax/MathJax/issues/2427
+// Starred and ifnextchar macros: https://github.com/mathjax/MathJax/issues/2428
+// \left, \right delimiters: https://github.com/mathjax/MathJax/issues/2535
+//
+// Modified by Brian Dunn to adjust equation numbering and add subequations.
+//
+// LaTeX can use \seteqnumber{subequations?}{section}{number} before each equation.
+// subequations? is 0 usually, 1 if inside subequations.
+// section is a string printed as-is, or empty.
+// number is auto-incremented by MathJax between equations.
+//
+MathJax = {
+    subequations: "0",
+    section: "",
+    loader: {
+        load: ['[tex]/tagformat', '[tex]/textmacros'],
+    },
+    startup: {
+        ready() {
+            //      These would be replaced by import commands if you wanted to make
+            //      a proper extension.
+            const Configuration = MathJax._.input.tex.Configuration.Configuration;
+            const CommandMap = MathJax._.input.tex.SymbolMap.CommandMap;
+            const Macro = MathJax._.input.tex.Symbol.Macro;
+            const TexError = MathJax._.input.tex.TexError.default;
+            const ParseUtil = MathJax._.input.tex.ParseUtil.default;
+            const expandable = MathJax._.util.Options.expandable;
+
+
+            //      Insert the replacement string into the TeX string, and check
+            //      that there haven't been too many maxro substitutions (prevents
+            //      infinite loops).
+            const useArgument = (parser, text) => {
+                parser.string = ParseUtil.addArgs(parser, text, parser.string.slice(parser.i));
+                parser.i = 0;
+                if (++parser.macroCount > parser.configuration.options.maxMacros) {
+                    throw new TexError('MaxMacroSub1',
+                    'MathJax maximum macro substitution count exceeded; ' +
+                    'is there a recursive macro call?');
+                }
+            }
+
+
+            //      Create the command map for:
+            //          \ifstar, \ifnextchar, \ifblank, \ifstrequal, \gsub, \seteqnumber
+            new CommandMap('Lwarp-macros', {
+                ifstar: 'IfstarFunction',
+                ifnextchar: 'IfnextcharFunction',
+                ifblank: 'IfblankFunction',
+                ifstrequal: 'IfstrequalFunction',
+                gsubstitute: 'GsubstituteFunction',
+                seteqnumber: 'SeteqnumberFunction'
+            }, {
+                //      This function implements an ifstar macro.
+                IfstarFunction(parser, name) {
+                    const resultstar = parser.GetArgument(name);
+                    const resultnostar = parser.GetArgument(name);
+                    const star = parser.GetStar();                      // true if there is a *
+                    useArgument(parser, star ? resultstar : resultnostar);
+                },
+
+
+                //      This function implements an ifnextchar macro.
+                IfnextcharFunction(parser, name) {
+                    let whichchar = parser.GetArgument(name);
+                    if (whichchar.match(/^(?:0x[0-9A-F]+|[0-9]+)$/i)) {
+                        // $ syntax highlighting
+                        whichchar = String.fromCodePoint(parseInt(whichchar));
+                    }
+                    const resultnextchar = parser.GetArgument(name);
+                    const resultnotnextchar = parser.GetArgument(name);
+                    const gotchar = (parser.GetNext() === whichchar);
+                    useArgument(parser, gotchar ? resultnextchar : resultnotnextchar);
+                },
+
+
+                // This function implements an ifblank macro.
+                IfblankFunction(parser, name) {
+                    const blankarg = parser.GetArgument(name);
+                    const resultblank = parser.GetArgument(name);
+                    const resultnotblank = parser.GetArgument(name);
+                    const isblank = (blankarg.trim() == "");
+                    useArgument(parser, isblank ? resultblank : resultnotblank);
+                },
+
+
+                // This function implements an ifstrequal macro.
+                IfstrequalFunction(parser, name) {
+                    const strequalfirst = parser.GetArgument(name);
+                    const strequalsecond = parser.GetArgument(name);
+                    const resultequal = parser.GetArgument(name);
+                    const resultnotequal = parser.GetArgument(name);
+                    const isequal = (strequalfirst == strequalsecond);
+                    useArgument(parser, isequal ? resultequal : resultnotequal);
+                },
+
+
+                // This function implements a gsub macro.
+                GsubstituteFunction(parser, name) {
+                    const gsubfirst = parser.GetArgument(name);
+                    const gsubsecond = parser.GetArgument(name);
+                    const gsubthird = parser.GetArgument(name);
+                    let gsubresult=gsubfirst.replace(gsubsecond, gsubthird);
+                    useArgument(parser, gsubresult);
+                },
+
+
+                //      This function modifies the equation numbers.
+                SeteqnumberFunction(parser, name) {
+                        //   Get the macro parameters
+                        const star = parser.GetStar();                    // true if there is a *
+                        const optBrackets = parser.GetBrackets(name);     // contents of optional brackets
+                        const newsubequations = parser.GetArgument(name);    // the subequations argument
+                        const neweqsection = parser.GetArgument(name);    // the eq section argument
+                        const neweqnumber = parser.GetArgument(name);     // the eq number argument
+                        MathJax.config.subequations=newsubequations ;     // a string with boolean meaning
+                        MathJax.config.section=neweqsection ;             // a string with numeric meaning
+                        parser.tags.counter = parser.tags.allCounter = neweqnumber ;
+                }
+
+
+            });
+
+
+            //      Create the Lwarp-macros package
+            Configuration.create('Lwarp-macros', {
+                handler: {macro: ['Lwarp-macros']}
+            });
+
+
+            MathJax.startup.defaultReady();
+
+
+            // For forward references:
+            MathJax.startup.input[0].preFilters.add(({math}) => {
+                if (math.inputData.recompile){
+                        MathJax.config.subequations = math.inputData.recompile.subequations;
+                        MathJax.config.section = math.inputData.recompile.section;
+                }
+            });
+            MathJax.startup.input[0].postFilters.add(({math}) => {
+                if (math.inputData.recompile){
+                        math.inputData.recompile.subequations = MathJax.config.subequations;
+                        math.inputData.recompile.section = MathJax.config.section;
+                }
+            });
+
+
+                // For \left, \right with unicode-math:
+                const {DelimiterMap} = MathJax._.input.tex.SymbolMap;
+                const {Symbol} = MathJax._.input.tex.Symbol;
+                const {MapHandler} = MathJax._.input.tex.MapHandler;
+                const delimiter = MapHandler.getMap('delimiter');
+                delimiter.add('\\lBrack', new Symbol('\\lBrack', '\u27E6'));
+                delimiter.add('\\rBrack', new Symbol('\\rBrack', '\u27E7'));
+                delimiter.add('\\lAngle', new Symbol('\\lAngle', '\u27EA'));
+                delimiter.add('\\rAngle', new Symbol('\\rAngle', '\u27EB'));
+                delimiter.add('\\lbrbrak', new Symbol('\\lbrbrak', '\u2772'));
+                delimiter.add('\\rbrbrak', new Symbol('\\rbrbrak', '\u2773'));
+                delimiter.add('\\lbag', new Symbol('\\lbag', '\u27C5'));
+                delimiter.add('\\rbag', new Symbol('\\rbag', '\u27C6'));
+                delimiter.add('\\llparenthesis', new Symbol('\\llparenthesis', '\u2987'));
+                delimiter.add('\\rrparenthesis', new Symbol('\\rrparenthesis', '\u2988'));
+                delimiter.add('\\llangle', new Symbol('\\llangle', '\u2989'));
+                delimiter.add('\\rrangle', new Symbol('\\rrangle', '\u298A'));
+                delimiter.add('\\Lbrbrak', new Symbol('\\Lbrbrak', '\u27EC'));
+                delimiter.add('\\Rbrbrak', new Symbol('\\Rbrbrak', '\u27ED'));
+                delimiter.add('\\lBrace', new Symbol('\\lBrace', '\u2983'));
+                delimiter.add('\\rBrace', new Symbol('\\rBrace', '\u2984'));
+                delimiter.add('\\lParen', new Symbol('\\lParen', '\u2985'));
+                delimiter.add('\\rParen', new Symbol('\\rParen', '\u2986'));
+                delimiter.add('\\lbrackubar', new Symbol('\\lbrackubar', '\u298B'));
+                delimiter.add('\\rbrackubar', new Symbol('\\rbrackubar', '\u298C'));
+                delimiter.add('\\lbrackultick', new Symbol('\\lbrackultick', '\u298D'));
+                delimiter.add('\\rbracklrtick', new Symbol('\\rbracklrtick', '\u298E'));
+                delimiter.add('\\lbracklltick', new Symbol('\\lbracklltick', '\u298F'));
+                delimiter.add('\\rbrackurtick', new Symbol('\\rbrackurtick', '\u2990'));
+                delimiter.add('\\langledot', new Symbol('\\langledot', '\u2991'));
+                delimiter.add('\\rangledot', new Symbol('\\rangledot', '\u2992'));
+                delimiter.add('\\lparenless', new Symbol('\\lparenless', '\u2993'));
+                delimiter.add('\\rparengtr', new Symbol('\\rparengtr', '\u2994'));
+                delimiter.add('\\Lparengtr', new Symbol('\\Lparengtr', '\u2995'));
+                delimiter.add('\\Rparenless', new Symbol('\\Rparenless', '\u2996'));
+                delimiter.add('\\lblkbrbrak', new Symbol('\\lblkbrbrak', '\u2997'));
+                delimiter.add('\\rblkbrbrak', new Symbol('\\rblkbrbrak', '\u2998'));
+                delimiter.add('\\lvzigzag', new Symbol('\\lvzigzag', '\u29D8'));
+                delimiter.add('\\rvzigzag', new Symbol('\\rvzigzag', '\u29D9'));
+                delimiter.add('\\Lvzigzag', new Symbol('\\Lvzigzag', '\u29DA'));
+                delimiter.add('\\Rvzigzag', new Symbol('\\Rvzigzag', '\u29DB'));
+                delimiter.add('\\lcurvyangle', new Symbol('\\lcurvyangle', '\u29FC'));
+                delimiter.add('\\rcurvyangle', new Symbol('\\rcurvyangle', '\u29FD'));
+                delimiter.add('\\Vvert', new Symbol('\\Vvert', '\u2980'));
+        }        // ready
+    },           // startup
+
+
+    tex: {
+        packages: {'[+]': ['tagformat', 'Lwarp-macros', 'textmacros']},
+        tags: "ams",
+                tagformat: {
+                        number: function (n) {
+                             if(MathJax.config.subequations==0)
+                                 return(MathJax.config.section + n);
+                             else
+                                 return(MathJax.config.section + String.fromCharCode(96+n));
+                        },
+                },
+    }
+}
+</script>
+
+
+<script
+        id="MathJax-script"
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+></script>
+
+</head>
+<body>
+
+
+<a id="lecnotes_html-autopage-6"></a>
+<nav class="topnavigation"><a href="lecnotes_html.html" class="linkhome" >
+Home</a></nav>
+
+
+<div class="bodyandsidetoc">
+<div class="sidetoccontainer">
+
+
+<nav class="sidetoc">
+
+
+<div class="sidetoctitle">
+
+<p>
+Contents
+</p>
+</div>
+
+
+<div class="sidetoccontents">
+
+<p>
+<a href="lecnotes_html.html" class="linkhome" >
+Home</a>
+</p>
+
+</div>
+
+</nav>
+
+</div>
+
+
+<main class="bodycontainer">
+
+
+<section class="textbody">
+
+<!--MathJax customizations:-->
+
+
+<div class="hidden">
+
+\(\newcommand{\footnotename}{footnote}\)
+
+\(\def \LWRfootnote {1}\)
+
+\(\newcommand {\footnote }[2][\LWRfootnote ]{{}^{\mathrm {#1}}}\)
+
+\(\newcommand {\footnotemark }[1][\LWRfootnote ]{{}^{\mathrm {#1}}}\)
+
+\(\let \LWRorighspace \hspace \)
+
+\(\renewcommand {\hspace }{\ifstar \LWRorighspace \LWRorighspace }\)
+
+\(\newcommand {\mathnormal }[1]{{#1}}\)
+
+\(\newcommand \ensuremath [1]{#1}\)
+
+\(\newcommand {\LWRframebox }[2][]{\fbox {#2}} \newcommand {\framebox }[1][]{\LWRframebox } \)
+
+\(\newcommand {\setlength }[2]{}\)
+
+\(\newcommand {\addtolength }[2]{}\)
+
+\(\newcommand {\setcounter }[2]{}\)
+
+\(\newcommand {\addtocounter }[2]{}\)
+
+\(\newcommand {\arabic }[1]{}\)
+
+\(\newcommand {\number }[1]{}\)
+
+\(\newcommand {\noalign }[1]{\text {#1}\notag \\}\)
+
+\(\newcommand {\cline }[1]{}\)
+
+\(\newcommand {\directlua }[1]{\text {(directlua)}}\)
+
+\(\newcommand {\luatexdirectlua }[1]{\text {(directlua)}}\)
+
+\(\newcommand {\protect }{}\)
+
+\(\def \LWRabsorbnumber #1 {}\)
+
+\(\def \LWRabsorbquotenumber &quot;#1 {}\)
+
+\(\newcommand {\LWRabsorboption }[1][]{}\)
+
+\(\newcommand {\LWRabsorbtwooptions }[1][]{\LWRabsorboption }\)
+
+\(\def \mathchar {\ifnextchar &quot;\LWRabsorbquotenumber \LWRabsorbnumber }\)
+
+\(\def \mathcode #1={\mathchar }\)
+
+\(\let \delcode \mathcode \)
+
+\(\let \delimiter \mathchar \)
+
+\(\def \oe {\unicode {x0153}}\)
+
+\(\def \OE {\unicode {x0152}}\)
+
+\(\def \ae {\unicode {x00E6}}\)
+
+\(\def \AE {\unicode {x00C6}}\)
+
+\(\def \aa {\unicode {x00E5}}\)
+
+\(\def \AA {\unicode {x00C5}}\)
+
+\(\def \o {\unicode {x00F8}}\)
+
+\(\def \O {\unicode {x00D8}}\)
+
+\(\def \l {\unicode {x0142}}\)
+
+\(\def \L {\unicode {x0141}}\)
+
+\(\def \ss {\unicode {x00DF}}\)
+
+\(\def \SS {\unicode {x1E9E}}\)
+
+\(\def \dag {\unicode {x2020}}\)
+
+\(\def \ddag {\unicode {x2021}}\)
+
+\(\def \P {\unicode {x00B6}}\)
+
+\(\def \copyright {\unicode {x00A9}}\)
+
+\(\def \pounds {\unicode {x00A3}}\)
+
+\(\let \LWRref \ref \)
+
+\(\renewcommand {\ref }{\ifstar \LWRref \LWRref }\)
+
+\( \newcommand {\multicolumn }[3]{#3}\)
+
+\(\require {textcomp}\)
+
+\(\newcommand {\intertext }[1]{\text {#1}\notag \\}\)
+
+\(\let \Hat \hat \)
+
+\(\let \Check \check \)
+
+\(\let \Tilde \tilde \)
+
+\(\let \Acute \acute \)
+
+\(\let \Grave \grave \)
+
+\(\let \Dot \dot \)
+
+\(\let \Ddot \ddot \)
+
+\(\let \Breve \breve \)
+
+\(\let \Bar \bar \)
+
+\(\let \Vec \vec \)
+
+\(\newcommand {\real }{\mathbb {R}} \)
+
+\(\newcommand {\RR }{\mathbb {R}} \)
+
+\(\newcommand {\ZZ }{\mathbb Z} \)
+
+\(\newcommand {\F }{\mathbb F} \)
+
+\(\newcommand {\Ham }{\mathrm {Ham}}\)
+
+\(\newcommand {\PP }{\mathbb P}\)
+
+\(\newcommand {\co }[1]{\overline {#1}} \)
+
+\(\newcommand {\ul }[1]{\underline {#1}} \)
+
+\(\newcommand {\bo }[1]{\mathbf {#1}} \)
+
+\(\newcommand {\concat }[2]{[\, #1 \,|\, #2 \,]} \)
+
+\(\newcommand {\Encode }{\texttt {ENCODE}} \)
+
+\(\newcommand {\Decode }{\texttt {DECODE}} \)
+
+\(\newcommand {\RM }{R} \)
+
+\(\newcommand {\Rep }{\text {Rep}} \)
+
+</div>
+
+<p>
+<!--
+...... chapter ch2exans ......
+-->
+<h3 id="autosec-7">Chapter&nbsp;<span class="sectionnumber">2&#x2003;</span>Exercises — solutions</h3>
+<a id="lecnotes_html-autopage-7"></a>
+<a id="lecnotes_html-autofile-6"></a>
+
+<p>
+Version 2022-09-28. <a href="lecnotes_html.pdf" target="_blank" >To PDF version of the notes</a>
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-2"></a>
+<span class="amsthmnamedefinition">Exercise</span><span class="amsthmnumberdefinition"> <span class="textup">2.1</span></span>.                      Consider the trivial code \(F^n\), the Manchester code and the Luhn code. For each of these codes,
+determine the parameters \([n,k,d]_q\) of the code; state how many errors the code can detect and how many errors the code can correct; determine if the code is perfect and/or MDS.
+</p>
+
+</li>
+
+</ul>
+
+</div>
+
+<p>
+<b>Answer to E2.1. </b> [<a href="ch2ex.html#.">These exercises without answers</a>]
+</p>
+
+<p>
+<b>Trivial code \(F^n\):</b> \(k=n\), \(d=1\). Does not detect or correct any errors. Is perfect because \(M=q^n=q^n/\sum _{i=0}^0 \binom {n}{0} (q-1)^0\). Is MDS as \(k=n-d+1\).
+</p>
+
+<p>
+<b>The Manchester code:</b> \(n=2\), \(q=2\), \(M=2\) so \(k=1\); \(d=2\) by inspection. A \([2,1,2]_2\)-code, can detect up to \(1\) bit error. Does not correct errors. Is not perfect as \(M=2&lt; 2^2/\sum _{i=0}^0 \binom {2}{0}
+(2-1)^0\) (using \(t=0\)). Is MDS as \(1=2-2+1\).
+</p>
+
+<p>
+<b>The Luhn code:</b> \(n=16\), \(q=10\), \(M=10^{15}\) so \(k=15\). One has \(d\le 2\) as for example the codewords \(0000\dots 0\) and \(9100\dots 0\) are at distance 2.
+</p>
+
+<p>
+On the other hand, \(d&gt;1\): consider two words \(\ul x = x_1x_2\dots x_{16}\) and \(\ul y=y_1y_2\dots y_{16}\) at distance \(1\). They differ in exactly one position, say \(i\), and the difference between their Luhn checksums is
+\(y_i-x_i\mod 10\) if \(i\) is even or \(\pi (y_i)-\pi (x_i)\mod 10\) if \(i\) is odd. In either case the difference is non-zero so \(\ul x\) and \(\ul y\) cannot both be codewords. This shows that the Luhn code does not contain a pair of
+codewords at distance \(1\), as claimed.
+</p>
+
+<p>
+To conclude, the Luhn code is a \([16,15,2]_{10}\)-code.
+</p>
+
+<p>
+Can detect up to \(1\) symbol error. Does not correct errors.
+</p>
+
+<p>
+One has \(n-d+1=16-2+1=15=k\) — this is an MDS code. (It is not perfect; this can be checked directly, or use an exercise below as \(d\) is even.)
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-3"></a>
+<span class="amsthmnamedefinition">Exercise</span><span class="amsthmnumberdefinition"> <span class="textup">2.2</span></span><span class="amsthmnotedefinition"> (important part of the theory; you will need these facts for the
+exam)</span>.
+</p>
+
+<p>
+<b>Definition (repeated from the lecture notes):</b> a code \(C\) is <b><i>perfect</i></b> if \(C\) <b>attains</b> the Hamming bound, meaning that
+</p>
+
+<p>
+\[ \#C = \frac {q^n}{\sum \limits _{i=0}^t \binom {n}{i}(q-1)^i} \]
+</p>
+
+<p>
+where \(n\) is the length of the code and \(t=[(d(C)-1)/2]\).
+</p>
+
+<p>
+(a) Use the proof of Theorem <a href="ch2.html#thm:HB">2.3</a> to show that a code \(C\subseteq F^n\) is perfect, if and only if the (disjoint) spheres of radius \(t\), centred at codewords of \(C\), fill up the set \(F^n\) of all words.
+</p>
+
+<p>
+<b>Equivalently,</b> \(C\) is perfect iff every word in \(F^n\) is at distance \(\le t\) from some codeword.
+</p>
+
+<p>
+(b) Prove that a perfect code has odd minimum distance \(d\). (<i>Hint</i>: if \(d\) is even, construct a word at distance \(d/2\) from a codeword and show that it is not at distance \(\le t\) from any codeword.)
+</p>
+
+<p>
+(c) Show that binary repetition codes of odd lengths are perfect.
+</p>
+
+<p>
+(d) Show that \(\text {Rep}(n,F)\) is not perfect if \(q=\#F&gt;2\). (<i>Hint</i>: using three different symbols, write down a word at distance \(&gt;n/2\) from each codeword.)
+</p>
+
+<p>
+
+
+</p>
+
+</li>
+
+</ul>
+
+</div>
+
+<p>
+<b>Answer to E2.2. </b> [<a href="ch2ex.html#.">These exercises without answers</a>]
+</p>
+
+<p>
+(a) We know from the proof of Theorem <a href="ch2.html#thm:HB">2.3</a> that the \(\#C\) spheres \(S_t(\ul c)\), where \(\ul c\in C\), are disjoint. Each sphere contains \(\sum _{i=0}^t \binom {n}{i}(q-1)^i\) words, hence the total
+number of words covered by these spheres is \((\#C)\sum _{i=0}^t \binom {n}{i}(q-1)^i\). This number is equal to \(\#F^n=q^n\) iff these spheres cover all words in \(F^n\), i.e., fill up the space \(F^n\). On the other hand, this number is equal
+to \(\#F^n=q^n\) iff the code \(C\) is perfect. Q.E.D.
+</p>
+
+<p>
+(b) Assume for contradiction that a perfect \(C\) has even \(d(C)=d\). Take any codeword \(\ul w\) of \(C\) and change the first \(d/2\) symbols in \(\ul w\) to obtain a word \(\ul z\in F^n\) with \(d(\ul z,\ul w)=d/2\). Since \(C\) is
+perfect, there must be another codeword \(\ul v\) such that \(d(\ul v,\ul z)\le t\). Then by the triangle inequality \(d(\ul v,\ul w)\le t+d/2 \le (d-1)/2+d/2 &lt;d\), a contradiction.
+</p>
+
+<p>
+(c) \(\text {Rep}(n,\F _2)\) consists of \(\ul 0 = 00\ldots 0\) and \(\ul 1 = 11\dots 1\). Here \(n=2t+1\). A word \(\ul y\in \F _2^n\) may have \(\le t\) zero bits — then \(d(\ul y,\ul 1)\le t\). Otherwise, \(\ul y\) has \(t+1\)
+or more zero bits, hence \(\le t\) one bits, and \(d(\ul y,\ul 0)\le t\). This shows that every word is at distance \(\le t\) from one of the two codewords. Now apply (a).
+</p>
+
+<p>
+(d) Assume that the alphabet \(F\) contains at least three symbols; for simplicity, assume that \(F\) contains \(0\), \(1\) and \(2\). The repetition code \(\text {Rep}(n,F)\) has minimum distance \(n\), hence \(t=[(n-1)/2]\).
+</p>
+
+<p>
+Let \(n\) be odd — the case of even \(n\) follows from (b). Then \(n=2t+1\). Consider the word \(0\dots 01\dots 12\) which has \(t\) zeros, \(t\) ones and \(1\) two. It differs from each codeword in at least \(t+1\) positions, hence is not at
+distance \(\le t\) from any codeword. We have shown that the code is not perfect.
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-4"></a>
+<span class="amsthmnamedefinition">Exercise</span><span class="amsthmnumberdefinition"> <span class="textup">2.3</span></span><span class="amsthmnotedefinition"> (not done in the tutorial)</span>.                         Assume that the cost of
+transmitting one symbol via a \(q\)-ary channel is \(cq\). (<em>Imagine a \(q\)-ary channel as a cable with \(q\) wires; the costs of building and maintaining it would be roughly proportional to \(q\)</em>.) Suppose that you are given a very large
+number \(M\) and need to design a code with \(M\) codewords. You have the control over the length \(n\) and the size \(q\) of the alphabet. Which \(q\) will ensure the lowest transmission costs <em>per codeword</em>? In particular, are the binary
+channels (the type most widely used in today’s computer networks) the most economical?
+</p>
+
+</li>
+
+</ul>
+
+</div>
+
+<p>
+<b>Answer to E2.3. </b> [<a href="ch2ex.html#.">These exercises without answers</a>]
+</p>
+
+<p>
+The cost of transmitting one codeword is \(cqn\). By the trivial bound, \(n\ge k=\log _qM\) so this cost is estimated from below as \(cq\log _qM= K\dfrac {q}{\ln q}\) where the constant \(K\) is \(c\ln M\). The function \(f(x)=x/\ln x\)
+decreases on \((0,e)\) and increases on \((e,\infty )\) (<i>check this by differentiation or otherwise</i>) so \(f(q)&gt;f(3)\) if \(q&gt;3\). Hence the only candidates for the minimum are \(q=2\) and \(q=3\). Calculating \(f(2)\cong 2.89\)
+and \(f(3)\cong 2.73\), we conclude that — if we accept the (somewhat arbitrary) assumptions in the problem — ternary codes are the most economical.
+</p>
+</section>
+
+</main>
+
+</div>
+
+
+<nav class="botnavigation"><a href="lecnotes_html.html" class="linkhome" >
+Home</a></nav>
+
+</body>
+</html>

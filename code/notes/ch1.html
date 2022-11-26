@@ -1,0 +1,1190 @@
+
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="UTF-8" />
+<meta name="generator" content="LaTeX Lwarp package" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<!--[if lt IE 9]>
+<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+<link rel="stylesheet" type="text/css" href="bazlovstyle.css" />
+
+<script>
+// Lwarp MathJax emulation code
+//
+// Based on code by Davide P. Cervone.
+// Equation numbering: https://github.com/mathjax/MathJax/issues/2427
+// Starred and ifnextchar macros: https://github.com/mathjax/MathJax/issues/2428
+// \left, \right delimiters: https://github.com/mathjax/MathJax/issues/2535
+//
+// Modified by Brian Dunn to adjust equation numbering and add subequations.
+//
+// LaTeX can use \seteqnumber{subequations?}{section}{number} before each equation.
+// subequations? is 0 usually, 1 if inside subequations.
+// section is a string printed as-is, or empty.
+// number is auto-incremented by MathJax between equations.
+//
+MathJax = {
+    subequations: "0",
+    section: "",
+    loader: {
+        load: ['[tex]/tagformat', '[tex]/textmacros'],
+    },
+    startup: {
+        ready() {
+            //      These would be replaced by import commands if you wanted to make
+            //      a proper extension.
+            const Configuration = MathJax._.input.tex.Configuration.Configuration;
+            const CommandMap = MathJax._.input.tex.SymbolMap.CommandMap;
+            const Macro = MathJax._.input.tex.Symbol.Macro;
+            const TexError = MathJax._.input.tex.TexError.default;
+            const ParseUtil = MathJax._.input.tex.ParseUtil.default;
+            const expandable = MathJax._.util.Options.expandable;
+
+
+            //      Insert the replacement string into the TeX string, and check
+            //      that there haven't been too many maxro substitutions (prevents
+            //      infinite loops).
+            const useArgument = (parser, text) => {
+                parser.string = ParseUtil.addArgs(parser, text, parser.string.slice(parser.i));
+                parser.i = 0;
+                if (++parser.macroCount > parser.configuration.options.maxMacros) {
+                    throw new TexError('MaxMacroSub1',
+                    'MathJax maximum macro substitution count exceeded; ' +
+                    'is there a recursive macro call?');
+                }
+            }
+
+
+            //      Create the command map for:
+            //          \ifstar, \ifnextchar, \ifblank, \ifstrequal, \gsub, \seteqnumber
+            new CommandMap('Lwarp-macros', {
+                ifstar: 'IfstarFunction',
+                ifnextchar: 'IfnextcharFunction',
+                ifblank: 'IfblankFunction',
+                ifstrequal: 'IfstrequalFunction',
+                gsubstitute: 'GsubstituteFunction',
+                seteqnumber: 'SeteqnumberFunction'
+            }, {
+                //      This function implements an ifstar macro.
+                IfstarFunction(parser, name) {
+                    const resultstar = parser.GetArgument(name);
+                    const resultnostar = parser.GetArgument(name);
+                    const star = parser.GetStar();                      // true if there is a *
+                    useArgument(parser, star ? resultstar : resultnostar);
+                },
+
+
+                //      This function implements an ifnextchar macro.
+                IfnextcharFunction(parser, name) {
+                    let whichchar = parser.GetArgument(name);
+                    if (whichchar.match(/^(?:0x[0-9A-F]+|[0-9]+)$/i)) {
+                        // $ syntax highlighting
+                        whichchar = String.fromCodePoint(parseInt(whichchar));
+                    }
+                    const resultnextchar = parser.GetArgument(name);
+                    const resultnotnextchar = parser.GetArgument(name);
+                    const gotchar = (parser.GetNext() === whichchar);
+                    useArgument(parser, gotchar ? resultnextchar : resultnotnextchar);
+                },
+
+
+                // This function implements an ifblank macro.
+                IfblankFunction(parser, name) {
+                    const blankarg = parser.GetArgument(name);
+                    const resultblank = parser.GetArgument(name);
+                    const resultnotblank = parser.GetArgument(name);
+                    const isblank = (blankarg.trim() == "");
+                    useArgument(parser, isblank ? resultblank : resultnotblank);
+                },
+
+
+                // This function implements an ifstrequal macro.
+                IfstrequalFunction(parser, name) {
+                    const strequalfirst = parser.GetArgument(name);
+                    const strequalsecond = parser.GetArgument(name);
+                    const resultequal = parser.GetArgument(name);
+                    const resultnotequal = parser.GetArgument(name);
+                    const isequal = (strequalfirst == strequalsecond);
+                    useArgument(parser, isequal ? resultequal : resultnotequal);
+                },
+
+
+                // This function implements a gsub macro.
+                GsubstituteFunction(parser, name) {
+                    const gsubfirst = parser.GetArgument(name);
+                    const gsubsecond = parser.GetArgument(name);
+                    const gsubthird = parser.GetArgument(name);
+                    let gsubresult=gsubfirst.replace(gsubsecond, gsubthird);
+                    useArgument(parser, gsubresult);
+                },
+
+
+                //      This function modifies the equation numbers.
+                SeteqnumberFunction(parser, name) {
+                        //   Get the macro parameters
+                        const star = parser.GetStar();                    // true if there is a *
+                        const optBrackets = parser.GetBrackets(name);     // contents of optional brackets
+                        const newsubequations = parser.GetArgument(name);    // the subequations argument
+                        const neweqsection = parser.GetArgument(name);    // the eq section argument
+                        const neweqnumber = parser.GetArgument(name);     // the eq number argument
+                        MathJax.config.subequations=newsubequations ;     // a string with boolean meaning
+                        MathJax.config.section=neweqsection ;             // a string with numeric meaning
+                        parser.tags.counter = parser.tags.allCounter = neweqnumber ;
+                }
+
+
+            });
+
+
+            //      Create the Lwarp-macros package
+            Configuration.create('Lwarp-macros', {
+                handler: {macro: ['Lwarp-macros']}
+            });
+
+
+            MathJax.startup.defaultReady();
+
+
+            // For forward references:
+            MathJax.startup.input[0].preFilters.add(({math}) => {
+                if (math.inputData.recompile){
+                        MathJax.config.subequations = math.inputData.recompile.subequations;
+                        MathJax.config.section = math.inputData.recompile.section;
+                }
+            });
+            MathJax.startup.input[0].postFilters.add(({math}) => {
+                if (math.inputData.recompile){
+                        math.inputData.recompile.subequations = MathJax.config.subequations;
+                        math.inputData.recompile.section = MathJax.config.section;
+                }
+            });
+
+
+                // For \left, \right with unicode-math:
+                const {DelimiterMap} = MathJax._.input.tex.SymbolMap;
+                const {Symbol} = MathJax._.input.tex.Symbol;
+                const {MapHandler} = MathJax._.input.tex.MapHandler;
+                const delimiter = MapHandler.getMap('delimiter');
+                delimiter.add('\\lBrack', new Symbol('\\lBrack', '\u27E6'));
+                delimiter.add('\\rBrack', new Symbol('\\rBrack', '\u27E7'));
+                delimiter.add('\\lAngle', new Symbol('\\lAngle', '\u27EA'));
+                delimiter.add('\\rAngle', new Symbol('\\rAngle', '\u27EB'));
+                delimiter.add('\\lbrbrak', new Symbol('\\lbrbrak', '\u2772'));
+                delimiter.add('\\rbrbrak', new Symbol('\\rbrbrak', '\u2773'));
+                delimiter.add('\\lbag', new Symbol('\\lbag', '\u27C5'));
+                delimiter.add('\\rbag', new Symbol('\\rbag', '\u27C6'));
+                delimiter.add('\\llparenthesis', new Symbol('\\llparenthesis', '\u2987'));
+                delimiter.add('\\rrparenthesis', new Symbol('\\rrparenthesis', '\u2988'));
+                delimiter.add('\\llangle', new Symbol('\\llangle', '\u2989'));
+                delimiter.add('\\rrangle', new Symbol('\\rrangle', '\u298A'));
+                delimiter.add('\\Lbrbrak', new Symbol('\\Lbrbrak', '\u27EC'));
+                delimiter.add('\\Rbrbrak', new Symbol('\\Rbrbrak', '\u27ED'));
+                delimiter.add('\\lBrace', new Symbol('\\lBrace', '\u2983'));
+                delimiter.add('\\rBrace', new Symbol('\\rBrace', '\u2984'));
+                delimiter.add('\\lParen', new Symbol('\\lParen', '\u2985'));
+                delimiter.add('\\rParen', new Symbol('\\rParen', '\u2986'));
+                delimiter.add('\\lbrackubar', new Symbol('\\lbrackubar', '\u298B'));
+                delimiter.add('\\rbrackubar', new Symbol('\\rbrackubar', '\u298C'));
+                delimiter.add('\\lbrackultick', new Symbol('\\lbrackultick', '\u298D'));
+                delimiter.add('\\rbracklrtick', new Symbol('\\rbracklrtick', '\u298E'));
+                delimiter.add('\\lbracklltick', new Symbol('\\lbracklltick', '\u298F'));
+                delimiter.add('\\rbrackurtick', new Symbol('\\rbrackurtick', '\u2990'));
+                delimiter.add('\\langledot', new Symbol('\\langledot', '\u2991'));
+                delimiter.add('\\rangledot', new Symbol('\\rangledot', '\u2992'));
+                delimiter.add('\\lparenless', new Symbol('\\lparenless', '\u2993'));
+                delimiter.add('\\rparengtr', new Symbol('\\rparengtr', '\u2994'));
+                delimiter.add('\\Lparengtr', new Symbol('\\Lparengtr', '\u2995'));
+                delimiter.add('\\Rparenless', new Symbol('\\Rparenless', '\u2996'));
+                delimiter.add('\\lblkbrbrak', new Symbol('\\lblkbrbrak', '\u2997'));
+                delimiter.add('\\rblkbrbrak', new Symbol('\\rblkbrbrak', '\u2998'));
+                delimiter.add('\\lvzigzag', new Symbol('\\lvzigzag', '\u29D8'));
+                delimiter.add('\\rvzigzag', new Symbol('\\rvzigzag', '\u29D9'));
+                delimiter.add('\\Lvzigzag', new Symbol('\\Lvzigzag', '\u29DA'));
+                delimiter.add('\\Rvzigzag', new Symbol('\\Rvzigzag', '\u29DB'));
+                delimiter.add('\\lcurvyangle', new Symbol('\\lcurvyangle', '\u29FC'));
+                delimiter.add('\\rcurvyangle', new Symbol('\\rcurvyangle', '\u29FD'));
+                delimiter.add('\\Vvert', new Symbol('\\Vvert', '\u2980'));
+        }        // ready
+    },           // startup
+
+
+    tex: {
+        packages: {'[+]': ['tagformat', 'Lwarp-macros', 'textmacros']},
+        tags: "ams",
+                tagformat: {
+                        number: function (n) {
+                             if(MathJax.config.subequations==0)
+                                 return(MathJax.config.section + n);
+                             else
+                                 return(MathJax.config.section + String.fromCharCode(96+n));
+                        },
+                },
+    }
+}
+</script>
+
+
+<script
+        id="MathJax-script"
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+></script>
+
+</head>
+<body>
+
+
+<a id="lecnotes_html-autopage-3"></a>
+<nav class="topnavigation"><a href="lecnotes_html.html" class="linkhome" >
+Home</a></nav>
+
+
+<div class="bodyandsidetoc">
+<div class="sidetoccontainer">
+
+
+<nav class="sidetoc">
+
+
+<div class="sidetoctitle">
+
+<p>
+Contents
+</p>
+</div>
+
+
+<div class="sidetoccontents">
+
+<p>
+<a href="lecnotes_html.html" class="linkhome" >
+Home</a>
+</p>
+
+</div>
+
+</nav>
+
+</div>
+
+
+<main class="bodycontainer">
+
+
+<section class="textbody">
+
+<!--MathJax customizations:-->
+
+
+<div class="hidden">
+
+\(\newcommand{\footnotename}{footnote}\)
+
+\(\def \LWRfootnote {1}\)
+
+\(\newcommand {\footnote }[2][\LWRfootnote ]{{}^{\mathrm {#1}}}\)
+
+\(\newcommand {\footnotemark }[1][\LWRfootnote ]{{}^{\mathrm {#1}}}\)
+
+\(\let \LWRorighspace \hspace \)
+
+\(\renewcommand {\hspace }{\ifstar \LWRorighspace \LWRorighspace }\)
+
+\(\newcommand {\mathnormal }[1]{{#1}}\)
+
+\(\newcommand \ensuremath [1]{#1}\)
+
+\(\newcommand {\LWRframebox }[2][]{\fbox {#2}} \newcommand {\framebox }[1][]{\LWRframebox } \)
+
+\(\newcommand {\setlength }[2]{}\)
+
+\(\newcommand {\addtolength }[2]{}\)
+
+\(\newcommand {\setcounter }[2]{}\)
+
+\(\newcommand {\addtocounter }[2]{}\)
+
+\(\newcommand {\arabic }[1]{}\)
+
+\(\newcommand {\number }[1]{}\)
+
+\(\newcommand {\noalign }[1]{\text {#1}\notag \\}\)
+
+\(\newcommand {\cline }[1]{}\)
+
+\(\newcommand {\directlua }[1]{\text {(directlua)}}\)
+
+\(\newcommand {\luatexdirectlua }[1]{\text {(directlua)}}\)
+
+\(\newcommand {\protect }{}\)
+
+\(\def \LWRabsorbnumber #1 {}\)
+
+\(\def \LWRabsorbquotenumber &quot;#1 {}\)
+
+\(\newcommand {\LWRabsorboption }[1][]{}\)
+
+\(\newcommand {\LWRabsorbtwooptions }[1][]{\LWRabsorboption }\)
+
+\(\def \mathchar {\ifnextchar &quot;\LWRabsorbquotenumber \LWRabsorbnumber }\)
+
+\(\def \mathcode #1={\mathchar }\)
+
+\(\let \delcode \mathcode \)
+
+\(\let \delimiter \mathchar \)
+
+\(\def \oe {\unicode {x0153}}\)
+
+\(\def \OE {\unicode {x0152}}\)
+
+\(\def \ae {\unicode {x00E6}}\)
+
+\(\def \AE {\unicode {x00C6}}\)
+
+\(\def \aa {\unicode {x00E5}}\)
+
+\(\def \AA {\unicode {x00C5}}\)
+
+\(\def \o {\unicode {x00F8}}\)
+
+\(\def \O {\unicode {x00D8}}\)
+
+\(\def \l {\unicode {x0142}}\)
+
+\(\def \L {\unicode {x0141}}\)
+
+\(\def \ss {\unicode {x00DF}}\)
+
+\(\def \SS {\unicode {x1E9E}}\)
+
+\(\def \dag {\unicode {x2020}}\)
+
+\(\def \ddag {\unicode {x2021}}\)
+
+\(\def \P {\unicode {x00B6}}\)
+
+\(\def \copyright {\unicode {x00A9}}\)
+
+\(\def \pounds {\unicode {x00A3}}\)
+
+\(\let \LWRref \ref \)
+
+\(\renewcommand {\ref }{\ifstar \LWRref \LWRref }\)
+
+\( \newcommand {\multicolumn }[3]{#3}\)
+
+\(\require {textcomp}\)
+
+\(\newcommand {\intertext }[1]{\text {#1}\notag \\}\)
+
+\(\let \Hat \hat \)
+
+\(\let \Check \check \)
+
+\(\let \Tilde \tilde \)
+
+\(\let \Acute \acute \)
+
+\(\let \Grave \grave \)
+
+\(\let \Dot \dot \)
+
+\(\let \Ddot \ddot \)
+
+\(\let \Breve \breve \)
+
+\(\let \Bar \bar \)
+
+\(\let \Vec \vec \)
+
+\(\newcommand {\real }{\mathbb {R}} \)
+
+\(\newcommand {\RR }{\mathbb {R}} \)
+
+\(\newcommand {\ZZ }{\mathbb Z} \)
+
+\(\newcommand {\F }{\mathbb F} \)
+
+\(\newcommand {\Ham }{\mathrm {Ham}}\)
+
+\(\newcommand {\PP }{\mathbb P}\)
+
+\(\newcommand {\co }[1]{\overline {#1}} \)
+
+\(\newcommand {\ul }[1]{\underline {#1}} \)
+
+\(\newcommand {\bo }[1]{\mathbf {#1}} \)
+
+\(\newcommand {\concat }[2]{[\, #1 \,|\, #2 \,]} \)
+
+\(\newcommand {\Encode }{\texttt {ENCODE}} \)
+
+\(\newcommand {\Decode }{\texttt {DECODE}} \)
+
+\(\newcommand {\RM }{R} \)
+
+\(\newcommand {\Rep }{\text {Rep}} \)
+
+</div>
+
+<p>
+<!--
+...... chapter ch1 ......
+-->
+<h3 id="autosec-4">Chapter&nbsp;<span class="sectionnumber">1&#x2003;</span>Introduction. How to detect and correct errors?</h3>
+<a id="lecnotes_html-autopage-4"></a>
+<a id="lecnotes_html-autofile-1"></a>
+
+<p>
+Version 2022-09-24. <a href="lecnotes_html.pdf" target="_blank" >To PDF version of the notes</a>
+</p>
+<!--
+...... section Preface ......
+-->
+<h4 id="autosec-5">Preface</h4>
+<a id="lecnotes_html-autopage-5"></a>
+
+
+<p>
+These notes are being revised to reflect the content of the course as taught in the 2022/23 academic year. Questions and comments on these lecture notes should be directed to<br />
+<kbd>Yuri.Bazlov@manchester.ac.uk</kbd>.
+</p>
+<!--
+...... subsection Synopsis ......
+-->
+<h5 id="autosec-6">Synopsis</h5>
+<a id="lecnotes_html-autopage-6"></a>
+
+
+<p>
+<i>We discuss information transmission and introduce the most basic notions of Coding Theory: <b>channel</b>, <b>alphabet</b>, <b>symbol</b>, <b>word</b>, <b>Hamming distance</b> and of course <b>code</b>. We show how a code can
+detect and correct some errors that occur during transmission.</i>
+</p>
+<!--
+...... subsection What is information? ......
+-->
+<h5 id="autosec-7">What is information?</h5>
+<a id="lecnotes_html-autopage-7"></a>
+
+
+<p>
+It is fair to say that our age is the age of information. Huge quantities of information and data literally flow around us and are stored in various forms.
+</p>
+
+<p>
+Information processing gives rise to many mathematical questions. Information needs to be processed because we may need, for example, to:
+</p>
+<ul style="list-style-type:none">
+
+<li>
+<p>
+• <em>store</em> the information;
+</p>
+
+
+</li>
+<li>
+
+
+<p>
+• <em>encrypt</em> the information;
+</p>
+
+
+</li>
+<li>
+
+
+<p>
+• <em>transmit</em> the information.
+</p>
+</li>
+</ul>
+
+<p>
+For practical purposes, information needs to be stored efficiently, which leads to problems such as <em>compacting</em> or <em>compressing</em> the information. For the purposes of data protection and security, information may need to be
+<em>encrypted</em>. We will NOT consider these problems here.
+</p>
+
+<p>
+In this course, we will address problems that arise in connection with <em>information transmission</em>.
+</p>
+
+<p>
+We do not attempt to give an exhaustive definition of <i>information</i>. Whereas some mathematical models for space, time, motion were developed hundreds of years ago, the modern mathematical theory of information was only born in 1948 in
+the paper <i>A Mathematical Theory of Communication</i> by <b>Claude Shannon</b> (1916–2001). The following will be enough for our purposes:
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-8"></a>
+<span class="amsthmnamedefinition">Definition</span><span class="amsthmnotedefinition"> (information, alphabet, symbol)</span>.
+</p>
+
+<p>
+Fix a finite set \(F\) and call it <b><i>the alphabet</i></b>.
+</p>
+
+<p>
+Elements of \(F\) are called <b><i>symbols</i></b>.
+</p>
+
+<p>
+By <b><i>information</i></b>, we mean a stream (a sequence) of symbols.
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-9"></a>
+<span class="amsthmnamedefinition">Remark</span>.        The alphabet should contain at least two symbols, otherwise any sequence of symbols will contain zero information. The philosophical explanation for this is: if there is only one possible we
+know each symbol in the sequence, hence reading the sequence does not give us any new knowledge.
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<!--
+...... subsection What does it mean to transmit information? What is a channel?                   ......
+-->
+<h5 id="autosec-10">What does it mean to transmit information? What is a channel?</h5>
+<a id="lecnotes_html-autopage-10"></a>
+
+
+<p>
+It means that symbols are sent by one party (the sender) and are received by another party (receiver). The symbols are transmitted via some medium, which we will in general refer to as <b><i>the channel</i></b>. More precisely, the channel is a
+mathematical abstraction of various real-life media such as a telephone line, a satellite communication link, a voice (in a face to face conversation between individuals), a CD (the sender writes information into it — the user reads the information from
+it), etc.
+</p>
+
+<p>
+In this course we will assume that when a symbol is fed into the channel (the input symbol), the same or another symbol is read from the other end of the channel (the output symbol). Thus, we will only consider channels where neither erasures
+(when the output symbol is unreadable) nor deletions (when some symbols fed into the channel simply disapear) occur. Working with those more general channels requires more advanced mathematical apparatus which is beyond this course.
+</p>
+
+<p>
+Importantly, we assume that there is <b><i>noise</i></b> in the channel, which means that the symbols are randomly changed by the channel. Our <b><i>simple model of information transmission</i></b> is thus as follows:
+</p>
+
+<p>
+\[ \fbox {sender} \xrightarrow {\text {stream of symbols}} \fbox {channel} \xrightarrow [\text {with random changes}]{\text {stream of symbols}} \fbox {receiver} \]
+</p>
+
+<p>
+When a single symbol \(x\in F\) is being transmitted, there are two possible outcomes:
+</p>
+<ul style="list-style-type:none">
+
+<li>
+<p>
+• The received symbol is \(x\). We say that no error occurred in this symbol.
+</p>
+
+
+</li>
+<li>
+
+
+<p>
+• The received symbol is \(y\ne x\). An error occurred in this symbol.
+</p>
+</li>
+</ul>
+
+<p>
+We will now give the most basic example of a channel, \(\mathit {BSC}(p)\). There are other mathematical models of channels, but \(\mathit {BSC}(p)\) is the only one we study systematically in the course.
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-11"></a>
+<span class="amsthmnamedefinition">Definition</span><span class="amsthmnotedefinition"> (binary alphabet, bit)</span>.   The <b><i>binary alphabet</i></b> is the set \(\F _2=\{0,1\}\). A <b><i>bit</i></b> is the same as
+<b><i>binary symbol</i></b>, an element of the binary alphabet.
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-12"></a>
+<span class="amsthmnamedefinition">Definition</span><span class="amsthmnotedefinition"> (\(\mathit {BSC}(p)\))</span>.                 The <b><i>binary symmetric channel with bit error rate \(p\)</i></b>, denoted \(\mathit {BSC}(p)\), is
+a channel which transmits binary symbols according to the following rule. A bit (\(0\) or \(1\)), transmitted via the channel, arrives unchanged with probability \(1-p\), and gets flipped with probability \(p\):
+</p>
+<div class="center">
+
+<p>
+
+
+<a href="bsc.svg" target="_blank" ><img
+      src="bsc.svg"
+      class="inlineimage"
+      alt="(image)"
+></a>
+</p>
+</div>
+
+<p>
+The error in any given bit is an event which is independent of all the previous bits. We thus say that this channel is <b><i>memoryless</i></b>.
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<!--
+...... subsection What is a code? ......
+-->
+<h5 id="autosec-14">What is a code?</h5>
+<a id="lecnotes_html-autopage-14"></a>
+
+
+<p>
+Generally, a word is a finite sequence of symbols, and a code is a set of words. However, in this course we will only consider <i>block codes</i> — this means that all the words in the code are of the same length \(n\). Although variable length codes
+are used in modern applications, we will not consider them in the course, and will refer to block codes simply as codes.
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-15"></a>
+<span class="amsthmnamedefinition">Definition</span><span class="amsthmnotedefinition"> (word)</span>.
+</p>
+
+<p>
+A <i><b>word of length \(n\)</b></i> in the alphabet \(F\) is an element of \(F^n\). Note that \(F^n\) is the set of all \(n\)-tuples of symbols:
+</p>
+
+<p>
+\[ F^n=\{\ul v=(v_1,v_2,\ldots ,v_n)\mid v_i\in F,\ 1\le i \le n\}.           \]
+</p>
+
+<p>
+
+
+</p>
+
+</li>
+
+</ul>
+
+</div>
+
+<p>
+We may write a word \((x_1,x_2,\dots ,x_n)\in F^n\) simply as \(x_1x_2\dots x_n\) if this is unambiguous. So, for example, the binary words \(000\), \(101\) and \(111\) belong to \(\F _2^3\).
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-16"></a>
+<span class="amsthmnamedefinition">Definition</span><span class="amsthmnotedefinition"> (code, codeword)</span>.   A <i><b>code</b></i> of length \(n\) in the alphabet \(F\) is a non-empty subset of \(F^n\). We will denote a code by
+\(C\). That is, \(C\subseteq F^n\), \(C\ne \varnothing \).
+</p>
+
+<p>
+A <i><b>codeword</b></i> is an element of the code.
+</p>
+
+</li>
+
+</ul>
+
+</div>
+
+<p>
+Our next goal is to understand how codes are used to detect and correct errors occurring in transmission.
+</p>
+<!--
+...... subsection How can a code detect errors? ......
+-->
+<h5 id="autosec-17">How can a code detect errors?</h5>
+<a id="lecnotes_html-autopage-17"></a>
+
+
+<p>
+Instead of transmitting an arbitrary stream of symbols via the channel, the sender and the receiver agree to transmit <b>only codewords</b>.
+</p>
+
+<p>
+\[ \fbox {sender} \xrightarrow [\ul c\in C]{\text { codeword }} \fbox {channel} \xrightarrow [\ul y\in F^n]{\text { received word }} \fbox {receiver} \]
+</p>
+
+<p>
+The sender transmits a codeword \(\ul c\in C\). The received word, \(\ul y\), may be not the same as \(\ul c\), due to noise in the channel. Of course, if \(\ul y\notin C\), the receiver knows that \(\ul y\) is not what was sent. If, however,
+\(\ul y\in C\), the receiver has no way of knowing whether an error occurred, and must assume that there was no error. Here is the terminology we will use:
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-18"></a>
+<span class="amsthmnamedefinition">Definition</span>.     Transmission outcomes:
+</p>
+<ul style="list-style-type:none">
+
+
+<li>
+<p>
+• If \(\ul y\notin C\), we say that a <b><i>detected error</i></b> occurred.
+</p>
+</li>
+<li>
+
+
+<p>
+• If \(\ul y \in C\) but \(\ul y\ne \ul c\), we speak of an <i><b>undetected error</b></i>.
+</p>
+</li>
+</ul>
+
+</li>
+
+</ul>
+
+</div>
+
+<p>
+At this stage, we informally notice that if the codewords of \(C\) are “far apart”, then a small number of symbol errors will not change a codeword into another codeword, so the errors will be detected. We quantify this in Theorem&nbsp;<a
+href="ch2.html#thm:detect-correct">2.1</a> below. For this, we need a way to measure the distance between words. The following definition is credited to <b>Richard Hamming</b> (1915–1998), whose first construction of more efficient codes
+was the beginning of modern coding theory.
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-19"></a>
+<span class="amsthmnamedefinition">Definition</span><span class="amsthmnotedefinition"> (Hamming distance)</span>.           The <i><b>Hamming distance</b></i> between two words \(\ul x,\ul y\in F^n\) is the number of positions
+where the symbol in \(\ul x\) differs from the symbol in \(\ul y\):
+</p>
+
+<p>
+\[ d(\ul x, \ul y) = \#\{i\in \{1,\ldots ,n\} :        x_i\ne y_i\}.   \]
+</p>
+
+<p>
+
+
+</p>
+
+</li>
+
+</ul>
+
+</div>
+
+<p>
+For example, in the set \(\F _2^3\) of \(3\)-bit binary words one has \(d(101,111)=1\) and \(d(101,000)=2\). Of course, \(d(101,101)=0\).
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-20"></a>
+<span class="amsthmnamedefinition">Lemma</span><span class="amsthmnumberdefinition"> <span class="textup">1.1</span></span><span class="amsthmnotedefinition"> (Properties of the Hamming distance)</span>.
+</p>
+
+<p>
+For any words \(\ul x, \ul y, \ul z\in F^n\),
+</p>
+<ul style="list-style-type:none">
+
+
+<li>
+<p>
+1. \(d(\ul x,\ul y)\ge 0\); \(d(\ul x,\ul y)= 0\) iff \(\ul x = \ul y\).
+</p>
+
+
+</li>
+<li>
+
+
+<p>
+2. \(d(\ul x,\ul y)=d(\ul y,\ul x)\).
+</p>
+
+
+</li>
+<li>
+
+
+<p>
+3. \(d(\ul x,\ul z)\le d(\ul x,\ul y)+d(\ul y,\ul z)\) (<b><i>the triangle inequality</i></b>).
+</p>
+</li>
+</ul>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-21"></a>
+<span class="amsthmnamedefinition">Remark</span>.     A function \(d(-,-)\) of two arguments which satisfies axioms 1.–3. is called a <em>metric</em>. This is familiar to those who studied <em>Metric spaces</em>. The Lemma says that the
+Hamming distance turns \(F^n\) into a metric space.
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmproof">
+
+<a id="lecnotes_html-autopage-22"></a>
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<span class="amsthmproofname">Proof.</span> For this proof only, write \(d(\ul x, \ul y) = \sum _{i=1}^n d_{x_i,y_i}\) where \(d_{ab}=\begin {cases} 1, &amp; \text {if }a\ne b, \\ 0, &amp;\text { if }a=b.              \end {cases}\).
+</p>
+
+<p>
+1. Since \(d_{x_i,y_i}\in \{0,1\}\), the sum \(\sum _{i=1}^n d_{x_i,y_i}\) is an integer between \(0\) and \(n\), and is \(0\) iff \(d_{x_i,y_i}=0\) for all \(i\) meaning that \(\ul x=\ul y\).
+</p>
+
+<p>
+2. Symmetry is clear as \(x_i\ne y_i\) is equivalent to \(y_i\ne x_i\).
+</p>
+
+<p>
+3. The inequality \(d_{x_i,z_i}\le d_{x_i,y_i}+ d_{y_i,z_i}\) holds for all \(i\): it is obvious when \(d_{x_i,y_i}\) or \(d_{y_i,z_i}\) is \(1\), and if \(d_{x_i,y_i}=d_{y_i,z_i}=0\) then \(x_i=y_i=z_i\) and so \(d_{x_i,z_i}=0\).
+Summing over \(i=1,\dots ,n\) gives the required triangle inequality. <span class="theoremendmark">&#x25A1;</span>
+</p>
+
+</li>
+
+</ul>
+
+</div>
+
+<p>
+We will now use the Hamming distance to set up error correction.
+</p>
+<!--
+...... subsection How can a code correct errors? ......
+-->
+<h5 id="autosec-23">How can a code correct errors?</h5>
+<a id="lecnotes_html-autopage-23"></a>
+
+
+<p>
+Let \(C\subseteq F^n\) be a code.
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-24"></a>
+<span class="amsthmnamedefinition">Definition</span><span class="amsthmnotedefinition"> (decoder, nearest neighbour)</span>.           A <b><i>decoder</i></b> for \(C\) is a function \(\Decode \colon F^n\to C\) such that for any \(\ul
+y\in F^n\), \(\Decode (\ul y)\) is a nearest neighbour of \(\ul y\) in \(C\).
+</p>
+
+<p>
+A <b><i>nearest neighbour</i></b> of \(\ul y\in F^n\) in \(C\) is a codeword \(\ul c\in C\) such that
+</p>
+
+<p>
+\[ d(\ul c,\ul y) = \min \{d(\ul z,\ul y):        \ul z\in C\}.   \]
+</p>
+
+<p>
+
+
+</p>
+
+</li>
+
+</ul>
+
+</div>
+
+<p>
+In order to use error correction, the sender and the receiver choose a decoder \(\Decode \colon F^n\to C\). (It may happen that some words \(\ul y\in F^n\) have more than one nearest neighbour in \(C\), which means that there exist more than
+one decoder function. In this course we assume that the receiver fixes one particular decoder to make decoding deterministic.)
+</p>
+
+<p>
+The sender transmits codewords of \(C\).
+</p>
+
+<p>
+The receiver <i>decodes</i> the received words:
+</p>
+
+<p>
+\[ \fbox {sender} \xrightarrow [\ul c\in C]{\text { codeword }} \fbox {channel} \xrightarrow [\ul y\in F^n]{\text { received word }} \xrightarrow [\ \Decode (\ul y)\in C\ ]{\text { decoded word }} \fbox {receiver}
+\]
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-25"></a>
+<span class="amsthmnamedefinition">Remark</span>.           Thus, if the received word \(\ul y\) is not a codeword, the decoder must assume that the codeword closest to \(\ul y\) was sent. This means that the following assumption is made about
+the channel: <i>out of all error patterns which may have resulted in receiving \(\ul y\), the pattern with fewest symbol errors is the most likely one.</i>
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-26"></a>
+<span class="amsthmnamedefinition">Definition</span><span class="amsthmnotedefinition"> (decoded correctly)</span>.               In the above setup, let \(\ul c\in C\) be the transmitted codeword and let \(\ul y\in F^n\) be the received word.
+If \(\Decode (\ul y)=\ul c\), we say that the received word is <i><b>decoded correctly</b></i>.
+</p>
+
+</li>
+
+</ul>
+
+</div>
+
+<p>
+The following Claim shows that the error-correcting setup makes sense — at least, if <i>no</i> symbol errors occurred in a codeword, the decoder will not introduce errors! Strictly speaking, the Claim is unnecessary, because it will follow from a
+theorem given later.
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-27"></a>
+<span class="amsthmnamedefinition">Claim</span>.   <b><i>A codeword is its own unique nearest neighbour</i>:</b> indeed, \(d(-,-)\) is non-negative hence \(d(\ul c,\ul c)=0=\min \{d(\ul z,\ul c):   \ul z\in C\}\). Therefore,
+<i><b>a codeword is always decoded to itself:</b></i>
+</p>
+
+<p>
+\[ \ul y\in C\quad \implies \quad \Decode (\ul y)=\ul y.   \]
+</p>
+
+<p>
+
+
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<!--
+...... subsection Concluding remarks for Chapter 1 ......
+-->
+<h5 id="autosec-28">Concluding remarks for Chapter 1</h5>
+<a id="lecnotes_html-autopage-28"></a>
+
+
+<p>
+Codes have been used for error correction for thousands of years: a natural language is essentially a code! If we “receive” a corrupted English word such as PHEOEEM, we will assume that is has most likely been THEOREM, because this would
+involve fewest mistakes.
+</p>
+
+<p>
+<i>The following examples are part of historical background to Coding Theory and are not covered in lectures.</i>
+</p>
+<!--
+...... subsection Example 1 ......
+-->
+<h5 id="autosec-29">Example 1</h5>
+<a id="lecnotes_html-autopage-29"></a>
+
+
+<p>
+Here is a real-world example of how Coding Theory is used in scientific research.
+</p>
+<figure id="autoid-1" class="figure ">
+<div class="center">
+
+<p>
+
+<a href="voyager1.jpg" target="_blank" ><img
+    src="voyager1.jpg"
+    class="inlineimage"
+    alt="(image)"
+></a>
+</p>
+
+
+<div class="figurecaption">
+<p>
+Figure 1.1:&nbsp;The Voyager spacecraft. Image taken from <a href="https://voyager.jpl.nasa.gov/mission/spacecraft/instruments/" target="_blank" >https://voyager.jpl.nasa.gov/mission/spacecraft/instruments/</a>
+</p>
+</div>
+
+</div>
+
+</figure>
+
+<p>
+<i>Voyager 1</i> is an unmanned spacecraft launched by NASA in 1977. Its primary mission was to explore Jupiter, Saturn, Uranus and Neptune. Voyager 1 sent a lot of precious photographs and data back to Earth. It has recently been in the
+news because the NASA scientists had concluded that it <i>reached the interstellar space</i>.
+</p>
+
+<p>
+The messages from Voyager 1 have to travel through the vast expanses of interplanetary space. Given that the spacecraft is equipped with a mere 23 Watt radio transmitter (powered by a plutonium-238 nuclear battery), it is inevitable that noise,
+such as cosmic rays, interferes with its transmissions. In order to protect the data from distortion, it is encoded with the error-correcting code called <i>extended binary Golay code</i>. We will look at this code later in the course. More modern
+space missions employ more efficient and more sophisticated codes.
+</p>
+<!--
+...... subsection Example 2 ......
+-->
+<h5 id="autosec-31">Example 2</h5>
+<a id="lecnotes_html-autopage-31"></a>
+
+
+<p>
+Here is a more down-to-earth example of the use of error-correcting codes. A CD can hold up to 80 minutes of music, represented by an array of zeros and ones. The data on the CD is encoded using a <i>Reed-Solomon code</i>. This way, even if a
+small scratch, a particle of dust or a fingerprint happens to be on the surface of the CD, it will still play perfectly well — all due to error correction.
+</p>
+
+<p>
+However, every method has its limits, and larger scratches or stains may lead to something like a thunderclap during playback!
+</p>
+<!--
+...... subsection Example 3 ......
+-->
+<h5 id="autosec-32">Example 3</h5>
+<a id="lecnotes_html-autopage-32"></a>
+
+
+<p>
+To finish this historical excursion, let us recall one of the very first uses of error-correcting codes.
+</p>
+
+<p>
+In 1948, Richard Hamming was working at the famous <i>Bell Laboratories</i>. Back then, the data for “computers” was stored on <i>punch cards</i>:
+</p>
+<figure id="autoid-2" class="figure ">
+<div class="center">
+
+<p>
+
+<a href="punch-card.png" target="_blank" ><img
+    src="punch-card.png"
+    class="inlineimage"
+    alt="(image)"
+></a>
+</p>
+
+
+<div class="figurecaption">
+<p>
+Figure 1.2:&nbsp;A punch card. Image from <a href="http://www.columbia.edu/cu/computinghistory" target="_blank" >http://www.columbia.edu/cu/computinghistory</a>
+</p>
+</div>
+
+</div>
+
+</figure>
+
+<p>
+pieces of thick paper where holes represented ones and absences of holes represented zeros. Punchers who had to perforate punch cards sometimes made mistakes, which frustrated Hamming.
+</p>
+
+<p>
+Hamming was able to come up with a code with the following properties: each codeword is 7 bits long, and if one error is made in a codeword (i.e., one bit is changed from 0 to 1 or vice versa), one can still recover the original codeword. This made
+the punch card technology more robust, as a punch card with a few mistakes would still be usable. The trade-off, however, was that the length of data was increased by 75%: there are only 16 different codewords, therefore, they can be used to convey
+messages which have the length of 4 bits.
+</p>
+
+<p>
+The original <i>Hamming code</i> will be introduced in the course soon!
+</p>
+</section>
+
+</main>
+
+</div>
+
+
+<nav class="botnavigation"><a href="lecnotes_html.html" class="linkhome" >
+Home</a></nav>
+
+</body>
+</html>

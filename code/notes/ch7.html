@@ -1,0 +1,1110 @@
+
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="UTF-8" />
+<meta name="generator" content="LaTeX Lwarp package" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<!--[if lt IE 9]>
+<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+<link rel="stylesheet" type="text/css" href="bazlovstyle.css" />
+
+<script>
+// Lwarp MathJax emulation code
+//
+// Based on code by Davide P. Cervone.
+// Equation numbering: https://github.com/mathjax/MathJax/issues/2427
+// Starred and ifnextchar macros: https://github.com/mathjax/MathJax/issues/2428
+// \left, \right delimiters: https://github.com/mathjax/MathJax/issues/2535
+//
+// Modified by Brian Dunn to adjust equation numbering and add subequations.
+//
+// LaTeX can use \seteqnumber{subequations?}{section}{number} before each equation.
+// subequations? is 0 usually, 1 if inside subequations.
+// section is a string printed as-is, or empty.
+// number is auto-incremented by MathJax between equations.
+//
+MathJax = {
+    subequations: "0",
+    section: "",
+    loader: {
+        load: ['[tex]/tagformat', '[tex]/textmacros'],
+    },
+    startup: {
+        ready() {
+            //      These would be replaced by import commands if you wanted to make
+            //      a proper extension.
+            const Configuration = MathJax._.input.tex.Configuration.Configuration;
+            const CommandMap = MathJax._.input.tex.SymbolMap.CommandMap;
+            const Macro = MathJax._.input.tex.Symbol.Macro;
+            const TexError = MathJax._.input.tex.TexError.default;
+            const ParseUtil = MathJax._.input.tex.ParseUtil.default;
+            const expandable = MathJax._.util.Options.expandable;
+
+
+            //      Insert the replacement string into the TeX string, and check
+            //      that there haven't been too many maxro substitutions (prevents
+            //      infinite loops).
+            const useArgument = (parser, text) => {
+                parser.string = ParseUtil.addArgs(parser, text, parser.string.slice(parser.i));
+                parser.i = 0;
+                if (++parser.macroCount > parser.configuration.options.maxMacros) {
+                    throw new TexError('MaxMacroSub1',
+                    'MathJax maximum macro substitution count exceeded; ' +
+                    'is there a recursive macro call?');
+                }
+            }
+
+
+            //      Create the command map for:
+            //          \ifstar, \ifnextchar, \ifblank, \ifstrequal, \gsub, \seteqnumber
+            new CommandMap('Lwarp-macros', {
+                ifstar: 'IfstarFunction',
+                ifnextchar: 'IfnextcharFunction',
+                ifblank: 'IfblankFunction',
+                ifstrequal: 'IfstrequalFunction',
+                gsubstitute: 'GsubstituteFunction',
+                seteqnumber: 'SeteqnumberFunction'
+            }, {
+                //      This function implements an ifstar macro.
+                IfstarFunction(parser, name) {
+                    const resultstar = parser.GetArgument(name);
+                    const resultnostar = parser.GetArgument(name);
+                    const star = parser.GetStar();                      // true if there is a *
+                    useArgument(parser, star ? resultstar : resultnostar);
+                },
+
+
+                //      This function implements an ifnextchar macro.
+                IfnextcharFunction(parser, name) {
+                    let whichchar = parser.GetArgument(name);
+                    if (whichchar.match(/^(?:0x[0-9A-F]+|[0-9]+)$/i)) {
+                        // $ syntax highlighting
+                        whichchar = String.fromCodePoint(parseInt(whichchar));
+                    }
+                    const resultnextchar = parser.GetArgument(name);
+                    const resultnotnextchar = parser.GetArgument(name);
+                    const gotchar = (parser.GetNext() === whichchar);
+                    useArgument(parser, gotchar ? resultnextchar : resultnotnextchar);
+                },
+
+
+                // This function implements an ifblank macro.
+                IfblankFunction(parser, name) {
+                    const blankarg = parser.GetArgument(name);
+                    const resultblank = parser.GetArgument(name);
+                    const resultnotblank = parser.GetArgument(name);
+                    const isblank = (blankarg.trim() == "");
+                    useArgument(parser, isblank ? resultblank : resultnotblank);
+                },
+
+
+                // This function implements an ifstrequal macro.
+                IfstrequalFunction(parser, name) {
+                    const strequalfirst = parser.GetArgument(name);
+                    const strequalsecond = parser.GetArgument(name);
+                    const resultequal = parser.GetArgument(name);
+                    const resultnotequal = parser.GetArgument(name);
+                    const isequal = (strequalfirst == strequalsecond);
+                    useArgument(parser, isequal ? resultequal : resultnotequal);
+                },
+
+
+                // This function implements a gsub macro.
+                GsubstituteFunction(parser, name) {
+                    const gsubfirst = parser.GetArgument(name);
+                    const gsubsecond = parser.GetArgument(name);
+                    const gsubthird = parser.GetArgument(name);
+                    let gsubresult=gsubfirst.replace(gsubsecond, gsubthird);
+                    useArgument(parser, gsubresult);
+                },
+
+
+                //      This function modifies the equation numbers.
+                SeteqnumberFunction(parser, name) {
+                        //   Get the macro parameters
+                        const star = parser.GetStar();                    // true if there is a *
+                        const optBrackets = parser.GetBrackets(name);     // contents of optional brackets
+                        const newsubequations = parser.GetArgument(name);    // the subequations argument
+                        const neweqsection = parser.GetArgument(name);    // the eq section argument
+                        const neweqnumber = parser.GetArgument(name);     // the eq number argument
+                        MathJax.config.subequations=newsubequations ;     // a string with boolean meaning
+                        MathJax.config.section=neweqsection ;             // a string with numeric meaning
+                        parser.tags.counter = parser.tags.allCounter = neweqnumber ;
+                }
+
+
+            });
+
+
+            //      Create the Lwarp-macros package
+            Configuration.create('Lwarp-macros', {
+                handler: {macro: ['Lwarp-macros']}
+            });
+
+
+            MathJax.startup.defaultReady();
+
+
+            // For forward references:
+            MathJax.startup.input[0].preFilters.add(({math}) => {
+                if (math.inputData.recompile){
+                        MathJax.config.subequations = math.inputData.recompile.subequations;
+                        MathJax.config.section = math.inputData.recompile.section;
+                }
+            });
+            MathJax.startup.input[0].postFilters.add(({math}) => {
+                if (math.inputData.recompile){
+                        math.inputData.recompile.subequations = MathJax.config.subequations;
+                        math.inputData.recompile.section = MathJax.config.section;
+                }
+            });
+
+
+                // For \left, \right with unicode-math:
+                const {DelimiterMap} = MathJax._.input.tex.SymbolMap;
+                const {Symbol} = MathJax._.input.tex.Symbol;
+                const {MapHandler} = MathJax._.input.tex.MapHandler;
+                const delimiter = MapHandler.getMap('delimiter');
+                delimiter.add('\\lBrack', new Symbol('\\lBrack', '\u27E6'));
+                delimiter.add('\\rBrack', new Symbol('\\rBrack', '\u27E7'));
+                delimiter.add('\\lAngle', new Symbol('\\lAngle', '\u27EA'));
+                delimiter.add('\\rAngle', new Symbol('\\rAngle', '\u27EB'));
+                delimiter.add('\\lbrbrak', new Symbol('\\lbrbrak', '\u2772'));
+                delimiter.add('\\rbrbrak', new Symbol('\\rbrbrak', '\u2773'));
+                delimiter.add('\\lbag', new Symbol('\\lbag', '\u27C5'));
+                delimiter.add('\\rbag', new Symbol('\\rbag', '\u27C6'));
+                delimiter.add('\\llparenthesis', new Symbol('\\llparenthesis', '\u2987'));
+                delimiter.add('\\rrparenthesis', new Symbol('\\rrparenthesis', '\u2988'));
+                delimiter.add('\\llangle', new Symbol('\\llangle', '\u2989'));
+                delimiter.add('\\rrangle', new Symbol('\\rrangle', '\u298A'));
+                delimiter.add('\\Lbrbrak', new Symbol('\\Lbrbrak', '\u27EC'));
+                delimiter.add('\\Rbrbrak', new Symbol('\\Rbrbrak', '\u27ED'));
+                delimiter.add('\\lBrace', new Symbol('\\lBrace', '\u2983'));
+                delimiter.add('\\rBrace', new Symbol('\\rBrace', '\u2984'));
+                delimiter.add('\\lParen', new Symbol('\\lParen', '\u2985'));
+                delimiter.add('\\rParen', new Symbol('\\rParen', '\u2986'));
+                delimiter.add('\\lbrackubar', new Symbol('\\lbrackubar', '\u298B'));
+                delimiter.add('\\rbrackubar', new Symbol('\\rbrackubar', '\u298C'));
+                delimiter.add('\\lbrackultick', new Symbol('\\lbrackultick', '\u298D'));
+                delimiter.add('\\rbracklrtick', new Symbol('\\rbracklrtick', '\u298E'));
+                delimiter.add('\\lbracklltick', new Symbol('\\lbracklltick', '\u298F'));
+                delimiter.add('\\rbrackurtick', new Symbol('\\rbrackurtick', '\u2990'));
+                delimiter.add('\\langledot', new Symbol('\\langledot', '\u2991'));
+                delimiter.add('\\rangledot', new Symbol('\\rangledot', '\u2992'));
+                delimiter.add('\\lparenless', new Symbol('\\lparenless', '\u2993'));
+                delimiter.add('\\rparengtr', new Symbol('\\rparengtr', '\u2994'));
+                delimiter.add('\\Lparengtr', new Symbol('\\Lparengtr', '\u2995'));
+                delimiter.add('\\Rparenless', new Symbol('\\Rparenless', '\u2996'));
+                delimiter.add('\\lblkbrbrak', new Symbol('\\lblkbrbrak', '\u2997'));
+                delimiter.add('\\rblkbrbrak', new Symbol('\\rblkbrbrak', '\u2998'));
+                delimiter.add('\\lvzigzag', new Symbol('\\lvzigzag', '\u29D8'));
+                delimiter.add('\\rvzigzag', new Symbol('\\rvzigzag', '\u29D9'));
+                delimiter.add('\\Lvzigzag', new Symbol('\\Lvzigzag', '\u29DA'));
+                delimiter.add('\\Rvzigzag', new Symbol('\\Rvzigzag', '\u29DB'));
+                delimiter.add('\\lcurvyangle', new Symbol('\\lcurvyangle', '\u29FC'));
+                delimiter.add('\\rcurvyangle', new Symbol('\\rcurvyangle', '\u29FD'));
+                delimiter.add('\\Vvert', new Symbol('\\Vvert', '\u2980'));
+        }        // ready
+    },           // startup
+
+
+    tex: {
+        packages: {'[+]': ['tagformat', 'Lwarp-macros', 'textmacros']},
+        tags: "ams",
+                tagformat: {
+                        number: function (n) {
+                             if(MathJax.config.subequations==0)
+                                 return(MathJax.config.section + n);
+                             else
+                                 return(MathJax.config.section + String.fromCharCode(96+n));
+                        },
+                },
+    }
+}
+</script>
+
+
+<script
+        id="MathJax-script"
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+></script>
+
+</head>
+<body>
+
+
+<a id="lecnotes_html-autopage-13"></a>
+<nav class="topnavigation"><a href="lecnotes_html.html" class="linkhome" >
+Home</a></nav>
+
+
+<div class="bodyandsidetoc">
+<div class="sidetoccontainer">
+
+
+<nav class="sidetoc">
+
+
+<div class="sidetoctitle">
+
+<p>
+Contents
+</p>
+</div>
+
+
+<div class="sidetoccontents">
+
+<p>
+<a href="lecnotes_html.html" class="linkhome" >
+Home</a>
+</p>
+
+</div>
+
+</nav>
+
+</div>
+
+
+<main class="bodycontainer">
+
+
+<section class="textbody">
+
+<!--MathJax customizations:-->
+
+
+<div class="hidden">
+
+\(\newcommand{\footnotename}{footnote}\)
+
+\(\def \LWRfootnote {1}\)
+
+\(\newcommand {\footnote }[2][\LWRfootnote ]{{}^{\mathrm {#1}}}\)
+
+\(\newcommand {\footnotemark }[1][\LWRfootnote ]{{}^{\mathrm {#1}}}\)
+
+\(\let \LWRorighspace \hspace \)
+
+\(\renewcommand {\hspace }{\ifstar \LWRorighspace \LWRorighspace }\)
+
+\(\newcommand {\mathnormal }[1]{{#1}}\)
+
+\(\newcommand \ensuremath [1]{#1}\)
+
+\(\newcommand {\LWRframebox }[2][]{\fbox {#2}} \newcommand {\framebox }[1][]{\LWRframebox } \)
+
+\(\newcommand {\setlength }[2]{}\)
+
+\(\newcommand {\addtolength }[2]{}\)
+
+\(\newcommand {\setcounter }[2]{}\)
+
+\(\newcommand {\addtocounter }[2]{}\)
+
+\(\newcommand {\arabic }[1]{}\)
+
+\(\newcommand {\number }[1]{}\)
+
+\(\newcommand {\noalign }[1]{\text {#1}\notag \\}\)
+
+\(\newcommand {\cline }[1]{}\)
+
+\(\newcommand {\directlua }[1]{\text {(directlua)}}\)
+
+\(\newcommand {\luatexdirectlua }[1]{\text {(directlua)}}\)
+
+\(\newcommand {\protect }{}\)
+
+\(\def \LWRabsorbnumber #1 {}\)
+
+\(\def \LWRabsorbquotenumber &quot;#1 {}\)
+
+\(\newcommand {\LWRabsorboption }[1][]{}\)
+
+\(\newcommand {\LWRabsorbtwooptions }[1][]{\LWRabsorboption }\)
+
+\(\def \mathchar {\ifnextchar &quot;\LWRabsorbquotenumber \LWRabsorbnumber }\)
+
+\(\def \mathcode #1={\mathchar }\)
+
+\(\let \delcode \mathcode \)
+
+\(\let \delimiter \mathchar \)
+
+\(\def \oe {\unicode {x0153}}\)
+
+\(\def \OE {\unicode {x0152}}\)
+
+\(\def \ae {\unicode {x00E6}}\)
+
+\(\def \AE {\unicode {x00C6}}\)
+
+\(\def \aa {\unicode {x00E5}}\)
+
+\(\def \AA {\unicode {x00C5}}\)
+
+\(\def \o {\unicode {x00F8}}\)
+
+\(\def \O {\unicode {x00D8}}\)
+
+\(\def \l {\unicode {x0142}}\)
+
+\(\def \L {\unicode {x0141}}\)
+
+\(\def \ss {\unicode {x00DF}}\)
+
+\(\def \SS {\unicode {x1E9E}}\)
+
+\(\def \dag {\unicode {x2020}}\)
+
+\(\def \ddag {\unicode {x2021}}\)
+
+\(\def \P {\unicode {x00B6}}\)
+
+\(\def \copyright {\unicode {x00A9}}\)
+
+\(\def \pounds {\unicode {x00A3}}\)
+
+\(\let \LWRref \ref \)
+
+\(\renewcommand {\ref }{\ifstar \LWRref \LWRref }\)
+
+\( \newcommand {\multicolumn }[3]{#3}\)
+
+\(\require {textcomp}\)
+
+\(\newcommand {\intertext }[1]{\text {#1}\notag \\}\)
+
+\(\let \Hat \hat \)
+
+\(\let \Check \check \)
+
+\(\let \Tilde \tilde \)
+
+\(\let \Acute \acute \)
+
+\(\let \Grave \grave \)
+
+\(\let \Dot \dot \)
+
+\(\let \Ddot \ddot \)
+
+\(\let \Breve \breve \)
+
+\(\let \Bar \bar \)
+
+\(\let \Vec \vec \)
+
+\(\newcommand {\real }{\mathbb {R}} \)
+
+\(\newcommand {\RR }{\mathbb {R}} \)
+
+\(\newcommand {\ZZ }{\mathbb Z} \)
+
+\(\newcommand {\F }{\mathbb F} \)
+
+\(\newcommand {\Ham }{\mathrm {Ham}}\)
+
+\(\newcommand {\PP }{\mathbb P}\)
+
+\(\newcommand {\co }[1]{\overline {#1}} \)
+
+\(\newcommand {\ul }[1]{\underline {#1}} \)
+
+\(\newcommand {\bo }[1]{\mathbf {#1}} \)
+
+\(\newcommand {\concat }[2]{[\, #1 \,|\, #2 \,]} \)
+
+\(\newcommand {\Encode }{\texttt {ENCODE}} \)
+
+\(\newcommand {\Decode }{\texttt {DECODE}} \)
+
+\(\newcommand {\RM }{R} \)
+
+\(\newcommand {\Rep }{\text {Rep}} \)
+
+</div>
+
+<p>
+<!--
+...... chapter ch7 ......
+-->
+<h3 id="autosec-14">Chapter&nbsp;<span class="sectionnumber">7&#x2003;</span>Hamming codes</h3>
+<a id="lecnotes_html-autopage-14"></a>
+<a id="lecnotes_html-autofile-17"></a>
+
+<p>
+Version 2022-11-02. <a href="lecnotes_html.pdf" target="_blank" >To PDF version of the notes</a>
+</p>
+
+<p>
+<b>Synopsis.</b> <i>Hamming codes are essentially the first non-trivial family of codes that we shall meet. We give a construction of a \(q\)-ary Hamming code and prove that it is perfect with minimum distance \(3\). We show that syndrome
+decoding works for Hamming codes in an especially simple way.</i>
+</p>
+
+<p>
+Before we can construct Hamming codes, we need to discuss check matrices further and prove a result (the Distance Theorem) which will allow us to find the minimum distance of a linear code from its check matrix.
+</p>
+<!--
+...... section Finding a check matrix ......
+-->
+<h4 id="autosec-15">Finding a check matrix</h4>
+<a id="lecnotes_html-autopage-15"></a>
+
+
+<p>
+The following result allows us to find a generator matrix of \(C^\perp \), assuming that \(C\) has a generator matrix in standard form.
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-16"></a>
+<span class="amsthmnamedefinition">Theorem</span><span class="amsthmnumberdefinition"> <span class="textup">7.1</span></span>.          <a id="thm:checkmatrix"></a>
+</p>
+
+<p>
+Assume that \(C\) has a \(k\times n\) generator matrix \(G=[\,I_k\,|\,A\,]\) in standard form. Then \(C^\perp \) has generator matrix
+</p>
+
+<p>
+\[ H = [\,-A^T\, |\, I_{n-k}\, ].    \]
+</p>
+
+<p>
+
+
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmproof">
+
+<a id="lecnotes_html-autopage-17"></a>
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<span class="amsthmproofname">Proof.</span> \(H\) has \(n-k\) rows which are linearly independent (due to \(I_{n-k}\) present). It is enough to show that each row \(\ul r\) of \(H\) is a codevector of&nbsp;\(C^\perp \): indeed, we have
+\(n-k\) linearly independent vectors in \(C^\perp \), and \(n-k\) is the dimension of \(C^\perp \) by Theorem&nbsp;<a href="ch5.html#thm:dual-prop">5.1</a>, so a linearly independent set of \(n-k\) vectors must be a basis of \(C^\perp \).
+</p>
+
+<p>
+Thus, we need to show that for each codevector \(\ul uG\) of&nbsp;\(C\), the inner product \(\ul uG\cdot \ul r=\ul uG\ul r^T\) is \(0\). Enough to show: \(G\ul r^T=\overline 0\), equivalently \(\ul rG^T =\ul 0\), and so we need to show
+that \(HG^T\) is the zero matrix. Indeed,
+</p>
+
+<p>
+\[ [\,-A^T\, |\, I_{n-k}\, ] \left [\begin {smallmatrix}&amp;I_k&amp; \\ &amp; -\!\!-\!\!-&amp; \\ &amp;A^T &amp;\end {smallmatrix}\right ] = -A^T I_k + I_{n-k}A^T = -A^T+A^T=0.\qedhere \]
+</p>
+
+<p>
+<span class="theoremendmark">&#x25A1;</span>
+</p>
+
+</li>
+
+</ul>
+
+</div>
+
+<p>
+How can one find a check matrix of \(C\) if \(C\) has no generator matrix in standard form? We address this question below.
+</p>
+<!--
+...... section Linearly equivalent codes ......
+-->
+<h4 id="autosec-18">Linearly equivalent codes</h4>
+<a id="lecnotes_html-autopage-18"></a>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-19"></a>
+<span class="amsthmnamedefinition">Definition</span><span class="amsthmnotedefinition"> (linearly equivalent codes)</span>.   Two linear codes \(C,C&apos;\subseteq \F _q^n\) are <b><i>linearly equivalent</i></b>, if \(C&apos;\)
+can be obtained from \(C\) by a sequence of linear transformations of the following types:
+</p>
+<ul style="list-style-type:none">
+
+
+<li>
+<p>
+(C1) choose indices \(i\), \(j\); in every codeword, swap symbols \(x_i\) and \(x_j\);
+</p>
+
+
+</li>
+<li>
+
+
+<p>
+(C2) choose index \(i\) and non-zero \(\lambda \in \F _q\); in every codeword, multiply \(x_i\) by \(\lambda \).
+</p>
+</li>
+</ul>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-20"></a>
+<span class="amsthmnamedefinition">Exercise</span>.   Linearly equivalent codes have the same length, dimension and weight. They have the same weight enumerator. (<i>Reason</i>: (C1) and (C2) do not change the weight of any vector.)
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-21"></a>
+<span class="amsthmnamedefinition">Fact</span><span class="amsthmnotedefinition"> (from linear algebra)</span>.
+</p>
+
+<p>
+<i>Every</i> generator matrix can be brought into the standard form by using row operations (R1), (R2), (R3) considered above and column operations (C1).
+</p>
+
+<p>
+<i>Reason:</i> any matrix can be brought to reduced row echelon form by (R1)–(R3); since generator matrices have linearly independent rows, the resulting reduced row echelon form will not have zero rows and will have a leading entry \(1\) in
+each of the \(k\) rows; each one of the \(k\) columns which contain the leading entries is a column of the identity matrix of size \(k\); if necessary use (C1) to move all these columns to the left.
+</p>
+
+<p>
+<i>Conclusion</i>: we can always find a generator matrix in standard form for a linearly equivalent code.
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<!--
+...... section The Distance Theorem ......
+-->
+<h4 id="autosec-22">The Distance Theorem</h4>
+<a id="lecnotes_html-autopage-22"></a>
+
+
+<p>
+We already know how to read the length and the dimension of a linear code \(C\) off a check matrix \(H\) of \(C\):
+</p>
+<ul style="list-style-type:none">
+
+<li>
+<p>
+• the number of columns of \(H\) is the length of \(C\);
+</p>
+
+
+</li>
+<li>
+
+
+<p>
+• the number of columns minus the number of rows of \(H\) is the dimension of \(C\).
+</p>
+</li>
+</ul>
+
+<p>
+The following theorem tells us how to determine the minimum distance of \(C\) using \(H\).
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-23"></a>
+<span class="amsthmnamedefinition">Theorem</span><span class="amsthmnumberdefinition"> <span class="textup">7.2</span></span><span class="amsthmnotedefinition"> (Distance Theorem for Linear Codes)</span>.                           <a
+id="thm:distance"></a>
+</p>
+
+<p>
+Let \(C\subseteq \F _q^n\) be a linear code with check matrix \(H\). Then \(d(C ) = d\) if and only if every set of \(d - 1\) columns of \(H\) is linearly independent and some set of \(d\) columns of \(H\) is linearly dependent.
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmproof">
+
+<a id="lecnotes_html-autopage-24"></a>
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<span class="amsthmproofname">Proof.</span> Let \(e\) be the size of a smallest linearly dependent subset of the set \(\{\co h_1,\ldots ,\co h_n\}\) of columns of \(H\). The theorem claims that \(e=d(C)\). Note that \(e\) is the minimum
+positive number of non-zero coefficients \(x_i\) in the linear combination
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{7.}{0}\)</span>
+
+<!--
+
+
+
+                                                                                                        x1 h1 + x2 h2 + . . . + xn hn = 0,
+
+-->
+
+<p>
+
+
+\begin{equation*}
+x_1 \co h_1+x_2\co h_2+\ldots +x_n \co h_n=\co 0,
+\end{equation*}
+
+
+</p>
+
+<p>
+i.e., the minimum weight of a non-zero \(\ul x =(x_1,\dots ,x_n)\) such that \(\ul x H^T = \ul 0\). By Theorem <a href="ch5.html#thm:dual-prop">5.1</a>, such vectors \(\ul x\) are exactly the codevectors of \(C\), so \(e=w(C)=d(C)\) as
+claimed. <span class="theoremendmark">&#x25A1;</span>
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<!--
+...... subsection Example ......
+-->
+<h5 id="autosec-25">Example</h5>
+<a id="lecnotes_html-autopage-25"></a>
+
+
+<p>
+Use the Distance Theorem to find the minimum distance of the ternary linear code with check matrix \(H=\left [\begin {matrix}1&amp;1&amp;1&amp;0 \\ 1&amp;2&amp;0&amp;1\end {matrix}\right ]\).
+</p>
+
+<p>
+<b>Solution.</b> <i>Step 1.</i> \(H\) has no zero columns. Hence every set of \(1\) column is linearly independent (a one-element set is linearly dependent iff that element is zero). So \(d\ge 2\).
+</p>
+
+<p>
+<i>Step 2.</i> Any two columns of \(H\) are linearly independent, because no two columns are proportional to each other. So \(d\ge 3\).
+</p>
+
+<p>
+<i>Step 3.</i> There are three linearly dependent columns in \(H\): for example, columns 1, 3 and 4 form linear combination \(\begin {bmatrix}1\\1\end {bmatrix} - \begin {bmatrix}1\\0\end {bmatrix} - \begin {bmatrix}0\\1\end
+{bmatrix}=\co 0\). Therefore, \(d=3\).
+</p>
+
+<p>
+<b>Remark:</b> although, for small matrices, the algorithm for finding \(d\) can be used in practice, it requires a lot of computations for large \(n\). Essentially, one needs to check all possible sets of columns of \(H\) for linear dependence. The
+required number of operations is exponential in&nbsp;\(n\).
+</p>
+<!--
+...... subsection Hamming codes: the construction ......
+-->
+<h5 id="autosec-26">Hamming codes: the construction</h5>
+<a id="lecnotes_html-autopage-26"></a>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-27"></a>
+<span class="amsthmnamedefinition">Definition</span><span class="amsthmnotedefinition"> (line, representative vector, projective space)</span>.
+</p>
+
+<p>
+A <em><b>line</b></em> is a \(1\)-dimensional subspace of the vector space \(\F _q^n\).
+</p>
+
+<p>
+A <i><b>representative vector</b></i> of a line is a non-zero vector \(\ul u\) from that line. The line is then given by \(\{\lambda \ul u\mid \lambda \in \F _q\}\).
+</p>
+
+<p>
+The <i><b>projective space</b></i> \(\PP _{n-1}(\F _q)\) is the set of all lines in \(\F _q^n\).
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-28"></a>
+<span class="amsthmnamedefinition">Remark</span>.           The terminology comes from euclidean geometry — in the euclidean plane, the set of all vectors proportional to a given non-zero vector is a straight line through the origin. Moreover,
+projective spaces over the field \(\mathbb R\) of real numbers are well-studied geometric objects.
+</p>
+
+<p>
+For example, \(\PP _1(\mathbb R)\) — the set of all lines through the origin in the euclidean plane — can be thought of as the unit circle with antipodes identified. We are working over a finite field \(\F _q\) where these notions are less intuitive.
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-29"></a>
+<span class="amsthmnamedefinition">Definition</span><span class="amsthmnotedefinition"> (Hamming codes)</span>.
+</p>
+
+<p>
+Let \(r \ge 2\) be given. We let \(\mathrm {Ham}(r, q)\) denote an \(\F _q\)-linear code whose check matrix has columns which are representatives of the lines in \(P_{r-1}(\F _q )\), exactly one representative vector from each line.
+</p>
+
+<p>
+
+
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-30"></a>
+<span class="amsthmnamedefinition">Remark</span>.          \(\Ham (r,q)\) is defined up to a linear equivalence. Indeed, we can:
+</p>
+<ul style="list-style-type:none">
+
+
+<li>
+<p>
+• multiply a column by non-zero scalar to get another representative of the same line;
+</p>
+
+
+</li>
+<li>
+
+
+<p>
+• put columns in any order.
+</p>
+</li>
+</ul>
+
+<p>
+This means that \(\mathrm {Ham}(r,q)\) is not just one code but a class of linearly equivalent codes. We will therefore say “<i>a \(\mathrm {Ham}(r,q)\) code</i>” to mean any of the linearly equivalent codes.
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-31"></a>
+<span class="amsthmnamedefinition">Example</span><span class="amsthmnotedefinition"> (\(\mathrm {Ham}(3,2)\))</span>.
+</p>
+
+<p>
+To construct a parity check matrix for \(\mathrm {Ham}(3,2)\), we need to take one non-zero column from each line in \(\F _2^3\). Note that for binary vectors, a line \(\{\lambda \ul u\mid \lambda \in \F _2\}\) consists only of two points,
+\(\ul 0\) and \(\ul u\). Therefore, \(\PP _{r-1}(\F _2)\) is the same as the set of all non-zero binary column vectors of size \(r\).
+</p>
+
+<p>
+We start filling in the parity check matrix by putting the identity columns at the end. We do this to obtain a parity check matrix in what is called standard form for check matrices, \(H=[-A^T \mid I_{n-k}]\). In total, we can find \(7\) non-zero
+binary vectors of size \(3\):
+</p>
+
+<p>
+\[ H=\left [\begin {array}{cccc|ccc} 1&amp; 1&amp; 1&amp;0&amp;1&amp;0&amp;0\\ 1&amp; 1&amp; 0&amp;1&amp;0&amp;1&amp;0\\ 1&amp; 0&amp; 1&amp;1&amp;0&amp;0&amp;1 \end {array}\right ] \]
+</p>
+
+<p>
+From this parity check matrix, we can reconstruct the generator matrix \(G=[I_k \mid A]\):
+</p>
+
+<p>
+\[ G=\left [\begin {array}{cccc|ccc} 1&amp; 0&amp; 0&amp;0&amp;1&amp;1&amp;1\\ 0&amp; 1&amp; 0&amp;0&amp;1&amp;1&amp;0\\ 0&amp; 0&amp; 1&amp;0&amp;1&amp;0&amp;1\\ 0&amp; 0&amp; 0&amp;1&amp;0&amp;1 &amp;1 \end
+{array}\right ] \]
+</p>
+
+<p>
+This is, up to linear equivalence, the generator matrix of the original \([7,4,3]_2\) code invented by Hamming.
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<!--
+...... subsection A historical remark ......
+-->
+<h5 id="autosec-32">A historical remark</h5>
+<a id="lecnotes_html-autopage-32"></a>
+
+
+<p>
+Despite their name, the \(q\)-ary Hamming codes for \(q&gt;2\) were not invented by Hamming. Richard Hamming told Claude Shannon (who he shared an office with at Bell Labs) about his binary \([7,4,3]\)-code, and Shannon mentioned it in
+his paper of 1948. That paper was read by <b>Marcel J. E. Golay</b> (1902–1989), a Swiss-born American mathematician and electronics engineer, who then suggested the \(\Ham (r,q)\) construction in his paper published in 1949. Golay went
+further and constructed two perfect codes which are not Hamming codes. He asked whether there are any more perfect codes.
+</p>
+
+<p>
+We will see the Golay codes, and will learn about an answer to Golay’s question about perfect codes, later in the course.
+</p>
+
+<p>
+We considered an example of a \(\Ham (3,2)\) code, which — by looking at its generator matrix — turns out to be a \([7,4,d]_2\) code. It is not difficult to see directly that \(d=3\). By explicitly computing the Hamming bound, one can show
+that all \([7,4,3]_2\)-codes are perfect.
+</p>
+
+<p>
+We will now generalise this and show that all Hamming codes are perfect.
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-33"></a>
+<span class="amsthmnamedefinition">Theorem</span><span class="amsthmnumberdefinition"> <span class="textup">7.3</span></span><span class="amsthmnotedefinition"> (properties of Hamming codes)</span>.   \(\Ham (r,q)\) is a
+perfect \([n,k,d]_q\) code where \(n=\dfrac {q^r-1}{q-1}, \quad k=n-r,\quad d=3 \).
+</p>
+
+</li>
+
+</ul>
+
+</div>
+
+<p>
+<b>Remark:</b> \(\dfrac {q^r-1}{q-1}=q^{r-1}+q^{r-2}+\ldots +q+1\); the right-hand side is obviously an integer.
+</p>
+<div class="amsthmproof">
+
+<a id="lecnotes_html-autopage-34"></a>
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<span class="amsthmproofname">Proof.</span> The length \(n\) of the code is equal to the number of columns in the check matrix, which is \(\#\mathbb P_{r-1}(\F _q)\), the number of lines in \(\F _q^r\).
+</p>
+
+<p>
+Observe that two lines intersect only at one point, namely \(\co 0\). The set \(\F _q^r\setminus \{\co 0\}\) is therefore a disjoint union of lines. Each line \(\{\lambda \co u:\lambda \in F\}\) contains \(q-1\) non-zero points.
+</p>
+
+<p>
+So the number of lines in \(\F _q^r\) can be found as \(\dfrac {\#(\F _q^r\setminus \{\co 0\})}{q-1} =\dfrac {q^r-1}{q-1}\).
+</p>
+
+<p>
+Note that \(k=\dim \Ham (r,q)=n-r\) because by construction, the check matrix \(H\) has \(r\) rows.
+</p>
+
+<p>
+To find the minimum distance, we use the Distance Theorem for linear codes. Note that any two columns of \(H\) are linearly independent because they are from different lines in \(\F _q^r\). (Two vectors can be linearly dependent only if they are
+proportional to each other, i.e., belong to the same line.) Therefore, \(d\ge 3\).
+</p>
+
+<p>
+On the other hand, \(H\) has columns \((a,0,0,\ldots ,0)^T\), \((0,b,0,\ldots ,0)^T\) and \((c,c,0,\ldots ,0)^T\), from three different lines (where \(a,b,c\in \F _q\setminus \{0\}\)). These three different columns are linearly
+dependent:
+</p>
+
+<p>
+\[ a^{-1}\begin {bmatrix}a\\0\\\vdots \\0\end {bmatrix} + b^{-1}\begin {bmatrix}0\\b\\\vdots \\0\end {bmatrix} -c^{-1}\begin {bmatrix}c\\c\\\vdots \\0\end {bmatrix} =\co 0.                          \]
+</p>
+
+<p>
+So \(d=3\) by the Distance Theorem.
+</p>
+
+<p>
+It remains to show that \(\Ham (r,q)\) is perfect. We compute the Hamming bound (in logarithmic form): \(t=[d-1)/2]=[2/2]=1\) hence we need to check that \(k=n-\log _q\left ( \binom n0 + \binom n1 (q-1)\right ) = n-\log _q\left
+( 1 + n(q-1) \right )\), but by the above \(n(q-1)=q^r-1\) so the equation becomes \(k=n-\log _q(q^r)=n-r\) — already proved to be true. Thus, \(\Ham (r,q)\) is perfect. <span class="theoremendmark">&#x25A1;</span>
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<!--
+...... subsection Decoding a Hamming code ......
+-->
+<h5 id="autosec-35">Decoding a Hamming code</h5>
+<a id="lecnotes_html-autopage-35"></a>
+
+
+<p>
+Next, we work out a decoding algorithm for a Hamming code. It is based on the general syndrome decoder, seen in the previous chapter. However, there is an extra simplification due to the fact that we know all the possible coset leaders.
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-36"></a>
+<span class="amsthmnamedefinition">Algorithm</span><span class="amsthmnumberdefinition"> <span class="textup">7.4</span></span><span class="amsthmnotedefinition"> (Decoding algorithm for a Hamming code)</span>.
+</p>
+
+<p>
+Let a Hamming code be given by its check matrix \(H\). Suppose that a vector \(\ul y\) is received.
+</p>
+<ul style="list-style-type:none">
+
+
+<li>
+<p>
+• Calculate \(S(\ul y)=\ul y H^T\).
+</p>
+
+
+</li>
+<li>
+
+
+<p>
+•
+</p>
+<p>
+Find a column of \(H\) such that \(S(\ul y)=\lambda \ \times \) that column. &#x2003;(\(i\)th column)
+</p>
+</li>
+<li>
+
+
+<p>
+• Subtract \(\lambda \) from the \(i\)th position in \(\ul y\). The result is the codevector \(\Decode (\ul y)\).
+</p>
+</li>
+</ul>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmproof">
+
+<a id="lecnotes_html-autopage-37"></a>
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<span class="amsthmproofname"><b>Proof of validity of the algorithm</b>.</span> Recall from the previous chapter that by <i>Syndrome decoding</i>, \(\Decode (\ul y)=\ul y- \ul a\) where \(\ul a\) is a coset leader with \(S(\ul
+a)=S(\ul y)\).
+</p>
+
+<p>
+It was shown (see example sheets) that for a perfect linear code, the coset leaders are exactly the vectors of weight \(\le t\). For a Hamming code, \(t=1\) hence the coset leaders are the vector \(\ul 0\) and all the vectors of weight \(1\).
+</p>
+
+<p>
+<i>Syndromes of coset leaders:</i> let \(\lambda \ul e_i=(0,\ldots ,0,\lambda ,0,\ldots ,0)\) be a coset leader, where \(\lambda \) is in position \(i\); the syndrome of \(\lambda \ul e_i\) is \(S(\lambda \ul e_i)=\lambda \ul e_i H^T
+=\lambda \times \,[\,\)the \(i\)th column of \(H\,]^T\).
+</p>
+
+<p>
+Thus, the syndrome \(S(\ul y)\) will be of the form \(\lambda \times \,[\,\)the \(i\)th column of \(H\,]^T\). In the special case \(S(\ul y)=\ul 0\), \(\ul y\) is a codevector so put \(\lambda =0\) and return \(\Decode (\ul y)=\ul y\).
+Otherwise, \(S(\ul y)=S(\lambda \ul e_i)\) so \(\Decode (\ul y)=\ul y-\lambda \ul e_i\). It remains to note that the vector \(\ul y-\lambda \ul e_i\) is obtained from \(\ul y\) by subtracting \(\lambda \) from the \(i\)th symbol of
+\(\ul y\). <span class="theoremendmark">&#x25A1;</span>
+</p>
+
+</li>
+
+</ul>
+
+</div>
+</section>
+
+</main>
+
+</div>
+
+
+<nav class="botnavigation"><a href="lecnotes_html.html" class="linkhome" >
+Home</a></nav>
+
+</body>
+</html>

@@ -1,0 +1,752 @@
+
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="UTF-8" />
+<meta name="generator" content="LaTeX Lwarp package" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<!--[if lt IE 9]>
+<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+<link rel="stylesheet" type="text/css" href="bazlovstyle.css" />
+
+<script>
+// Lwarp MathJax emulation code
+//
+// Based on code by Davide P. Cervone.
+// Equation numbering: https://github.com/mathjax/MathJax/issues/2427
+// Starred and ifnextchar macros: https://github.com/mathjax/MathJax/issues/2428
+// \left, \right delimiters: https://github.com/mathjax/MathJax/issues/2535
+//
+// Modified by Brian Dunn to adjust equation numbering and add subequations.
+//
+// LaTeX can use \seteqnumber{subequations?}{section}{number} before each equation.
+// subequations? is 0 usually, 1 if inside subequations.
+// section is a string printed as-is, or empty.
+// number is auto-incremented by MathJax between equations.
+//
+MathJax = {
+    subequations: "0",
+    section: "",
+    loader: {
+        load: ['[tex]/tagformat', '[tex]/textmacros'],
+    },
+    startup: {
+        ready() {
+            //      These would be replaced by import commands if you wanted to make
+            //      a proper extension.
+            const Configuration = MathJax._.input.tex.Configuration.Configuration;
+            const CommandMap = MathJax._.input.tex.SymbolMap.CommandMap;
+            const Macro = MathJax._.input.tex.Symbol.Macro;
+            const TexError = MathJax._.input.tex.TexError.default;
+            const ParseUtil = MathJax._.input.tex.ParseUtil.default;
+            const expandable = MathJax._.util.Options.expandable;
+
+
+            //      Insert the replacement string into the TeX string, and check
+            //      that there haven't been too many maxro substitutions (prevents
+            //      infinite loops).
+            const useArgument = (parser, text) => {
+                parser.string = ParseUtil.addArgs(parser, text, parser.string.slice(parser.i));
+                parser.i = 0;
+                if (++parser.macroCount > parser.configuration.options.maxMacros) {
+                    throw new TexError('MaxMacroSub1',
+                    'MathJax maximum macro substitution count exceeded; ' +
+                    'is there a recursive macro call?');
+                }
+            }
+
+
+            //      Create the command map for:
+            //          \ifstar, \ifnextchar, \ifblank, \ifstrequal, \gsub, \seteqnumber
+            new CommandMap('Lwarp-macros', {
+                ifstar: 'IfstarFunction',
+                ifnextchar: 'IfnextcharFunction',
+                ifblank: 'IfblankFunction',
+                ifstrequal: 'IfstrequalFunction',
+                gsubstitute: 'GsubstituteFunction',
+                seteqnumber: 'SeteqnumberFunction'
+            }, {
+                //      This function implements an ifstar macro.
+                IfstarFunction(parser, name) {
+                    const resultstar = parser.GetArgument(name);
+                    const resultnostar = parser.GetArgument(name);
+                    const star = parser.GetStar();                      // true if there is a *
+                    useArgument(parser, star ? resultstar : resultnostar);
+                },
+
+
+                //      This function implements an ifnextchar macro.
+                IfnextcharFunction(parser, name) {
+                    let whichchar = parser.GetArgument(name);
+                    if (whichchar.match(/^(?:0x[0-9A-F]+|[0-9]+)$/i)) {
+                        // $ syntax highlighting
+                        whichchar = String.fromCodePoint(parseInt(whichchar));
+                    }
+                    const resultnextchar = parser.GetArgument(name);
+                    const resultnotnextchar = parser.GetArgument(name);
+                    const gotchar = (parser.GetNext() === whichchar);
+                    useArgument(parser, gotchar ? resultnextchar : resultnotnextchar);
+                },
+
+
+                // This function implements an ifblank macro.
+                IfblankFunction(parser, name) {
+                    const blankarg = parser.GetArgument(name);
+                    const resultblank = parser.GetArgument(name);
+                    const resultnotblank = parser.GetArgument(name);
+                    const isblank = (blankarg.trim() == "");
+                    useArgument(parser, isblank ? resultblank : resultnotblank);
+                },
+
+
+                // This function implements an ifstrequal macro.
+                IfstrequalFunction(parser, name) {
+                    const strequalfirst = parser.GetArgument(name);
+                    const strequalsecond = parser.GetArgument(name);
+                    const resultequal = parser.GetArgument(name);
+                    const resultnotequal = parser.GetArgument(name);
+                    const isequal = (strequalfirst == strequalsecond);
+                    useArgument(parser, isequal ? resultequal : resultnotequal);
+                },
+
+
+                // This function implements a gsub macro.
+                GsubstituteFunction(parser, name) {
+                    const gsubfirst = parser.GetArgument(name);
+                    const gsubsecond = parser.GetArgument(name);
+                    const gsubthird = parser.GetArgument(name);
+                    let gsubresult=gsubfirst.replace(gsubsecond, gsubthird);
+                    useArgument(parser, gsubresult);
+                },
+
+
+                //      This function modifies the equation numbers.
+                SeteqnumberFunction(parser, name) {
+                        //   Get the macro parameters
+                        const star = parser.GetStar();                    // true if there is a *
+                        const optBrackets = parser.GetBrackets(name);     // contents of optional brackets
+                        const newsubequations = parser.GetArgument(name);    // the subequations argument
+                        const neweqsection = parser.GetArgument(name);    // the eq section argument
+                        const neweqnumber = parser.GetArgument(name);     // the eq number argument
+                        MathJax.config.subequations=newsubequations ;     // a string with boolean meaning
+                        MathJax.config.section=neweqsection ;             // a string with numeric meaning
+                        parser.tags.counter = parser.tags.allCounter = neweqnumber ;
+                }
+
+
+            });
+
+
+            //      Create the Lwarp-macros package
+            Configuration.create('Lwarp-macros', {
+                handler: {macro: ['Lwarp-macros']}
+            });
+
+
+            MathJax.startup.defaultReady();
+
+
+            // For forward references:
+            MathJax.startup.input[0].preFilters.add(({math}) => {
+                if (math.inputData.recompile){
+                        MathJax.config.subequations = math.inputData.recompile.subequations;
+                        MathJax.config.section = math.inputData.recompile.section;
+                }
+            });
+            MathJax.startup.input[0].postFilters.add(({math}) => {
+                if (math.inputData.recompile){
+                        math.inputData.recompile.subequations = MathJax.config.subequations;
+                        math.inputData.recompile.section = MathJax.config.section;
+                }
+            });
+
+
+                // For \left, \right with unicode-math:
+                const {DelimiterMap} = MathJax._.input.tex.SymbolMap;
+                const {Symbol} = MathJax._.input.tex.Symbol;
+                const {MapHandler} = MathJax._.input.tex.MapHandler;
+                const delimiter = MapHandler.getMap('delimiter');
+                delimiter.add('\\lBrack', new Symbol('\\lBrack', '\u27E6'));
+                delimiter.add('\\rBrack', new Symbol('\\rBrack', '\u27E7'));
+                delimiter.add('\\lAngle', new Symbol('\\lAngle', '\u27EA'));
+                delimiter.add('\\rAngle', new Symbol('\\rAngle', '\u27EB'));
+                delimiter.add('\\lbrbrak', new Symbol('\\lbrbrak', '\u2772'));
+                delimiter.add('\\rbrbrak', new Symbol('\\rbrbrak', '\u2773'));
+                delimiter.add('\\lbag', new Symbol('\\lbag', '\u27C5'));
+                delimiter.add('\\rbag', new Symbol('\\rbag', '\u27C6'));
+                delimiter.add('\\llparenthesis', new Symbol('\\llparenthesis', '\u2987'));
+                delimiter.add('\\rrparenthesis', new Symbol('\\rrparenthesis', '\u2988'));
+                delimiter.add('\\llangle', new Symbol('\\llangle', '\u2989'));
+                delimiter.add('\\rrangle', new Symbol('\\rrangle', '\u298A'));
+                delimiter.add('\\Lbrbrak', new Symbol('\\Lbrbrak', '\u27EC'));
+                delimiter.add('\\Rbrbrak', new Symbol('\\Rbrbrak', '\u27ED'));
+                delimiter.add('\\lBrace', new Symbol('\\lBrace', '\u2983'));
+                delimiter.add('\\rBrace', new Symbol('\\rBrace', '\u2984'));
+                delimiter.add('\\lParen', new Symbol('\\lParen', '\u2985'));
+                delimiter.add('\\rParen', new Symbol('\\rParen', '\u2986'));
+                delimiter.add('\\lbrackubar', new Symbol('\\lbrackubar', '\u298B'));
+                delimiter.add('\\rbrackubar', new Symbol('\\rbrackubar', '\u298C'));
+                delimiter.add('\\lbrackultick', new Symbol('\\lbrackultick', '\u298D'));
+                delimiter.add('\\rbracklrtick', new Symbol('\\rbracklrtick', '\u298E'));
+                delimiter.add('\\lbracklltick', new Symbol('\\lbracklltick', '\u298F'));
+                delimiter.add('\\rbrackurtick', new Symbol('\\rbrackurtick', '\u2990'));
+                delimiter.add('\\langledot', new Symbol('\\langledot', '\u2991'));
+                delimiter.add('\\rangledot', new Symbol('\\rangledot', '\u2992'));
+                delimiter.add('\\lparenless', new Symbol('\\lparenless', '\u2993'));
+                delimiter.add('\\rparengtr', new Symbol('\\rparengtr', '\u2994'));
+                delimiter.add('\\Lparengtr', new Symbol('\\Lparengtr', '\u2995'));
+                delimiter.add('\\Rparenless', new Symbol('\\Rparenless', '\u2996'));
+                delimiter.add('\\lblkbrbrak', new Symbol('\\lblkbrbrak', '\u2997'));
+                delimiter.add('\\rblkbrbrak', new Symbol('\\rblkbrbrak', '\u2998'));
+                delimiter.add('\\lvzigzag', new Symbol('\\lvzigzag', '\u29D8'));
+                delimiter.add('\\rvzigzag', new Symbol('\\rvzigzag', '\u29D9'));
+                delimiter.add('\\Lvzigzag', new Symbol('\\Lvzigzag', '\u29DA'));
+                delimiter.add('\\Rvzigzag', new Symbol('\\Rvzigzag', '\u29DB'));
+                delimiter.add('\\lcurvyangle', new Symbol('\\lcurvyangle', '\u29FC'));
+                delimiter.add('\\rcurvyangle', new Symbol('\\rcurvyangle', '\u29FD'));
+                delimiter.add('\\Vvert', new Symbol('\\Vvert', '\u2980'));
+        }        // ready
+    },           // startup
+
+
+    tex: {
+        packages: {'[+]': ['tagformat', 'Lwarp-macros', 'textmacros']},
+        tags: "ams",
+                tagformat: {
+                        number: function (n) {
+                             if(MathJax.config.subequations==0)
+                                 return(MathJax.config.section + n);
+                             else
+                                 return(MathJax.config.section + String.fromCharCode(96+n));
+                        },
+                },
+    }
+}
+</script>
+
+
+<script
+        id="MathJax-script"
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+></script>
+
+</head>
+<body>
+
+
+<a id="lecnotes_html-autopage-6"></a>
+<nav class="topnavigation"><a href="lecnotes_html.html" class="linkhome" >
+Home</a></nav>
+
+
+<div class="bodyandsidetoc">
+<div class="sidetoccontainer">
+
+
+<nav class="sidetoc">
+
+
+<div class="sidetoctitle">
+
+<p>
+Contents
+</p>
+</div>
+
+
+<div class="sidetoccontents">
+
+<p>
+<a href="lecnotes_html.html" class="linkhome" >
+Home</a>
+</p>
+
+</div>
+
+</nav>
+
+</div>
+
+
+<main class="bodycontainer">
+
+
+<section class="textbody">
+
+<!--MathJax customizations:-->
+
+
+<div class="hidden">
+
+\(\newcommand{\footnotename}{footnote}\)
+
+\(\def \LWRfootnote {1}\)
+
+\(\newcommand {\footnote }[2][\LWRfootnote ]{{}^{\mathrm {#1}}}\)
+
+\(\newcommand {\footnotemark }[1][\LWRfootnote ]{{}^{\mathrm {#1}}}\)
+
+\(\let \LWRorighspace \hspace \)
+
+\(\renewcommand {\hspace }{\ifstar \LWRorighspace \LWRorighspace }\)
+
+\(\newcommand {\mathnormal }[1]{{#1}}\)
+
+\(\newcommand \ensuremath [1]{#1}\)
+
+\(\newcommand {\LWRframebox }[2][]{\fbox {#2}} \newcommand {\framebox }[1][]{\LWRframebox } \)
+
+\(\newcommand {\setlength }[2]{}\)
+
+\(\newcommand {\addtolength }[2]{}\)
+
+\(\newcommand {\setcounter }[2]{}\)
+
+\(\newcommand {\addtocounter }[2]{}\)
+
+\(\newcommand {\arabic }[1]{}\)
+
+\(\newcommand {\number }[1]{}\)
+
+\(\newcommand {\noalign }[1]{\text {#1}\notag \\}\)
+
+\(\newcommand {\cline }[1]{}\)
+
+\(\newcommand {\directlua }[1]{\text {(directlua)}}\)
+
+\(\newcommand {\luatexdirectlua }[1]{\text {(directlua)}}\)
+
+\(\newcommand {\protect }{}\)
+
+\(\def \LWRabsorbnumber #1 {}\)
+
+\(\def \LWRabsorbquotenumber &quot;#1 {}\)
+
+\(\newcommand {\LWRabsorboption }[1][]{}\)
+
+\(\newcommand {\LWRabsorbtwooptions }[1][]{\LWRabsorboption }\)
+
+\(\def \mathchar {\ifnextchar &quot;\LWRabsorbquotenumber \LWRabsorbnumber }\)
+
+\(\def \mathcode #1={\mathchar }\)
+
+\(\let \delcode \mathcode \)
+
+\(\let \delimiter \mathchar \)
+
+\(\def \oe {\unicode {x0153}}\)
+
+\(\def \OE {\unicode {x0152}}\)
+
+\(\def \ae {\unicode {x00E6}}\)
+
+\(\def \AE {\unicode {x00C6}}\)
+
+\(\def \aa {\unicode {x00E5}}\)
+
+\(\def \AA {\unicode {x00C5}}\)
+
+\(\def \o {\unicode {x00F8}}\)
+
+\(\def \O {\unicode {x00D8}}\)
+
+\(\def \l {\unicode {x0142}}\)
+
+\(\def \L {\unicode {x0141}}\)
+
+\(\def \ss {\unicode {x00DF}}\)
+
+\(\def \SS {\unicode {x1E9E}}\)
+
+\(\def \dag {\unicode {x2020}}\)
+
+\(\def \ddag {\unicode {x2021}}\)
+
+\(\def \P {\unicode {x00B6}}\)
+
+\(\def \copyright {\unicode {x00A9}}\)
+
+\(\def \pounds {\unicode {x00A3}}\)
+
+\(\let \LWRref \ref \)
+
+\(\renewcommand {\ref }{\ifstar \LWRref \LWRref }\)
+
+\( \newcommand {\multicolumn }[3]{#3}\)
+
+\(\require {textcomp}\)
+
+\(\newcommand {\intertext }[1]{\text {#1}\notag \\}\)
+
+\(\let \Hat \hat \)
+
+\(\let \Check \check \)
+
+\(\let \Tilde \tilde \)
+
+\(\let \Acute \acute \)
+
+\(\let \Grave \grave \)
+
+\(\let \Dot \dot \)
+
+\(\let \Ddot \ddot \)
+
+\(\let \Breve \breve \)
+
+\(\let \Bar \bar \)
+
+\(\let \Vec \vec \)
+
+\(\newcommand {\real }{\mathbb {R}} \)
+
+\(\newcommand {\RR }{\mathbb {R}} \)
+
+\(\newcommand {\ZZ }{\mathbb Z} \)
+
+\(\newcommand {\F }{\mathbb F} \)
+
+\(\newcommand {\Ham }{\mathrm {Ham}}\)
+
+\(\newcommand {\PP }{\mathbb P}\)
+
+\(\newcommand {\co }[1]{\overline {#1}} \)
+
+\(\newcommand {\ul }[1]{\underline {#1}} \)
+
+\(\newcommand {\bo }[1]{\mathbf {#1}} \)
+
+\(\newcommand {\concat }[2]{[\, #1 \,|\, #2 \,]} \)
+
+\(\newcommand {\Encode }{\texttt {ENCODE}} \)
+
+\(\newcommand {\Decode }{\texttt {DECODE}} \)
+
+\(\newcommand {\RM }{R} \)
+
+\(\newcommand {\Rep }{\text {Rep}} \)
+
+</div>
+
+<p>
+<!--
+...... chapter ch10exans ......
+-->
+<h3 id="autosec-7">Chapter&nbsp;<span class="sectionnumber">10&#x2003;</span>Exercises to Chapter 10 — solutions</h3>
+<a id="lecnotes_html-autopage-7"></a>
+<a id="lecnotes_html-autofile-28"></a>
+
+<p>
+Version 2022-11-22. <a href="lecnotes_html.pdf" target="_blank" >To PDF version of the notes</a>
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-2"></a>
+<span class="amsthmnamedefinition">Exercise</span><span class="amsthmnumberdefinition"> <span class="textup">10.1</span></span><span class="amsthmnotedefinition"> (the extended binary Golay code)</span>.                              <a
+id="ex:G24"></a>The code \(G_{24}\) as defined as \(\widehat {G}_{23}\), that is, by <i>extending</i> the binary Golay code defined earlier.
+</p>
+
+<p>
+(a) Determine the parameters \([n,k,d]_q\) of \(G_{24}.\) State how many bit errors per codevector is the code guaranteed to <i>detect</i>. Same for <i>correct</i>. Find the rate of \(G_{24}.\)
+</p>
+
+<p>
+(b) A codevector of \(G_{24}\) is transmitted, and thirteen bit errors occur. Will an error be detected?
+</p>
+
+<p>
+(c) Prove that \(G_{24}\) is a self-dual code. The proof may involve calculations, but they should not be computer-aided — it should be possible to do them by hand in a reasonable amount of time.
+</p>
+
+</li>
+
+</ul>
+
+</div>
+
+<p>
+<b>Answer to E10.1. </b> [<a href="ch10ex.html#.">These exercises without answers</a>]
+</p>
+
+<p>
+Extending a binary code means appending a parity check bit to every codevector, so that the resulting vector is of even weight. Appending one bit increases the length by \(1\), so the length \(n\) of \(G_{24}\) is \(24.\)
+</p>
+
+<p>
+Appending a bit to every codevector does not change the number of codevectors. The \(G_{23}\) is a \([23,12,7]_2\) code, so \(\#G_{24}=\#G_{23}=2^{12}\) and \(k=12\).
+</p>
+
+<p>
+The minimum weight vector in \(G_{23}\setminus \{0\}\) has weight \(7\), so after extending, it becomes a vector of weight \(8.\) Extending a vector cannot decrease its weight, so \(d=w(G_{24})=8\). A \([24,12,8]_2\) code which is
+guaranteed to detect up to \(8-1=7\) errors per codevector and is guaranteed to correct \([(8-1)/2]=3\) errors per codevector.
+</p>
+
+<p>
+The rate of \(G_{24}\) is \(k/n=12/24=1/2\).
+</p>
+
+<p>
+(b) When \(13\) bit errors occur in a vector of even weight, the received vector has odd weight. Since all codevectors of \(G_{24}\) have even weight (by construction), this will result in a detected error — despite \(13\) being greater than \(7\).
+</p>
+
+<p>
+(c) We can construct a generator matrix \(\widehat G\) for \(G_{24}\) by adding a parity check bit to every row of a generator matrix \(G\) for \(G_{23}\). We will choose \(G\) to generate <i>cyclic</i> \(G_{23}\), and the rows of \(G\) will be
+the cyclic shifts of the vector \(\ul g\) where \(g(x)=1+x^2+x^4+x^5+x^6+x^{10}+x^{11}\):
+</p>
+<div class="center">
+
+<p>
+
+<a href="G24genmatrix1.svg" target="_blank" ><img
+    src="G24genmatrix1.svg"
+    class="inlineimage"
+    alt="(image)"
+></a>
+</p>
+</div>
+
+<p>
+(only the first, second and 12<sup>th</sup> rows of \(G\) shown, blanks mean zeros). To construct \(\widehat G\), we extend each row of \(G\); since the weight of each row of \(G\) is \(7\), which is odd, we append&nbsp;\(1\):
+</p>
+<div class="center">
+
+<p>
+
+<a href="G24genmatrix2.svg" target="_blank" ><img
+    src="G24genmatrix2.svg"
+    class="inlineimage"
+    alt="(image)"
+></a>
+</p>
+</div>
+
+<p>
+To show that \(G_{24}\) is self-orthogonal, we need to check that \(n=2k\), \(24=2\times 12\) which is true; and also that \(\widehat G \widehat G^T=0\), equivalently the inner product of any two rows of \(\widehat G\) is \(0\).
+</p>
+
+<p>
+Taking into account the product of the trailing \(\color {red}1\)s, we need to verify the equivalent statement that the inner product of any two of the cyclic shifts \(\ul g\), \(s(\ul g),\dots ,s^{11}(\ul g)\) is&nbsp;\(1\). This is easily seen
+to reduce to the inner product of \(\ul g\) itself and its cyclic shifts. So one manually checks that the inner product of \(\ul g\) with \(s^i(\ul g)\), \(i=0,\dots ,11\) is&nbsp;\(1\).
+</p>
+
+<p>
+This simplifies even further: note that the inner product of the vectors \(\ul a\) and \(\ul b_{\mathrm {backwards}}\) in \(\F _2^{23}\) is equal to the coefficient of \(x^{22}\) in the polynomial \(a(x)b(x)\). Let \(a(x) = x^ig(x)\) and
+\(b(x) = \overleftarrow {g}(x) =x^{11}+x^9+x^7+x^6+x^5+x+1\), so that \(\ul a = s^i(\ul g)\) and \(\ul b_{\mathrm {backwards}}=\ul g\). Note that \(a(x)b(x)=x^ig(x)\overleftarrow g(x)=x^i\frac {x^{23}+1}{x+1}
+=x^i(x^{22}+x^{21}+\dots +x+1)\). This polynomial contains the term \(x^{22}\) for all \(i=0,1,\dots ,11\), which proves that \(\ul a \cdot \ul b=1\), completing the proof of self-orthogonality of \(G_{24}\).
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-5"></a>
+<span class="amsthmnamedefinition">Exercise</span><span class="amsthmnumberdefinition"> <span class="textup">10.2</span></span><span class="amsthmnotedefinition"> (<i>This exercise is discussed in the review
+sessions</i>)</span>.    Find all possible binary cyclic codes of length \(7\). For each such code, find its minimum distance, determine whether the code is perfect. Determine which codes that you obtain are linearly equivalent.
+</p>
+
+</li>
+
+</ul>
+
+</div>
+
+<p>
+<b>Answer to E10.2. </b> [<a href="ch10ex.html#.">These exercises without answers</a>]
+</p>
+
+<p>
+First of all, one needs to write the polynomial \(x^7 - 1\) as a product of irreducible factors. One can always start with \(x-1\), because \(x-1\) is always a factor of \(x^n-1\) for any \(n\) and for every field \(\F _q\). We have \(x^7-1= (x -
+1)(x^6+x^5+x^4+x^3+x^2+x+1)\).
+</p>
+
+<p>
+We now need to factorise \(x^6+x^5+x^4+x^3+x^2+x+1\) over \(\F _2\). Unfortunately there is no easy way. One can use brute force (<i>this will not be expected in the exam</i>): check whether any of the polynomials of degree \(1\) are factors of
+\(x^6+x^5+x^4+x^3+x^2+x+1\), then polynomials of degree \(2\), then polynomials of degree \(3\). In this case we obtain the factorisation \(x^6+x^5+x^4+x^3+x^2+x+1= (x^3 + x + 1)(x^3 + x^2 + 1)\). We conclude that
+</p>
+
+<p>
+\[ x^7-1=(x+1)(x^3 + x + 1)(x^3 + x^2 + 1) \]
+</p>
+
+<p>
+as a product of irreducible polynomials over \(\F _2\). (Note that \(x-1\) is the same as \(x+1\) over \(\F _2\).)
+</p>
+
+<p>
+There are thus \(8\) cyclic binary codes of length \(7\): they correspond to generator polynomials which are product of a subset of the three irreducible factors of \(x^7-1\). To list all of them, we denote \(g_1=x+1\), \(g_2=x^3+x+1\),
+\(g_3=x^3+x^2+1\):
+</p>
+
+<p>
+\[ \begin {array}{lcc} g\text { (generator polynomial)} &amp; \deg g &amp; \dim g R_7 \\ \hline 1 &amp; 0 &amp; 7 \\ g_1 &amp; 1 &amp; 6 \\ g_2, \, g_3 &amp; 3 &amp; 4 \\ g_1 g_2, \, g_1 g_3 &amp; 4 &amp; 3 \\
+g_2g_3 &amp; 6 &amp; 1 \\ g_1g_2g_3 &amp; 7 &amp; 0 \end {array} \]
+</p>
+
+<p>
+<i>The code of dimension \(0\)</i> is \(\{\ul 0\}\), a cyclic code with generator polynomial \(x^7-1\).
+</p>
+
+<p>
+<i>Dimension \(1\)</i>: the generator polynomial of this code is \((x^3+x+1)(x^3+x^2+1)= 1+x+x^2+x^3+x^4+x^5+x^6\), see the table given above. Therefore, its generator matrix is
+</p>
+
+<p>
+\[ G=\left [\begin {matrix}1&amp;1&amp;1&amp;1&amp;1&amp;1&amp;1\end {matrix}\right ] .                \]
+</p>
+
+<p>
+This is the generator matrix of the <i>binary repetition code of length \(7\)</i>. The minimum distance of this code is \(7\).
+</p>
+
+<p>
+<i>Dimension \(6\)</i>: according to the table, the generator polynomial is \(g=x+1\). Therefore, the check polynomial is \(h=\frac {x^7-1}{g}=1+x+x^2+x^3+x^4+x^5+x^6\). Then the check matrix is \(H=\left [\begin
+{matrix}1&amp;1&amp;1&amp;1&amp;1&amp;1&amp;1\end {matrix}\right ]\). The check matrix generates the dual code, which therefore is the repetition code. The code of dimension \(6\) is dual to the repetition code, hence is the <i>binary even
+weight code of length \(7\)</i>. The minimum distance is \(2\).
+</p>
+
+<p>
+<i>Dimension \(7\)</i>: the only code which has dimension equal to length is the trivial code. So the answer is the <i>trivial binary code of length \(7\)</i>. It has generator polynomial \(1\) (of degree 0).
+</p>
+
+<p>
+<i>Dimension \(3\)</i>: we get two codes which are seen to be <i>simplex codes</i> \(\Sigma (3,2)= \Ham (3,2)^\perp \). From the above factorisation, there are two generator polynomials of degree \(4\):
+</p>
+
+<p>
+\[ g_1(x) = (x+1)(x^3+x+1) = x^4+x^3+x^2+1 \text { and } g_2(x) = (x+1)(x^3+x^2+1) = x^4+x^2+x+1, \]
+</p>
+
+<p>
+giving rise to the generator matrices
+</p>
+
+<p>
+\[ G_1 = \begin {bmatrix} 1&amp;0&amp;1&amp;1&amp;1&amp;0&amp;0 \\ 0&amp;1&amp;0&amp;1&amp;1&amp;1&amp;0 \\ 0&amp;0&amp;1&amp;0&amp;1&amp;1&amp;1 \end {bmatrix} \quad \text {and}\quad G_2 = \begin {bmatrix}
+1&amp;1&amp;1&amp;0&amp;1&amp;0&amp;0 \\ 0&amp;1&amp;1&amp;1&amp;0&amp;1&amp;0 \\ 0&amp;0&amp;1&amp;1&amp;1&amp;0&amp;1 \end {bmatrix} \]
+</p>
+
+<p>
+which generate the codes \(C_1\) and \(C_2\). Observing that \(G_2\) is obtained from \(G_1\) by permuting columns (e.g., permutation \(2\to 6\to 4\to 2\), \(3\leftrightarrow 5\) <i>or</i> notice that both matrices are made up of
+<i>all</i> possible non-zero columns of size \(3\) — they are parity check matrices for Hamming code \(\mathrm {Ham}(3,2)\)), we conclude that both codes are \(\Sigma (3,2)\) and are linearly equivalent. Recall that their weight can be found
+by writing down all the 7 non-zero codevectors; all of them have weight 4. They are \([7,3,4]_2\)-codes and are not perfect (the minimum distance is even).
+</p>
+
+<p>
+<i>Dimension \(4\)</i>: there are two codes, one generated by \(x^3+x+1\), the other by \(x^3+x^2+1\). Consider the code \(D\) with generator polynomial \(g(x)=x^3+x+1\). The parity check polynomial of \(D\) is \(h(x)=
+(x+1)(x^3+x^2+1)=x^4+x^2+x+1\) so its parity check matrix given by Theorem <a href="ch9.html#thm:gen-check">9.4</a> is
+</p>
+
+<p>
+\[ H=\begin {bmatrix} 0&amp;0&amp;1&amp;0&amp;1&amp;1&amp;1 \\ 0&amp;1&amp;0&amp;1&amp;1&amp;1&amp;0 \\ 1&amp;0&amp;1&amp;1&amp;1&amp;0&amp;0 \end {bmatrix}.                            \]
+</p>
+
+<p>
+This is the same as matrix \(G_1\) above (with the order of rows reversed — but this does not affect the code generated by the matrix), hence \(D^\perp \) is a \(\Sigma (3,2)\) code \(C_1\). Therefore, \(D\) is a \(\Ham (3,2)\) code, which is a
+perfect \([7,4,3]_2\)-code.
+</p>
+
+<p>
+A completely similar argument shows that the code \(D&apos;\) with generator polynomial \(x^3+x^2+1\) is dual to \(C_2\), hence is another \(\Ham (3,2)\) code and is linearly equivalent to \(D\).
+</p>
+
+<p>
+There are thus 8 binary cyclic codes of length 7. None of them has dimension 2 or 5.
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-6"></a>
+<span class="amsthmnamedefinition">Exercise</span><span class="amsthmnumberdefinition"> <span class="textup">10.3</span></span>.                      (i) Show that a perfect ternary code of length \(11\) and minimum distance \(5\) must contain
+\(729\) codewords.
+</p>
+
+<p>
+(ii) A football match can end in a Win (2), Draw (1) or Loss (0) for your club. You buy a <i>football pool</i> ticket which contains 11 boxes. You fill in the boxes trying to predict the result of each of the 11 matches your club will play in a
+forthcoming tournament. If, at the end of the tournament, it turns out that your ticket contained 9 or more correct guesses (out of 11), you win a prize.
+</p>
+<ul style="list-style-type:none">
+
+
+<li>
+<p>
+(a) Assuming that the outcomes of the 11 matches are completely independent and random, show that one ticket wins a prize with a probability \(\frac {1}{729}\). [<i>Of course, this does not mean that just by completing 729 tickets you are
+guaranteed a prize!</i>]
+</p>
+</li>
+<li>
+
+
+<p>
+(b) Explain how one can use a code from (i) to buy and complete 729 football pool tickets and to <i>guarantee</i> that one of them wins a prize.
+</p>
+</li>
+</ul>
+
+</li>
+
+</ul>
+
+</div>
+
+<p>
+<b>Answer to E10.3. </b> [<a href="ch10ex.html#.">These exercises without answers</a>]
+</p>
+
+<p>
+(i) Here is a calculation of the Hamming bound for a ternary code of length \(11\) and minimum distance \(5\): \(t=[\frac {5-1}{2}]=2\), \(\#S_2(\ul 0)=\binom {11}{0}+\binom {11}{1}(3-1)+\binom {11}{2} (3-1)^2=1+11\times
+2+55\times 2^2 = 243=3^5\), so that the Hamming bound (hence the cardinality of a perfect code) is \(3^{11} \, / \, \#S_2(\ul 0)=3^{11}/3^5=3^6=729\).
+</p>
+
+<p>
+(ii) (a) Let \(\ul X\) denote the vector of match outcomes. Let \(\ul Y\) denote the vector of values written on the ticket. The probablility that \(\ul Y\) wins a prize is the probability that \(d(\ul X,\ul Y)\le 2\), or, the same, that \(\ul X\)
+belongs to the sphere \(S_2(\ul Y)\). Given the assumption that \(\ul X\) is uniformly distributed in \(\F _3^{11}\), this probability is calculated as \(\frac {\#S_2(\ul Y)}{\#\F _3^{11}}\). Note that \(\#S_2(\ul Y)=\#S_2(\ul 0)=243\),
+so that the answer is \(243/3^{11}=1/729\).
+</p>
+
+<p>
+(b) In fact, this is how the ternary Golay code \(G_{11}\), which is a perfect \([11,6,5]_3\) code, was discovered by Finnish football pool enthusiast Juhani Virtakallio in 1947. Read about this in:
+</p>
+
+<p>
+A. Barg, <em>At the Dawn of the Theory of Codes</em>, The Mathematical Intelligencer 15, no. 1, 1993, pp. 20–26; <a href="http://www.ece.umd.edu/~abarg/reprints/dawn.pdf" target="_blank"
+>http://www.ece.umd.edu/~abarg/reprints/dawn.pdf</a>
+</p>
+
+<p>
+Virtakallio published the code — all the \(729\) codewords — in three (!) issues of a football pool magazine. When Marcel Golay rediscovered the code in 1949, he realised that \(G_{11}\) is a linear code, so it is enough to give only a check matrix.
+Following the introduction of cyclic codes in 1957 by Eugene Prange, we can define this code by its generator polynomial \(x^5+x^4+2 x^3+x^2+2\).
+</p>
+
+<p>
+Briefly, one should write the 729 codewords of this perfect code \(C\) in the 729 tickets. Recall from the proof of the Hamming bound that, since \(C\) is perfect, the space \(\F _3^{11}\) is covered by spheres of radius \(t=2\) centred at codevectors
+from \(C\). Hence every vector in \(\F _3^{11}\) is at distance \(\le 2\) from a codevector of \(C\). Therefore, for every possible vector \(\ul X\) of 11 match outcomes there will be one out of the 729 tickets (codewords) which will differ from
+\(\ul X\) in at most two positions. That ticket will win the prize.
+</p>
+<a id="lecnotes_html-autofile-last"></a>
+</section>
+
+</main>
+
+</div>
+
+
+<nav class="botnavigation"><a href="lecnotes_html.html" class="linkhome" >
+Home</a></nav>
+
+</body>
+</html>

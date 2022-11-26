@@ -1,0 +1,878 @@
+
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="UTF-8" />
+<meta name="generator" content="LaTeX Lwarp package" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<!--[if lt IE 9]>
+<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+<link rel="stylesheet" type="text/css" href="bazlovstyle.css" />
+
+<script>
+// Lwarp MathJax emulation code
+//
+// Based on code by Davide P. Cervone.
+// Equation numbering: https://github.com/mathjax/MathJax/issues/2427
+// Starred and ifnextchar macros: https://github.com/mathjax/MathJax/issues/2428
+// \left, \right delimiters: https://github.com/mathjax/MathJax/issues/2535
+//
+// Modified by Brian Dunn to adjust equation numbering and add subequations.
+//
+// LaTeX can use \seteqnumber{subequations?}{section}{number} before each equation.
+// subequations? is 0 usually, 1 if inside subequations.
+// section is a string printed as-is, or empty.
+// number is auto-incremented by MathJax between equations.
+//
+MathJax = {
+    subequations: "0",
+    section: "",
+    loader: {
+        load: ['[tex]/tagformat', '[tex]/textmacros'],
+    },
+    startup: {
+        ready() {
+            //      These would be replaced by import commands if you wanted to make
+            //      a proper extension.
+            const Configuration = MathJax._.input.tex.Configuration.Configuration;
+            const CommandMap = MathJax._.input.tex.SymbolMap.CommandMap;
+            const Macro = MathJax._.input.tex.Symbol.Macro;
+            const TexError = MathJax._.input.tex.TexError.default;
+            const ParseUtil = MathJax._.input.tex.ParseUtil.default;
+            const expandable = MathJax._.util.Options.expandable;
+
+
+            //      Insert the replacement string into the TeX string, and check
+            //      that there haven't been too many maxro substitutions (prevents
+            //      infinite loops).
+            const useArgument = (parser, text) => {
+                parser.string = ParseUtil.addArgs(parser, text, parser.string.slice(parser.i));
+                parser.i = 0;
+                if (++parser.macroCount > parser.configuration.options.maxMacros) {
+                    throw new TexError('MaxMacroSub1',
+                    'MathJax maximum macro substitution count exceeded; ' +
+                    'is there a recursive macro call?');
+                }
+            }
+
+
+            //      Create the command map for:
+            //          \ifstar, \ifnextchar, \ifblank, \ifstrequal, \gsub, \seteqnumber
+            new CommandMap('Lwarp-macros', {
+                ifstar: 'IfstarFunction',
+                ifnextchar: 'IfnextcharFunction',
+                ifblank: 'IfblankFunction',
+                ifstrequal: 'IfstrequalFunction',
+                gsubstitute: 'GsubstituteFunction',
+                seteqnumber: 'SeteqnumberFunction'
+            }, {
+                //      This function implements an ifstar macro.
+                IfstarFunction(parser, name) {
+                    const resultstar = parser.GetArgument(name);
+                    const resultnostar = parser.GetArgument(name);
+                    const star = parser.GetStar();                      // true if there is a *
+                    useArgument(parser, star ? resultstar : resultnostar);
+                },
+
+
+                //      This function implements an ifnextchar macro.
+                IfnextcharFunction(parser, name) {
+                    let whichchar = parser.GetArgument(name);
+                    if (whichchar.match(/^(?:0x[0-9A-F]+|[0-9]+)$/i)) {
+                        // $ syntax highlighting
+                        whichchar = String.fromCodePoint(parseInt(whichchar));
+                    }
+                    const resultnextchar = parser.GetArgument(name);
+                    const resultnotnextchar = parser.GetArgument(name);
+                    const gotchar = (parser.GetNext() === whichchar);
+                    useArgument(parser, gotchar ? resultnextchar : resultnotnextchar);
+                },
+
+
+                // This function implements an ifblank macro.
+                IfblankFunction(parser, name) {
+                    const blankarg = parser.GetArgument(name);
+                    const resultblank = parser.GetArgument(name);
+                    const resultnotblank = parser.GetArgument(name);
+                    const isblank = (blankarg.trim() == "");
+                    useArgument(parser, isblank ? resultblank : resultnotblank);
+                },
+
+
+                // This function implements an ifstrequal macro.
+                IfstrequalFunction(parser, name) {
+                    const strequalfirst = parser.GetArgument(name);
+                    const strequalsecond = parser.GetArgument(name);
+                    const resultequal = parser.GetArgument(name);
+                    const resultnotequal = parser.GetArgument(name);
+                    const isequal = (strequalfirst == strequalsecond);
+                    useArgument(parser, isequal ? resultequal : resultnotequal);
+                },
+
+
+                // This function implements a gsub macro.
+                GsubstituteFunction(parser, name) {
+                    const gsubfirst = parser.GetArgument(name);
+                    const gsubsecond = parser.GetArgument(name);
+                    const gsubthird = parser.GetArgument(name);
+                    let gsubresult=gsubfirst.replace(gsubsecond, gsubthird);
+                    useArgument(parser, gsubresult);
+                },
+
+
+                //      This function modifies the equation numbers.
+                SeteqnumberFunction(parser, name) {
+                        //   Get the macro parameters
+                        const star = parser.GetStar();                    // true if there is a *
+                        const optBrackets = parser.GetBrackets(name);     // contents of optional brackets
+                        const newsubequations = parser.GetArgument(name);    // the subequations argument
+                        const neweqsection = parser.GetArgument(name);    // the eq section argument
+                        const neweqnumber = parser.GetArgument(name);     // the eq number argument
+                        MathJax.config.subequations=newsubequations ;     // a string with boolean meaning
+                        MathJax.config.section=neweqsection ;             // a string with numeric meaning
+                        parser.tags.counter = parser.tags.allCounter = neweqnumber ;
+                }
+
+
+            });
+
+
+            //      Create the Lwarp-macros package
+            Configuration.create('Lwarp-macros', {
+                handler: {macro: ['Lwarp-macros']}
+            });
+
+
+            MathJax.startup.defaultReady();
+
+
+            // For forward references:
+            MathJax.startup.input[0].preFilters.add(({math}) => {
+                if (math.inputData.recompile){
+                        MathJax.config.subequations = math.inputData.recompile.subequations;
+                        MathJax.config.section = math.inputData.recompile.section;
+                }
+            });
+            MathJax.startup.input[0].postFilters.add(({math}) => {
+                if (math.inputData.recompile){
+                        math.inputData.recompile.subequations = MathJax.config.subequations;
+                        math.inputData.recompile.section = MathJax.config.section;
+                }
+            });
+
+
+                // For \left, \right with unicode-math:
+                const {DelimiterMap} = MathJax._.input.tex.SymbolMap;
+                const {Symbol} = MathJax._.input.tex.Symbol;
+                const {MapHandler} = MathJax._.input.tex.MapHandler;
+                const delimiter = MapHandler.getMap('delimiter');
+                delimiter.add('\\lBrack', new Symbol('\\lBrack', '\u27E6'));
+                delimiter.add('\\rBrack', new Symbol('\\rBrack', '\u27E7'));
+                delimiter.add('\\lAngle', new Symbol('\\lAngle', '\u27EA'));
+                delimiter.add('\\rAngle', new Symbol('\\rAngle', '\u27EB'));
+                delimiter.add('\\lbrbrak', new Symbol('\\lbrbrak', '\u2772'));
+                delimiter.add('\\rbrbrak', new Symbol('\\rbrbrak', '\u2773'));
+                delimiter.add('\\lbag', new Symbol('\\lbag', '\u27C5'));
+                delimiter.add('\\rbag', new Symbol('\\rbag', '\u27C6'));
+                delimiter.add('\\llparenthesis', new Symbol('\\llparenthesis', '\u2987'));
+                delimiter.add('\\rrparenthesis', new Symbol('\\rrparenthesis', '\u2988'));
+                delimiter.add('\\llangle', new Symbol('\\llangle', '\u2989'));
+                delimiter.add('\\rrangle', new Symbol('\\rrangle', '\u298A'));
+                delimiter.add('\\Lbrbrak', new Symbol('\\Lbrbrak', '\u27EC'));
+                delimiter.add('\\Rbrbrak', new Symbol('\\Rbrbrak', '\u27ED'));
+                delimiter.add('\\lBrace', new Symbol('\\lBrace', '\u2983'));
+                delimiter.add('\\rBrace', new Symbol('\\rBrace', '\u2984'));
+                delimiter.add('\\lParen', new Symbol('\\lParen', '\u2985'));
+                delimiter.add('\\rParen', new Symbol('\\rParen', '\u2986'));
+                delimiter.add('\\lbrackubar', new Symbol('\\lbrackubar', '\u298B'));
+                delimiter.add('\\rbrackubar', new Symbol('\\rbrackubar', '\u298C'));
+                delimiter.add('\\lbrackultick', new Symbol('\\lbrackultick', '\u298D'));
+                delimiter.add('\\rbracklrtick', new Symbol('\\rbracklrtick', '\u298E'));
+                delimiter.add('\\lbracklltick', new Symbol('\\lbracklltick', '\u298F'));
+                delimiter.add('\\rbrackurtick', new Symbol('\\rbrackurtick', '\u2990'));
+                delimiter.add('\\langledot', new Symbol('\\langledot', '\u2991'));
+                delimiter.add('\\rangledot', new Symbol('\\rangledot', '\u2992'));
+                delimiter.add('\\lparenless', new Symbol('\\lparenless', '\u2993'));
+                delimiter.add('\\rparengtr', new Symbol('\\rparengtr', '\u2994'));
+                delimiter.add('\\Lparengtr', new Symbol('\\Lparengtr', '\u2995'));
+                delimiter.add('\\Rparenless', new Symbol('\\Rparenless', '\u2996'));
+                delimiter.add('\\lblkbrbrak', new Symbol('\\lblkbrbrak', '\u2997'));
+                delimiter.add('\\rblkbrbrak', new Symbol('\\rblkbrbrak', '\u2998'));
+                delimiter.add('\\lvzigzag', new Symbol('\\lvzigzag', '\u29D8'));
+                delimiter.add('\\rvzigzag', new Symbol('\\rvzigzag', '\u29D9'));
+                delimiter.add('\\Lvzigzag', new Symbol('\\Lvzigzag', '\u29DA'));
+                delimiter.add('\\Rvzigzag', new Symbol('\\Rvzigzag', '\u29DB'));
+                delimiter.add('\\lcurvyangle', new Symbol('\\lcurvyangle', '\u29FC'));
+                delimiter.add('\\rcurvyangle', new Symbol('\\rcurvyangle', '\u29FD'));
+                delimiter.add('\\Vvert', new Symbol('\\Vvert', '\u2980'));
+        }        // ready
+    },           // startup
+
+
+    tex: {
+        packages: {'[+]': ['tagformat', 'Lwarp-macros', 'textmacros']},
+        tags: "ams",
+                tagformat: {
+                        number: function (n) {
+                             if(MathJax.config.subequations==0)
+                                 return(MathJax.config.section + n);
+                             else
+                                 return(MathJax.config.section + String.fromCharCode(96+n));
+                        },
+                },
+    }
+}
+</script>
+
+
+<script
+        id="MathJax-script"
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+></script>
+
+</head>
+<body>
+
+
+<a id="lecnotes_html-autopage-7"></a>
+<nav class="topnavigation"><a href="lecnotes_html.html" class="linkhome" >
+Home</a></nav>
+
+
+<div class="bodyandsidetoc">
+<div class="sidetoccontainer">
+
+
+<nav class="sidetoc">
+
+
+<div class="sidetoctitle">
+
+<p>
+Contents
+</p>
+</div>
+
+
+<div class="sidetoccontents">
+
+<p>
+<a href="lecnotes_html.html" class="linkhome" >
+Home</a>
+</p>
+
+</div>
+
+</nav>
+
+</div>
+
+
+<main class="bodycontainer">
+
+
+<section class="textbody">
+
+<!--MathJax customizations:-->
+
+
+<div class="hidden">
+
+\(\newcommand{\footnotename}{footnote}\)
+
+\(\def \LWRfootnote {1}\)
+
+\(\newcommand {\footnote }[2][\LWRfootnote ]{{}^{\mathrm {#1}}}\)
+
+\(\newcommand {\footnotemark }[1][\LWRfootnote ]{{}^{\mathrm {#1}}}\)
+
+\(\let \LWRorighspace \hspace \)
+
+\(\renewcommand {\hspace }{\ifstar \LWRorighspace \LWRorighspace }\)
+
+\(\newcommand {\mathnormal }[1]{{#1}}\)
+
+\(\newcommand \ensuremath [1]{#1}\)
+
+\(\newcommand {\LWRframebox }[2][]{\fbox {#2}} \newcommand {\framebox }[1][]{\LWRframebox } \)
+
+\(\newcommand {\setlength }[2]{}\)
+
+\(\newcommand {\addtolength }[2]{}\)
+
+\(\newcommand {\setcounter }[2]{}\)
+
+\(\newcommand {\addtocounter }[2]{}\)
+
+\(\newcommand {\arabic }[1]{}\)
+
+\(\newcommand {\number }[1]{}\)
+
+\(\newcommand {\noalign }[1]{\text {#1}\notag \\}\)
+
+\(\newcommand {\cline }[1]{}\)
+
+\(\newcommand {\directlua }[1]{\text {(directlua)}}\)
+
+\(\newcommand {\luatexdirectlua }[1]{\text {(directlua)}}\)
+
+\(\newcommand {\protect }{}\)
+
+\(\def \LWRabsorbnumber #1 {}\)
+
+\(\def \LWRabsorbquotenumber &quot;#1 {}\)
+
+\(\newcommand {\LWRabsorboption }[1][]{}\)
+
+\(\newcommand {\LWRabsorbtwooptions }[1][]{\LWRabsorboption }\)
+
+\(\def \mathchar {\ifnextchar &quot;\LWRabsorbquotenumber \LWRabsorbnumber }\)
+
+\(\def \mathcode #1={\mathchar }\)
+
+\(\let \delcode \mathcode \)
+
+\(\let \delimiter \mathchar \)
+
+\(\def \oe {\unicode {x0153}}\)
+
+\(\def \OE {\unicode {x0152}}\)
+
+\(\def \ae {\unicode {x00E6}}\)
+
+\(\def \AE {\unicode {x00C6}}\)
+
+\(\def \aa {\unicode {x00E5}}\)
+
+\(\def \AA {\unicode {x00C5}}\)
+
+\(\def \o {\unicode {x00F8}}\)
+
+\(\def \O {\unicode {x00D8}}\)
+
+\(\def \l {\unicode {x0142}}\)
+
+\(\def \L {\unicode {x0141}}\)
+
+\(\def \ss {\unicode {x00DF}}\)
+
+\(\def \SS {\unicode {x1E9E}}\)
+
+\(\def \dag {\unicode {x2020}}\)
+
+\(\def \ddag {\unicode {x2021}}\)
+
+\(\def \P {\unicode {x00B6}}\)
+
+\(\def \copyright {\unicode {x00A9}}\)
+
+\(\def \pounds {\unicode {x00A3}}\)
+
+\(\let \LWRref \ref \)
+
+\(\renewcommand {\ref }{\ifstar \LWRref \LWRref }\)
+
+\( \newcommand {\multicolumn }[3]{#3}\)
+
+\(\require {textcomp}\)
+
+\(\newcommand {\intertext }[1]{\text {#1}\notag \\}\)
+
+\(\let \Hat \hat \)
+
+\(\let \Check \check \)
+
+\(\let \Tilde \tilde \)
+
+\(\let \Acute \acute \)
+
+\(\let \Grave \grave \)
+
+\(\let \Dot \dot \)
+
+\(\let \Ddot \ddot \)
+
+\(\let \Breve \breve \)
+
+\(\let \Bar \bar \)
+
+\(\let \Vec \vec \)
+
+\(\newcommand {\real }{\mathbb {R}} \)
+
+\(\newcommand {\RR }{\mathbb {R}} \)
+
+\(\newcommand {\ZZ }{\mathbb Z} \)
+
+\(\newcommand {\F }{\mathbb F} \)
+
+\(\newcommand {\Ham }{\mathrm {Ham}}\)
+
+\(\newcommand {\PP }{\mathbb P}\)
+
+\(\newcommand {\co }[1]{\overline {#1}} \)
+
+\(\newcommand {\ul }[1]{\underline {#1}} \)
+
+\(\newcommand {\bo }[1]{\mathbf {#1}} \)
+
+\(\newcommand {\concat }[2]{[\, #1 \,|\, #2 \,]} \)
+
+\(\newcommand {\Encode }{\texttt {ENCODE}} \)
+
+\(\newcommand {\Decode }{\texttt {DECODE}} \)
+
+\(\newcommand {\RM }{R} \)
+
+\(\newcommand {\Rep }{\text {Rep}} \)
+
+</div>
+
+<p>
+<!--
+...... chapter ch10 ......
+-->
+<h3 id="autosec-8">Chapter&nbsp;<span class="sectionnumber">10&#x2003;</span>Golay codes. Classification of perfect codes</h3>
+<a id="lecnotes_html-autopage-8"></a>
+<a id="lecnotes_html-autofile-26"></a>
+
+<p>
+Version 2022-11-22. <a href="lecnotes_html.pdf" target="_blank" >To PDF version of the notes</a>
+</p>
+
+<p>
+<b>Synopsis.</b> <i>One can explore cyclic codes of a given length over a given finite field in an attempt to find codes with interesting/useful properties. In fact, all types of codes we have considered so far will arise as cyclic codes. In this chapter,
+we define two new linear equivalence classes of codes called Golay codes. In our approach, these arise as cyclic codes, however, historically they were found in a different way. We give without proof a complete classification of perfect codes over
+alphabets of prime power size up to parameter equivalence, conjectured by Golay and proved by Tieta&#x0308;va&#x0308;inen and van Lint.</i>
+</p>
+
+<p>
+The following two remarks aim to highlight useful features of cyclic codes.
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-9"></a>
+<span class="amsthmnamedefinition">Remark</span>.
+</p>
+
+<p>
+Recall that:
+</p>
+<ul style="list-style-type:none">
+
+
+<li>
+<p>
+• the only way to specify a general non-linear code in \(\F _q^n\) is to list all the codewords, which consist of a total of \(q^k\times n\) symbols;
+</p>
+
+
+</li>
+<li>
+
+
+<p>
+• a linear code can be specified by a generator matrix, which has \(k\times n\) entries;
+</p>
+
+
+</li>
+<li>
+
+
+<p>
+• a cyclic code can be specified in an even more compact way — by giving its generator polynomial, which corresponds to a single codeword! We only need to specify \(n-k\) coefficients of the generator polynomial (its degree is \(n-k\) and its
+leading coefficient is \(1\)).
+</p>
+</li>
+</ul>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-10"></a>
+<span class="amsthmnamedefinition">Remark</span>.        <b>What do we use check matrices for?</b> For example, to find the minimum distance of a linear code.
+</p>
+
+<p>
+<b>Strategy of searching for interesting/perfect/etc codes:</b>
+</p>
+
+<p>
+Look for divisors of \(x^n-1\) and hope that the cyclic codes they generate have a large minimum distance. <b>For example,</b> among the cyclic codes in \(\mathbb F_2^7\), there are two perfect, Hamming codes (<i>Exercise</i>).
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-11"></a>
+<span class="amsthmnamedefinition">Example</span><span class="amsthmnumberdefinition"> <span class="textup">10.1</span></span><span class="amsthmnotedefinition"> (two new perfect codes — the Golay codes)</span>.
+</p>
+
+<p>
+The following two codes were found by Marcel Golay in 1949. They are known as the <i>binary Golay code</i> and the <i>ternary Golay code</i>, respectively.
+</p>
+
+</li>
+
+</ul>
+<!--
+......   subsection The binary Golay code        ......
+-->
+<h5 id="autosec-12">The binary Golay code \(G_{23}\)</h5>
+<a id="lecnotes_html-autopage-12"></a>
+
+
+
+<p>
+In \(\F _2[x]\), \(x^{23}-1=(x-1)g(x)\overleftarrow g(x)\), where \(g(x)=x^{11}+x^{10}+x^6+x^5+x^4+x^2+1\) and \(\overleftarrow g(x)=x^{11}+x^9+x^7+x^6+x^5+x+1.\) (<i>Exercise</i>: check this! You may use a computer algebra
+system but it is always instructive to do this by hand.)
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-13"></a>
+<span class="amsthmnamedefinition">Definition</span>.   Define a <b><i>binary Golay code</i></b> to be the cyclic code in \(\mathbb F_2^{23}\) generated by \(g(x)\), or any code linearly equivalent to it.
+</p>
+
+<p>
+(Any) binary Golay code is denoted \(G_{23}.\)
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-14"></a>
+<span class="amsthmnamedefinition">Remark</span>.          The cyclic code generated by \(g_1(x)\) is seen to be linearly equivalent to the cyclic code generated by \(g(x)\); the linear equivalence is by writing all the codevectors backwards.
+</p>
+
+<p>
+The above definition does not reflect how the code was originally found (see below) but suggests a practical way to construct a \(G_{23}\) code if need be: factorise \(x^{23}-1\) over \(\mathbb F_2\) into irreducible factors (e.g., using a computer
+algebra system) and take one such factor of degree greater than \(1\) to be the generator polynomial of a cyclic code.
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-15"></a>
+<span class="amsthmnamedefinition">Theorem</span><span class="amsthmnumberdefinition"> <span class="textup">10.2</span></span>.   <a id="thm:G23"></a> \(G_{23}\) is a perfect \([23,12,7]_2\)-code.
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmproof">
+
+<a id="lecnotes_html-autopage-16"></a>
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<span class="amsthmproofname">Proof.</span> (<i>partially computer-aided</i>) The code is binary of length \(n=23\) by construction. The dimension is \(23-\deg g=12.\) We will <span class="underline">not</span> formally prove that
+\(d=7\) (although an algebraic proof can be found in the literature, it is beyond the scope of this course). Observe that \(d\le 7\): indeed, the vector \(\ul g\in G_{23}\) is \(10101110001100000000000\), of weight&nbsp;\(7.\)
+</p>
+
+<p>
+The minimum weight of \(G_{23}\) can be found using a computer — consider for example the following code written for the computer algebra system <a href="https://www.sagemath.org/" target="_blank" ><b>SageMath</b></a>:
+</p>
+<pre class="verbatim">
+sage: R.<x>=GF(2)[]
+sage: factor(x^23 - 1)
+(x+1)*(x^11+x^9+x^7+x^6+x^5+x+1)*(x^11+x^10+x^6+x^5+x^4+x^2+1)
+sage: g = factor(x^23 - 1)[1][0]
+sage: messagepolynomials = R.monics( max_degree=23-g.degree()-1 )
+sage: codepolynomials = [ u*g for u in messagepolynomials ]
+sage: min([ len(c.coefficients()) for c in codepolynomials ])
+7
+
+</pre>
+
+<p>
+To show that \(G_{23}\) is perfect, write the Hamming bound for a binary code in in logarithmic form: \(k\le n-\log _2\left (\binom n0 +\dots +\binom nt\right ).\) Here \(t=[(7-1)/2]=3\) so the expression under the logarithm is
+\(1+\binom {23}{1}+\binom {23}{2}+\binom {23}{3}= 1+23+23\times \frac {22}{2}+23\times \frac {22}{2}\times \frac {21}{3} =1+23(1+11+77)=2048.\) One has \(12 = 23-\log _2 2048\) hence the Hamming bound is attained. <span
+class="theoremendmark">&#x25A1;</span>
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<!--
+......   subsection Trivia ......
+-->
+<h5 id="autosec-18">Trivia</h5>
+<a id="lecnotes_html-autopage-18"></a>
+
+
+
+<p>
+The code \(G_{23}\) was used by Voyager 1 &amp; 2 spaceships (NASA, Jupiter and Saturn, 1979–81). More precisely, the Golay code was used in a version extended to \(24\) bits by adding a parity check bit to each codevector, see Exercise&nbsp;<a
+href="ch10exans.html#ex:G24">10.1</a>. This increased the minimum distance to \(8\) thereby improving error detection (not affecting error correction). But the extended \(24\) bit code \(G_{24}:=\widehat G_{23}\) is no longer perfect.
+</p>
+<!--
+......   subsection The ternary Golay code   ......
+-->
+<h5 id="autosec-19">The ternary Golay code \(G_{11}\)</h5>
+<a id="lecnotes_html-autopage-19"></a>
+
+
+
+<p>
+In \(\F _3[x]\), \(x^{11}-1=(x-1)g(x)g_1(x)\) where \(g(x)=x^5+x^4+2 x^3+x^2+2\) and \(g_1(x) =-\overleftarrow g(x) = x^5+2x^3+x^2+2x+2.\)
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-20"></a>
+<span class="amsthmnamedefinition">Definition</span>.   A <b><i>ternary Golay code</i></b> is the the cyclic code in \(\mathbb F_3^{11}\) generated by \(g(x)\), or any code linearly equivalent to it. (<i>Notation</i>: \(G_{11}.\))
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-21"></a>
+<span class="amsthmnamedefinition">Theorem</span><span class="amsthmnumberdefinition"> <span class="textup">10.3</span></span>.   <a id="thm:G11"></a> \(G_{11}\) is a perfect \([11,6,5]_3\) code.
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-22"></a>
+<span class="amsthmnamedefinition">Exercise</span>.   Prove Theorem <a href="ch10.html#thm:G11">10.3</a>, modifying the computer code provided in the proof of Theorem&nbsp;<a href="ch10.html#thm:G23">10.2</a> to calculate the
+weight of \(G_{11}.\)
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<!--
+......   subsection Historical notes ......
+-->
+<h5 id="autosec-23">Historical notes</h5>
+<a id="lecnotes_html-autopage-23"></a>
+
+
+
+<p>
+Golay found his two perfect codes in 1949, before cyclic codes were discovered. He defined the codes \(G_{23}\) and \(G_{11}\) by writing their check matrices. Crucially, Golay observed that \(\binom {23}{0}+\binom {23}{1}+\binom
+{23}{2}+\binom {23}{3}\) is a power of two. From the proof of perfectness above one can see that the condition \(\binom {n}{0}+\dots +\binom {n}{t}=2^r\) is necessary for the existence of a perfect \(t\)-error-correcting binary code of length
+\(n.\) This condition is not sufficient: e.g., in his 1949 paper Golay also observes that \(\binom {90}{0}+\binom {90}{1}+\binom {90}{2}=2^{12}\) but this does not lead to any perfect binary code of length 90.
+</p>
+
+<p>
+Amazingly, Golay’s 1949 paper where he constructs all the Hamming codes and the two Golay codes, is barely half a page long.
+</p>
+
+</div>
+
+<p>
+Now we can state the classification theorem about perfect codes. It was proved in 1973, more than twenty years since Golay gave a conjecturally complete list of perfect codes in alphabets of prime power size. We will not give its proof here, but you
+should learn the statement of the theorem.
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-24"></a>
+<span class="amsthmnamedefinition">Definition</span><span class="amsthmnotedefinition"> (parameter equivalence)</span>.
+</p>
+
+<p>
+We say that two codes are <i>parameter equivalent</i>, if they both are \([n,k,d]_q\)-codes for some \(n, k, d\) and \(q.\)
+</p>
+
+<p>
+
+
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-25"></a>
+<span class="amsthmnamedefinition">Theorem</span><span class="amsthmnumberdefinition"> <span class="textup">10.4</span></span><span class="amsthmnotedefinition"> (Tieta&#x0308;va&#x0308;inen – van Lint, 1973;
+classification of perfect codes where \(q\) is a prime power)</span>.
+</p>
+
+<p>
+Let \(q\) be a power of a prime number. A perfect \([n,k,d]_q\)-code is parameter equivalent to one of the following:
+</p>
+<ul style="list-style-type:none">
+
+
+<li>
+<p>
+• a trivial code: \(n\) arbitrary, \(k=n\), \(d=1\), \(q\) any prime power;
+</p>
+
+
+</li>
+<li>
+
+
+<p>
+• a binary repetition code of odd length: \(n\) odd, \(k=1\), \(d=n\), \(q=2\);
+</p>
+
+
+</li>
+<li>
+
+
+<p>
+• a Hamming code \(\Ham (r,q)\): \(n=\dfrac {q^r-1}{q-1}\), \(k=n-r\), \(d=3\), \(q\) any prime power;
+</p>
+
+
+</li>
+<li>
+
+
+<p>
+• the Golay code \(G_{23}\), which is a \([23,12,7]_2\)-code;
+</p>
+
+
+</li>
+<li>
+
+
+<p>
+• the Golay code \(G_{11}\) which is an \([11,6,5]_3\)-code.
+</p>
+</li>
+</ul>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-26"></a>
+<span class="amsthmnamedefinition">Remark</span>.   Classification of perfect codes over alphabets of size not equal to a prime power is, in general, an open problem.
+</p>
+
+</li>
+
+</ul>
+
+</div>
+</section>
+
+</main>
+
+</div>
+
+
+<nav class="botnavigation"><a href="lecnotes_html.html" class="linkhome" >
+Home</a></nav>
+
+</body>
+</html>

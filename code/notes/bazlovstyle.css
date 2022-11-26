@@ -1,0 +1,27 @@
+/* ( --- Start of project.css --- ) */
+/* ( --- A sample project-specific CSS file for lwarp --- ) */
+
+/* Uncomment one of the following: */
+@import url("lwarp.css") ;
+/* @import url("lwarp_formal.css") ; */
+/* @import url("lwarp_sagebrush.css") ; */
+
+/* Project-specific CSS setting follow here. */
+/* . . . */
+
+    
+/* 
+ body, span.textrm, div.textrm {    font-family: "Linux Libertine O", "Hoefler Text", "Garamond", "DejaVu Serif", "Bitstream Vera Serif",
+        "Lucida Bright", Georgia, serif;
+} */
+body { font-size: 90%; }
+
+.amsthmnamedefinition, .amsthmnumberdefinition, .amsthmnotedefinition { font-weight: bold; }
+.amsthmbodydefinition > ul { padding: 0ex; }
+.amsthmnametheorem, .amsthmnotetheorem { font-weight: bold; }
+.amsthmbodytheorem > ul { padding: 0ex; }
+.amsthmproofname { font-weight: bold; }
+.amsthmproof > ul { padding: 0ex; }
+.sidetoccontainer { display: none; }
+hhhh5 { font-size: 1em; }
+/* ( --- End of project.css --- ) */

@@ -1,0 +1,1360 @@
+
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="UTF-8" />
+<meta name="generator" content="LaTeX Lwarp package" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<!--[if lt IE 9]>
+<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+<link rel="stylesheet" type="text/css" href="bazlovstyle.css" />
+
+<script>
+// Lwarp MathJax emulation code
+//
+// Based on code by Davide P. Cervone.
+// Equation numbering: https://github.com/mathjax/MathJax/issues/2427
+// Starred and ifnextchar macros: https://github.com/mathjax/MathJax/issues/2428
+// \left, \right delimiters: https://github.com/mathjax/MathJax/issues/2535
+//
+// Modified by Brian Dunn to adjust equation numbering and add subequations.
+//
+// LaTeX can use \seteqnumber{subequations?}{section}{number} before each equation.
+// subequations? is 0 usually, 1 if inside subequations.
+// section is a string printed as-is, or empty.
+// number is auto-incremented by MathJax between equations.
+//
+MathJax = {
+    subequations: "0",
+    section: "",
+    loader: {
+        load: ['[tex]/tagformat', '[tex]/textmacros'],
+    },
+    startup: {
+        ready() {
+            //      These would be replaced by import commands if you wanted to make
+            //      a proper extension.
+            const Configuration = MathJax._.input.tex.Configuration.Configuration;
+            const CommandMap = MathJax._.input.tex.SymbolMap.CommandMap;
+            const Macro = MathJax._.input.tex.Symbol.Macro;
+            const TexError = MathJax._.input.tex.TexError.default;
+            const ParseUtil = MathJax._.input.tex.ParseUtil.default;
+            const expandable = MathJax._.util.Options.expandable;
+
+
+            //      Insert the replacement string into the TeX string, and check
+            //      that there haven't been too many maxro substitutions (prevents
+            //      infinite loops).
+            const useArgument = (parser, text) => {
+                parser.string = ParseUtil.addArgs(parser, text, parser.string.slice(parser.i));
+                parser.i = 0;
+                if (++parser.macroCount > parser.configuration.options.maxMacros) {
+                    throw new TexError('MaxMacroSub1',
+                    'MathJax maximum macro substitution count exceeded; ' +
+                    'is there a recursive macro call?');
+                }
+            }
+
+
+            //      Create the command map for:
+            //          \ifstar, \ifnextchar, \ifblank, \ifstrequal, \gsub, \seteqnumber
+            new CommandMap('Lwarp-macros', {
+                ifstar: 'IfstarFunction',
+                ifnextchar: 'IfnextcharFunction',
+                ifblank: 'IfblankFunction',
+                ifstrequal: 'IfstrequalFunction',
+                gsubstitute: 'GsubstituteFunction',
+                seteqnumber: 'SeteqnumberFunction'
+            }, {
+                //      This function implements an ifstar macro.
+                IfstarFunction(parser, name) {
+                    const resultstar = parser.GetArgument(name);
+                    const resultnostar = parser.GetArgument(name);
+                    const star = parser.GetStar();                      // true if there is a *
+                    useArgument(parser, star ? resultstar : resultnostar);
+                },
+
+
+                //      This function implements an ifnextchar macro.
+                IfnextcharFunction(parser, name) {
+                    let whichchar = parser.GetArgument(name);
+                    if (whichchar.match(/^(?:0x[0-9A-F]+|[0-9]+)$/i)) {
+                        // $ syntax highlighting
+                        whichchar = String.fromCodePoint(parseInt(whichchar));
+                    }
+                    const resultnextchar = parser.GetArgument(name);
+                    const resultnotnextchar = parser.GetArgument(name);
+                    const gotchar = (parser.GetNext() === whichchar);
+                    useArgument(parser, gotchar ? resultnextchar : resultnotnextchar);
+                },
+
+
+                // This function implements an ifblank macro.
+                IfblankFunction(parser, name) {
+                    const blankarg = parser.GetArgument(name);
+                    const resultblank = parser.GetArgument(name);
+                    const resultnotblank = parser.GetArgument(name);
+                    const isblank = (blankarg.trim() == "");
+                    useArgument(parser, isblank ? resultblank : resultnotblank);
+                },
+
+
+                // This function implements an ifstrequal macro.
+                IfstrequalFunction(parser, name) {
+                    const strequalfirst = parser.GetArgument(name);
+                    const strequalsecond = parser.GetArgument(name);
+                    const resultequal = parser.GetArgument(name);
+                    const resultnotequal = parser.GetArgument(name);
+                    const isequal = (strequalfirst == strequalsecond);
+                    useArgument(parser, isequal ? resultequal : resultnotequal);
+                },
+
+
+                // This function implements a gsub macro.
+                GsubstituteFunction(parser, name) {
+                    const gsubfirst = parser.GetArgument(name);
+                    const gsubsecond = parser.GetArgument(name);
+                    const gsubthird = parser.GetArgument(name);
+                    let gsubresult=gsubfirst.replace(gsubsecond, gsubthird);
+                    useArgument(parser, gsubresult);
+                },
+
+
+                //      This function modifies the equation numbers.
+                SeteqnumberFunction(parser, name) {
+                        //   Get the macro parameters
+                        const star = parser.GetStar();                    // true if there is a *
+                        const optBrackets = parser.GetBrackets(name);     // contents of optional brackets
+                        const newsubequations = parser.GetArgument(name);    // the subequations argument
+                        const neweqsection = parser.GetArgument(name);    // the eq section argument
+                        const neweqnumber = parser.GetArgument(name);     // the eq number argument
+                        MathJax.config.subequations=newsubequations ;     // a string with boolean meaning
+                        MathJax.config.section=neweqsection ;             // a string with numeric meaning
+                        parser.tags.counter = parser.tags.allCounter = neweqnumber ;
+                }
+
+
+            });
+
+
+            //      Create the Lwarp-macros package
+            Configuration.create('Lwarp-macros', {
+                handler: {macro: ['Lwarp-macros']}
+            });
+
+
+            MathJax.startup.defaultReady();
+
+
+            // For forward references:
+            MathJax.startup.input[0].preFilters.add(({math}) => {
+                if (math.inputData.recompile){
+                        MathJax.config.subequations = math.inputData.recompile.subequations;
+                        MathJax.config.section = math.inputData.recompile.section;
+                }
+            });
+            MathJax.startup.input[0].postFilters.add(({math}) => {
+                if (math.inputData.recompile){
+                        math.inputData.recompile.subequations = MathJax.config.subequations;
+                        math.inputData.recompile.section = MathJax.config.section;
+                }
+            });
+
+
+                // For \left, \right with unicode-math:
+                const {DelimiterMap} = MathJax._.input.tex.SymbolMap;
+                const {Symbol} = MathJax._.input.tex.Symbol;
+                const {MapHandler} = MathJax._.input.tex.MapHandler;
+                const delimiter = MapHandler.getMap('delimiter');
+                delimiter.add('\\lBrack', new Symbol('\\lBrack', '\u27E6'));
+                delimiter.add('\\rBrack', new Symbol('\\rBrack', '\u27E7'));
+                delimiter.add('\\lAngle', new Symbol('\\lAngle', '\u27EA'));
+                delimiter.add('\\rAngle', new Symbol('\\rAngle', '\u27EB'));
+                delimiter.add('\\lbrbrak', new Symbol('\\lbrbrak', '\u2772'));
+                delimiter.add('\\rbrbrak', new Symbol('\\rbrbrak', '\u2773'));
+                delimiter.add('\\lbag', new Symbol('\\lbag', '\u27C5'));
+                delimiter.add('\\rbag', new Symbol('\\rbag', '\u27C6'));
+                delimiter.add('\\llparenthesis', new Symbol('\\llparenthesis', '\u2987'));
+                delimiter.add('\\rrparenthesis', new Symbol('\\rrparenthesis', '\u2988'));
+                delimiter.add('\\llangle', new Symbol('\\llangle', '\u2989'));
+                delimiter.add('\\rrangle', new Symbol('\\rrangle', '\u298A'));
+                delimiter.add('\\Lbrbrak', new Symbol('\\Lbrbrak', '\u27EC'));
+                delimiter.add('\\Rbrbrak', new Symbol('\\Rbrbrak', '\u27ED'));
+                delimiter.add('\\lBrace', new Symbol('\\lBrace', '\u2983'));
+                delimiter.add('\\rBrace', new Symbol('\\rBrace', '\u2984'));
+                delimiter.add('\\lParen', new Symbol('\\lParen', '\u2985'));
+                delimiter.add('\\rParen', new Symbol('\\rParen', '\u2986'));
+                delimiter.add('\\lbrackubar', new Symbol('\\lbrackubar', '\u298B'));
+                delimiter.add('\\rbrackubar', new Symbol('\\rbrackubar', '\u298C'));
+                delimiter.add('\\lbrackultick', new Symbol('\\lbrackultick', '\u298D'));
+                delimiter.add('\\rbracklrtick', new Symbol('\\rbracklrtick', '\u298E'));
+                delimiter.add('\\lbracklltick', new Symbol('\\lbracklltick', '\u298F'));
+                delimiter.add('\\rbrackurtick', new Symbol('\\rbrackurtick', '\u2990'));
+                delimiter.add('\\langledot', new Symbol('\\langledot', '\u2991'));
+                delimiter.add('\\rangledot', new Symbol('\\rangledot', '\u2992'));
+                delimiter.add('\\lparenless', new Symbol('\\lparenless', '\u2993'));
+                delimiter.add('\\rparengtr', new Symbol('\\rparengtr', '\u2994'));
+                delimiter.add('\\Lparengtr', new Symbol('\\Lparengtr', '\u2995'));
+                delimiter.add('\\Rparenless', new Symbol('\\Rparenless', '\u2996'));
+                delimiter.add('\\lblkbrbrak', new Symbol('\\lblkbrbrak', '\u2997'));
+                delimiter.add('\\rblkbrbrak', new Symbol('\\rblkbrbrak', '\u2998'));
+                delimiter.add('\\lvzigzag', new Symbol('\\lvzigzag', '\u29D8'));
+                delimiter.add('\\rvzigzag', new Symbol('\\rvzigzag', '\u29D9'));
+                delimiter.add('\\Lvzigzag', new Symbol('\\Lvzigzag', '\u29DA'));
+                delimiter.add('\\Rvzigzag', new Symbol('\\Rvzigzag', '\u29DB'));
+                delimiter.add('\\lcurvyangle', new Symbol('\\lcurvyangle', '\u29FC'));
+                delimiter.add('\\rcurvyangle', new Symbol('\\rcurvyangle', '\u29FD'));
+                delimiter.add('\\Vvert', new Symbol('\\Vvert', '\u2980'));
+        }        // ready
+    },           // startup
+
+
+    tex: {
+        packages: {'[+]': ['tagformat', 'Lwarp-macros', 'textmacros']},
+        tags: "ams",
+                tagformat: {
+                        number: function (n) {
+                             if(MathJax.config.subequations==0)
+                                 return(MathJax.config.section + n);
+                             else
+                                 return(MathJax.config.section + String.fromCharCode(96+n));
+                        },
+                },
+    }
+}
+</script>
+
+
+<script
+        id="MathJax-script"
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+></script>
+
+</head>
+<body>
+
+
+<a id="lecnotes_html-autopage-9"></a>
+<nav class="topnavigation"><a href="lecnotes_html.html" class="linkhome" >
+Home</a></nav>
+
+
+<div class="bodyandsidetoc">
+<div class="sidetoccontainer">
+
+
+<nav class="sidetoc">
+
+
+<div class="sidetoctitle">
+
+<p>
+Contents
+</p>
+</div>
+
+
+<div class="sidetoccontents">
+
+<p>
+<a href="lecnotes_html.html" class="linkhome" >
+Home</a>
+</p>
+
+</div>
+
+</nav>
+
+</div>
+
+
+<main class="bodycontainer">
+
+
+<section class="textbody">
+
+<!--MathJax customizations:-->
+
+
+<div class="hidden">
+
+\(\newcommand{\footnotename}{footnote}\)
+
+\(\def \LWRfootnote {1}\)
+
+\(\newcommand {\footnote }[2][\LWRfootnote ]{{}^{\mathrm {#1}}}\)
+
+\(\newcommand {\footnotemark }[1][\LWRfootnote ]{{}^{\mathrm {#1}}}\)
+
+\(\let \LWRorighspace \hspace \)
+
+\(\renewcommand {\hspace }{\ifstar \LWRorighspace \LWRorighspace }\)
+
+\(\newcommand {\mathnormal }[1]{{#1}}\)
+
+\(\newcommand \ensuremath [1]{#1}\)
+
+\(\newcommand {\LWRframebox }[2][]{\fbox {#2}} \newcommand {\framebox }[1][]{\LWRframebox } \)
+
+\(\newcommand {\setlength }[2]{}\)
+
+\(\newcommand {\addtolength }[2]{}\)
+
+\(\newcommand {\setcounter }[2]{}\)
+
+\(\newcommand {\addtocounter }[2]{}\)
+
+\(\newcommand {\arabic }[1]{}\)
+
+\(\newcommand {\number }[1]{}\)
+
+\(\newcommand {\noalign }[1]{\text {#1}\notag \\}\)
+
+\(\newcommand {\cline }[1]{}\)
+
+\(\newcommand {\directlua }[1]{\text {(directlua)}}\)
+
+\(\newcommand {\luatexdirectlua }[1]{\text {(directlua)}}\)
+
+\(\newcommand {\protect }{}\)
+
+\(\def \LWRabsorbnumber #1 {}\)
+
+\(\def \LWRabsorbquotenumber &quot;#1 {}\)
+
+\(\newcommand {\LWRabsorboption }[1][]{}\)
+
+\(\newcommand {\LWRabsorbtwooptions }[1][]{\LWRabsorboption }\)
+
+\(\def \mathchar {\ifnextchar &quot;\LWRabsorbquotenumber \LWRabsorbnumber }\)
+
+\(\def \mathcode #1={\mathchar }\)
+
+\(\let \delcode \mathcode \)
+
+\(\let \delimiter \mathchar \)
+
+\(\def \oe {\unicode {x0153}}\)
+
+\(\def \OE {\unicode {x0152}}\)
+
+\(\def \ae {\unicode {x00E6}}\)
+
+\(\def \AE {\unicode {x00C6}}\)
+
+\(\def \aa {\unicode {x00E5}}\)
+
+\(\def \AA {\unicode {x00C5}}\)
+
+\(\def \o {\unicode {x00F8}}\)
+
+\(\def \O {\unicode {x00D8}}\)
+
+\(\def \l {\unicode {x0142}}\)
+
+\(\def \L {\unicode {x0141}}\)
+
+\(\def \ss {\unicode {x00DF}}\)
+
+\(\def \SS {\unicode {x1E9E}}\)
+
+\(\def \dag {\unicode {x2020}}\)
+
+\(\def \ddag {\unicode {x2021}}\)
+
+\(\def \P {\unicode {x00B6}}\)
+
+\(\def \copyright {\unicode {x00A9}}\)
+
+\(\def \pounds {\unicode {x00A3}}\)
+
+\(\let \LWRref \ref \)
+
+\(\renewcommand {\ref }{\ifstar \LWRref \LWRref }\)
+
+\( \newcommand {\multicolumn }[3]{#3}\)
+
+\(\require {textcomp}\)
+
+\(\newcommand {\intertext }[1]{\text {#1}\notag \\}\)
+
+\(\let \Hat \hat \)
+
+\(\let \Check \check \)
+
+\(\let \Tilde \tilde \)
+
+\(\let \Acute \acute \)
+
+\(\let \Grave \grave \)
+
+\(\let \Dot \dot \)
+
+\(\let \Ddot \ddot \)
+
+\(\let \Breve \breve \)
+
+\(\let \Bar \bar \)
+
+\(\let \Vec \vec \)
+
+\(\newcommand {\real }{\mathbb {R}} \)
+
+\(\newcommand {\RR }{\mathbb {R}} \)
+
+\(\newcommand {\ZZ }{\mathbb Z} \)
+
+\(\newcommand {\F }{\mathbb F} \)
+
+\(\newcommand {\Ham }{\mathrm {Ham}}\)
+
+\(\newcommand {\PP }{\mathbb P}\)
+
+\(\newcommand {\co }[1]{\overline {#1}} \)
+
+\(\newcommand {\ul }[1]{\underline {#1}} \)
+
+\(\newcommand {\bo }[1]{\mathbf {#1}} \)
+
+\(\newcommand {\concat }[2]{[\, #1 \,|\, #2 \,]} \)
+
+\(\newcommand {\Encode }{\texttt {ENCODE}} \)
+
+\(\newcommand {\Decode }{\texttt {DECODE}} \)
+
+\(\newcommand {\RM }{R} \)
+
+\(\newcommand {\Rep }{\text {Rep}} \)
+
+</div>
+
+<p>
+<!--
+...... chapter ch4 ......
+-->
+<h3 id="autosec-10">Chapter&nbsp;<span class="sectionnumber">4&#x2003;</span>Decoding linear codes</h3>
+<a id="lecnotes_html-autopage-10"></a>
+<a id="lecnotes_html-autofile-10"></a>
+
+<p>
+Version 2022-10-11. <a href="lecnotes_html.pdf" target="_blank" >To PDF version of the notes</a>
+</p>
+
+<p>
+<b>Synopsis.</b> <i>We explicitly describe a decoder \(\Decode \colon \F _q^n \to C\) based on coset leaders and a standard array for \(C\). For binary \(C\) sent via a binary symmetric channel, we find the probability \(P_{\mathrm
+{undetect}}(C)\) of an undetected transmission error. It is related to the weight enumerator of \(C\). We also find the probability \(P_{\mathrm {corr}}(C)\) that a codeword is decoded correctly.</i>
+</p>
+<!--
+...... subsection Cosets and coset leaders ......
+-->
+<h5 id="autosec-11">Cosets and coset leaders</h5>
+<a id="lecnotes_html-autopage-11"></a>
+
+
+<p>
+Our next objective is a <i>decoder</i> for a linear code \(C\), i.e., an algorithm which defines a function \(\Decode \colon \F _q^n\to C\) such that \(\Decode (\ul y)\) is a nearest neighbour of \(\ul y\) in \(C\). It turns out that the following
+notion is of direct relevance to decoding:
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-12"></a>
+<span class="amsthmnamedefinition">Definition</span><span class="amsthmnotedefinition"> (coset)</span>.                Given a linear code \(C\subseteq \F _q^n\) and a vector \(\ul y\in \F _q^n\), the set
+</p>
+
+<p>
+\[ \ul y + C = \{\ul y + \ul c\mid \ul c \in C\} \]
+</p>
+
+<p>
+is called the <b><i>coset</i></b> of \(\ul y\).
+</p>
+
+</li>
+
+</ul>
+
+</div>
+
+<p>
+We recall basic facts about cosets (see for example <i>Algebraic Structures 1</i>):
+</p>
+<ul style="list-style-type:none">
+
+<li>
+<p>
+• \(C=\ul 0+C\) is itself a coset. (\(C\) is called the <i>trivial coset</i>.) Moreover, \(C\) is the coset of any codeword \(\ul c\in C\).
+</p>
+</li>
+<li>
+
+
+<p>
+• If \(\ul y,\ul z\in \F _q^n\), then either \(\ul y + C = \ul z+C\) (<i>this happens if \(\ul y-\ul z\in C\)</i>) or \((\ul y + C)\cap (\ul z+C)=\varnothing \).
+</p>
+</li>
+<li>
+
+
+<p>
+• \(\#(\ul y+C)=\#C=q^k\).
+</p>
+</li>
+<li>
+
+
+<p>
+• There are \(\dfrac {\#\F _q^n}{\#C}=q^{n-k}\) distinct cosets.
+</p>
+</li>
+</ul>
+
+<p>
+Thus, the whole space \(\F _q^n\) is split (<i>partitioned</i>) into \(q^{n-k}\) cosets:
+</p>
+
+<p>
+\[ \F _q^n = C \sqcup (\ul a_1+C)\sqcup \ldots \sqcup (\ul a_{q^{n-k}-1}+C). \]
+</p>
+
+<p>
+The above is true for cosets in arbitrary abelian groups. We need, however, a notion specific to Coding Theory:
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-13"></a>
+<span class="amsthmnamedefinition">Definition</span><span class="amsthmnotedefinition"> (coset leader)</span>.   A <b><i>coset leader</i></b> of a coset \(\ul y+C\) is a vector of minimum weight in \(\ul y +C\).
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-14"></a>
+<span class="amsthmnamedefinition">Remark</span><span class="amsthmnotedefinition"> (non-uniqueness of coset leader)</span>.   There may be more than one coset leader in a coset. However, all coset leaders of a given coset are of the
+same weight — the minimum of all weights of vectors in the coset.
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-15"></a>
+<span class="amsthmnamedefinition">Proposition</span><span class="amsthmnumberdefinition"> <span class="textup">4.1</span></span><span class="amsthmnotedefinition"> (the formula for a decoder for a linear code)</span>.   <a
+id="prop:err"></a> For a linear code \(C\subseteq \F _q^n\), any decoder \(\Decode \colon \F _q^n \to C\) satisfies:
+</p>
+
+<p>
+\[ \forall \ul y\in \F _q^n\quad \Decode (\ul y)=\ul y - \ul e \text { where $\ul e$ is a coset leader of the coset $\ul y + C$ of $\ul y$.} \]
+</p>
+
+<p>
+
+
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmproof">
+
+<a id="lecnotes_html-autopage-16"></a>
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<span class="amsthmproofname">Proof.</span> Let \(\ul v=\Decode (\ul y)\). Then \(\ul v\in C\). Put \(\ul e=\ul y - \ul v\). Since \(C\) is a linear code, \(-\ul v\in C\), so \(\ul e=\ul y + (-\ul v)\in \ul y + C\). We have
+proved that \(\ul e\) must lie in the coset \(\ul y+C\).
+</p>
+
+<p>
+Furthermore, by Lemma&nbsp;<a href="ch3.html#lem:dist-weight">3.1</a> \(d(\ul y,\ul v)=w(\ul y-\ul v)=w(\ul e)\). The decoder must decode \(\ul y\) to a nearest neighbour of \(\ul y\) in \(C\), that is, to minimise \(d(\ul y,\ul
+v)\); hence the decoder must choose \(\ul e\) so that \(w(\ul e)\) is minimal in the coset \(\ul y+C\). Hence by definition of a coset leader, \(\ul e\) must be a coset leader of the coset \(\ul y+C\). <span
+class="theoremendmark">&#x25A1;</span>
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<!--
+...... subsection Standard array: construction ......
+-->
+<h5 id="autosec-17">Standard array: construction</h5>
+<a id="lecnotes_html-autopage-17"></a>
+
+
+<p>
+The following construction is a way to construct all cosets and to find one coset leader for every coset for a given linear code \(C\).
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-18"></a>
+<span class="amsthmnamedefinition">Definition</span><span class="amsthmnotedefinition"> (standard array)</span>.                 A <b><i>standard array</i></b> for a linear code \(C\subseteq \F _q^n\) is a table with the following properties.
+The table has \(|C|=q^k\) columns and \(q^{n-k}\) rows. Each row is a coset. The leftmost entry in each row is a coset leader of that row. Row 0 is the trivial coset (i.e., \(C\) itself). Each entry in the table is the sum of the leftmost entry in its
+row and the top entry in its column. The table contains every vector from \(\F _q^n\) exactly once.
+</p>
+
+</li>
+
+</ul>
+
+</div>
+
+<p>
+We will show how to construct a standard array, using the linear code \(C=\{0000\), \(0111\), \(1011, 1100\} \subseteq \F _2^4\) as an example. (In fact, this code is the even weight code of length \(3\) with last bit repeated; but the origin of
+the code is not important for the standard array construction.)
+</p>
+
+<p>
+<b>Row 0 of the standard array:</b> lists all <i>codevectors</i> (elements of \(C=\ul 0+C\)). They must start from \(\ul 0\), but otherwise the order is arbitrary.
+</p>
+<div class="center">
+
+<p>
+\(0000\qquad 0111 \qquad 1011 \qquad 1100\)
+</p>
+</div>
+
+<p>
+<b>Row 1:</b> choose a vector \(\ul a_1\) of smallest weight not yet listed. Because of its minimum weight, that vector will automatically be a coset leader. Fill in Row 1 by adding \(\ul a_1\) to each codevector in Row 0.<br />
+Say, \(\ul a_1=0001\). To list its coset, add it to row \(0\): e.g., \(0001+0111=0110\), etc.
+</p>
+<div class="center">
+
+<p>
+\(0001\qquad 0110\qquad 1010 \qquad 1101\)
+</p>
+</div>
+
+<p>
+<b>Row 2:</b> choose \(\ul a_2\) of smallest weight not yet listed, and do the same as for Row 1.<br />
+Say, \(\ul a_2=0010\), add it to row 0:
+</p>
+<div class="center">
+
+<p>
+\(0010\qquad 0101\qquad 1001\qquad 1110\)
+</p>
+</div>
+
+<p>
+<b>Row 3:</b> same with, say, \(\ul a_3=0100\):
+</p>
+<div class="center">
+
+<p>
+\(0100\qquad 0011\qquad 1111\qquad 1000\)
+</p>
+</div>
+
+<p>
+We obtain the following standard array for the code \(C=\{0000\), \(0111\), \(1011, 1100\}\):
+</p>
+
+<p>
+\[ \begin {matrix} 0000&amp; 0111 &amp; 1011 &amp; 1100 \\ 0001&amp; 0110&amp; 1010 &amp; 1101 \\ 0010&amp; 0101&amp; 1001&amp; 1110 \\ 0100&amp; 0011&amp; 1111&amp; 1000 \end {matrix} \]
+</p>
+<!--
+...... subsection Standard array: decoding ......
+-->
+<h5 id="autosec-23">Standard array: decoding</h5>
+<a id="lecnotes_html-autopage-23"></a>
+
+
+<p>
+Let \(C\subseteq \F _q^n\) be a linear code. By Proposition <a href="ch4.html#prop:err">4.1</a>, any decoder is given by
+</p>
+
+<p>
+\[ \Decode (\ul y) = \ul y - \texttt {COSET LEADER}(\ul y+C). \]
+</p>
+
+<p>
+This suggests the following decoding algorithm for \(C\).
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-24"></a>
+<span class="amsthmnamedefinition">Algorithm</span><span class="amsthmnumberdefinition"> <span class="textup">4.2</span></span><span class="amsthmnotedefinition"> (the standard array decoder)</span>.
+</p>
+
+<p>
+<i>Preparation</i>.
+</p>
+<ul style="list-style-type:none">
+
+
+<li>
+<p>
+• Construct a standard array for \(C\).
+</p>
+</li>
+</ul>
+
+<p>
+<i>Decoding</i>.
+</p>
+<ul style="list-style-type:none">
+
+
+<li>
+<p>
+• Receive a vector \(\ul y\in \F _q^n\).
+</p>
+
+
+</li>
+<li>
+
+
+<p>
+• Look up \(\ul y\) in the standard array.
+</p>
+
+
+</li>
+<li>
+
+
+<p>
+• Return the topmost vector of the column of \(\ul y\) as \(\Decode (\ul y)\).
+</p>
+</li>
+</ul>
+
+<p>
+<b>Justification:</b> the algorithm is correct because, by definition of a standard array,
+</p>
+<ul style="list-style-type:none">
+
+
+<li>
+<p>
+(a) Look-up of \(\ul y\) will succeed as every vector in \(\F _q^n\) is present in the array;
+</p>
+
+
+</li>
+<li>
+
+
+<p>
+(b) the row of \(\ul y\) starts with \(\texttt {COSET LEADER}(\ul y+C)\), so
+</p>
+
+
+</li>
+<li>
+
+
+<p>
+(c) the top of \(\ul y\)’s column is \(\ul y - \texttt {COSET LEADER}(\ul y+C)\) so this is \(\ul y\) decoded.
+</p>
+</li>
+</ul>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-25"></a>
+<span class="amsthmnamedefinition">Example</span>.
+</p>
+
+<p>
+Using the standard array decoder for the binary code \(C=\{0000,0111,1011,1100\}\) with the standard array constructed above,
+</p>
+<ul style="list-style-type:none">
+
+
+<li>
+<p>
+• decode the received vectors \(0011\) and \(1100\);
+</p>
+
+
+</li>
+<li>
+
+
+<p>
+• give an example of one bit error occurring in a codeword and being corrected;
+</p>
+
+
+</li>
+<li>
+
+
+<p>
+• give an example of one bit error occurring in a codeword and not being corrected.
+</p>
+</li>
+</ul>
+
+<p>
+<b>Solution.</b> We work with the following standard array for \(C\):
+</p>
+
+<p>
+\[ \begin {matrix} 0000&amp; 0111 &amp; 1011 &amp; 1100 \\ 0001&amp; 0110&amp; 1010 &amp; 1101 \\ 0010&amp; 0101&amp; 1001&amp; 1110 \\ 0100&amp; 0011&amp; 1111&amp; 1000 \end {matrix} \]
+</p>
+
+<p>
+The received vector \(0011\) is in the second column, so \(\Decode (0011)=0111\). The received vector \(1100\) is a codeword (in the fourth column), so \(\Decode (1100)=1100\).
+</p>
+
+<p>
+Suppose that the codeword \(0000\) is sent. If an error occurs in the last bit, the word \(0001\) is received and decoded correctly as \(0000\). If an error occurs in the first bit, the word \(1000\) is received and decoded incorrectly as \(1100\).
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-26"></a>
+<span class="amsthmnamedefinition">Remark</span><span class="amsthmnotedefinition"> (a standard array decoder is not unique)</span>.
+</p>
+
+<p>
+Recall that there may be more than one possible standard array for the code \(C\). Indeed, in the above example the coset \(0100+C\) has two coset leaders: \(0100\) and \(1000\). Thus, we could construct a different standard array for \(C\):
+</p>
+
+<p>
+\[ \begin {matrix} 0000&amp; 0111 &amp; 1011 &amp; 1100 \\ 0001&amp; 0110&amp; 1010 &amp; 1101 \\ 0010&amp; 0101&amp; 1001&amp; 1110 \\ 1000&amp; 1111&amp; 0011&amp; 0100 \end {matrix} \]
+</p>
+
+<p>
+The decoder associated to this standard array is different from the decoder considered above. Both decoders decode the same linear code \(C\). A linear code can have more than one decoder.
+</p>
+
+<p>
+However, if \(C\) is a perfect linear code, then each coset has only one coset leader, so the decoder is unique. This property of perfect codes appears on the example sheets.
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<!--
+...... subsection Reminder (the number of errors corrected by a code) ......
+-->
+<h5 id="autosec-27">Reminder (the number of errors corrected by a code)</h5>
+<a id="lecnotes_html-autopage-27"></a>
+
+
+<p>
+Recall that a code with minimum distance \(d\) corrects \(t=\left [ (d-1)/2 \right ]\) errors.
+</p>
+
+<p>
+The code \(C\) in the above example is linear, hence \(d(C)=w(C)=2\) (it is easy to find the minimum weight of the code by inspection). This means that the code corrects \(\left [\frac {2-1}{2}\right ]=0\) errors. That is, \(C\) is not
+guaranteed to corect even a single bit error occurring in a codevector. And indeed, we saw in an example how one bit error occurred in a codevector and was not corrected.
+</p>
+
+<p>
+So, from the point of view of Hamming’s theory, this code \(C\) has no error-correcting capability. It still detects up to one error.
+</p>
+
+<p>
+But in Shannon’s theory, error-detecting and error-correcting performance of a code are measured probabilistically.
+</p>
+<!--
+...... subsection Error-detecting and error-correcting performance of a linear code: Shannon’s theory point of view ......
+-->
+<h5 id="autosec-28">Error-detecting and error-correcting performance of a linear code: Shannon’s theory point of view</h5>
+<a id="lecnotes_html-autopage-28"></a>
+<!--
+...... subsection The probability of an undetected error ......
+-->
+<h5 id="autosec-29">The probability of an undetected error</h5>
+<a id="lecnotes_html-autopage-29"></a>
+
+
+<p>
+Shannon’s Information Theory is interested in how likely is it that a transmission error in a codeword is not detected/corrected by a decoder of \(C\).
+</p>
+
+<p>
+We will answer these questions for a binary linear code \(C\), but we need to have a stochastic model of the noise. Here it is:
+</p>
+
+<p>
+<b>Assumption.</b> The channel is \(\mathit {BSC}(p)\), the binary symmetric channel with bit error rate \(p\).
+</p>
+
+<p>
+Recall that this means that one bit (\(0\) or \(1\)), transmitted via the channel, arrives unchanged with probability \(1-p\), and gets flipped with probability \(p\):
+</p>
+<div class="center">
+
+<p>
+
+<a href="bsc.svg" target="_blank" ><img
+    src="bsc.svg"
+    class="inlineimage"
+    alt="(image)"
+></a>
+</p>
+</div>
+
+<p>
+When a codeword \(\ul v\) is transmitted, the channel generates a random error vector and adds it to \(\ul v\). By definition of \(\mathit {BSC}(p)\), for a given \(\ul e\in \F _2^n\) one has
+</p>
+
+<p>
+\[ P(\text {the error vector equals }\ul e) = (1-p)^{n-i}p^i, \qquad \text {where }i=w(\ul e).                  \]
+</p>
+
+<p>
+It turns out that in determining the probability of an undetected error, the following notion is very useful:
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-31"></a>
+<span class="amsthmnamedefinition">Definition</span><span class="amsthmnotedefinition"> (the weight enumerator)</span>.
+</p>
+
+<p>
+The <b><i>weight enumerator</i></b> of a linear code \(C\subseteq \F _q^n\) is
+</p>
+<span class="hidden"> \(\seteqnumber{0}{4.}{0}\)</span>
+
+
+
+<!--
+
+
+                                                                                                         X
+                                                                                           WC (x, y) =         xn−w(v) y w(v)
+                                                                                                         v∈C
+
+                                                                                                    = A0 xn + A1 xn−1 y + A2 xn−2 y 2 + . . . + An y n
+
+
+
+-->
+
+
+
+<p>
+
+
+\begin{align*}
+W_C(x,y) &amp; = \sum _{\ul v\in C}x^{n-w(\ul v)}y^{w(\ul v)} \\ &amp; = A_0x^n+A_1x^{n-1}y+A_2x^{n-2}y^{2}+\ldots +A_ny^n
+\end{align*}
+where \(A_i = \#\{\ul v\in C: w(\ul v)=i\}\). The weight enumerator of \(C\) is a polynomial in two variables \(x,y\).
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-32"></a>
+<span class="amsthmnamedefinition">Theorem</span><span class="amsthmnumberdefinition"> <span class="textup">4.3</span></span><span class="amsthmnotedefinition"> (\(P_{\mathrm {undetect}}(C)\), the probability of an
+undetected error)</span>.   Suppose that a codevector of a binary linear code \(C\) of length \(n\) is transmitted via \(\mathit {BSC}(p)\). Then the probability of an undetected transmission error \(P_{\mathrm {undetect}}(C) =
+W_C(1-p,p)-(1-p)^n\).
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmproof">
+
+<a id="lecnotes_html-autopage-33"></a>
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<span class="amsthmproofname">Proof.</span> Let \(\ul v\in C\) be the codevector being transmitted. Recall that an <i>undetected error</i> means that the received vector \(\ul v+\ul e\) is a codevector not equal to \(\ul v\). Note that,
+since \(\ul v\in C\) and \(C\) is a vector space,
+</p>
+
+<p>
+\[ \ul v + \ul e \in C, \ \ul v+\ul e\ne \ul v \quad \iff \quad \ul e \in C, \ \ul e\ne \ul 0.               \]
+</p>
+
+<p>
+Therefore, <i>an undetected error means that the error vector is a non-zero codevector.</i> We can now calculate
+</p>
+<span class="hidden"> \(\seteqnumber{0}{4.}{0}\)</span>
+
+
+
+<!--
+
+
+                                                                                                                                   X
+                                                                                        Pundetect (C) = P (undetected error) =               P (the error vector is e)
+                                                                                                                                 e∈C, e̸=0
+                                                                                                                                   X
+                                                                                                                            =            (1 − p)n−w(e) pw(e) .
+                                                                                                                                 e∈C, e̸=0
+
+
+
+
+-->
+
+
+
+<p>
+
+
+\begin{align*}
+P_{\mathrm {undetect}}(C) = P(\text {undetected error}) &amp;= \sum _{\ul e\in C,\, \ul e\ne \ul 0} P(\text {the error vector is }\ul e)\\ &amp;=\sum _{\ul e\in C,\, \ul e\ne \ul 0} (1-p)^{n-w(\ul e)}p^{w(\ul e)}.
+\end{align*}
+This sum is \(W_C(1-p,p)\) without one term. The missing term, excluded by the condition \(\ul e\ne \ul 0\), is exactly
+</p>
+
+<p>
+\[ (1-p)^{n-w(\ul 0)}p^{w(\ul 0)} = (1-p)^n, \]
+</p>
+
+<p>
+which gives the expression for \(P_{\mathrm {undetect}}(C) \) as stated. <span class="theoremendmark">&#x25A1;</span>
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-34"></a>
+<span class="amsthmnamedefinition">Remark</span>.         In general, \(P_{\mathrm {undetect}}(C) \) is calculated assuming that the codeword \(\ul v\) is picked at random from the code, with all codewords equally likely to be picked.
+However, our proof shows that for a <i>linear</i> binary code and for the binary <i>symmetric</i> channel the probability is the same for all codevectors.
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-35"></a>
+<span class="amsthmnamedefinition">Example</span>.         For the binary code \(C=\{0000,0111,1011,1100\}\) as above, the weight enumerator is
+</p>
+
+<p>
+\[ W_C(x,y)= x^4 + x^2y^2 + 2xy^3, \]
+</p>
+
+<p>
+because \(C\) has one codeword of weight \(0\), zero codewords of weight \(1\), one codeword of weight \(2\) and two codewords of weight \(3\). If a codeword of \(C\) is transmitted via \(\mathit {BSC}(p)\), then an undetected error occurs with
+probability \(P_{\mathrm {undetect}} = (1-p)^2 p^2 + 2(1-p)p^3 \).
+</p>
+
+</li>
+
+</ul>
+
+</div>
+
+<p>
+<b>Discussion.</b> When is it important to know \(P_{\mathrm {undetect}}(C)\)? A code is used in a situation where the receiver can request retransmission if an error is detected. Assuming this results in a correct transmission (i.e., neglecting
+the probability that undetected errors creep up in <i>retransmitted</i> codevectors), \(P_{\mathrm {undetect}}(C)\) is on average the proportion of incorrect codevectors, hence incorrect symbols, accepted by the receiver. A code should be
+designed for a particular channel so as to keep this probability below an agreed threshold.
+</p>
+<!--
+...... subsection The probability of correct decoding ......
+-->
+<h5 id="autosec-36">The probability of correct decoding</h5>
+<a id="lecnotes_html-autopage-36"></a>
+
+
+<p>
+We will now find the probability of an error being <i>corrected</i> for \(C\).
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-37"></a>
+<span class="amsthmnamedefinition">Theorem</span><span class="amsthmnumberdefinition"> <span class="textup">4.4</span></span><span class="amsthmnotedefinition"> (\(P_{\mathrm {corr}}(C)\), the probability of correct
+decoding)</span>.   <a id="thm:pcorr"></a> Suppose that a codevector of a binary linear code \(C\) is transmitted via \(\mathit {BSC}(p)\). The probability that the received vector will be decoded corectly is
+</p>
+
+<p>
+\[ P_{\mathrm {corr}} (C)= \sum _{i=0}^n \alpha _i (1-p)^{n-i}p^i, \]
+</p>
+
+<p>
+where \(\alpha _i\) denotes the number of cosets where the coset leader is of weight&nbsp;\(i\).
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmproof">
+
+<a id="lecnotes_html-autopage-38"></a>
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<span class="amsthmproofname">Proof.</span> Recall that \(\ul v\in C\) is <i>decoded correctly</i> if \(\Decode (\ul v+\ul e)=\ul v\). By Proposition <a href="ch4.html#prop:err">4.1</a>,
+</p>
+<span class="hidden"> \(\seteqnumber{0}{4.}{0}\)</span>
+
+
+
+<!--
+
+
+
+                                                                                                       DECODE(v + e) = v + e − COSET LEADER(v + e)
+                                                                                                                    = v + e − COSET LEADER(e).
+
+
+
+-->
+
+
+
+<p>
+
+
+\begin{align*}
+\Decode (\ul v+\ul e)&amp;=\ul v + \ul e - \texttt {COSET LEADER}(\ul v+\ul e)\\ &amp; = \ul v + \ul e - \texttt {COSET LEADER}(\ul e).
+\end{align*}
+Therefore, <i>correct decoding occurs whenever the error vector is the chosen coset leader of its coset</i>.
+</p>
+
+<p>
+We therefore have one good outcome per coset: namely, \(\ul e\) equals the chosen coset leader of the coset. Recall that that happens with probability \((1-p)^{n-i}p^i\) where \(i\) is the weight of the coset leader of the given coset. Summing
+over all cosets and gathering the like terms, we obtain the formula for \(P_{\mathrm {corr}} (C)\) as stated (it does not depend on \(\ul v\)). <span class="theoremendmark">&#x25A1;</span>
+</p>
+
+</li>
+
+</ul>
+
+</div>
+
+<p>
+<b>Discussion.</b> When is it important to know \(P_{\mathrm {corr}}(C)\)? In one-way communication channels there is no retransmission even if an error is detected, hence the decoder is used to produce a best guess as to which codevector
+was sent. Thus, \(1-P_{\mathrm {corr}}(C)\) is on average the proportion of incorrect codevectors, hence incorrect symbols, accepted by the receiver in this case. Once again, a code should be designed for a particular channel so as to keep
+\(1-P_{\mathrm {corr}}(C)\) below an agreed threshold.
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-39"></a>
+<span class="amsthmnamedefinition">Example</span>.           Recall the code with a standard array
+</p>
+
+<p>
+\[ \begin {matrix} 0000&amp; 0111 &amp; 1011 &amp; 1100 \\ 0001&amp; 0110&amp; 1010 &amp; 1101 \\ 0010&amp; 0101&amp; 1001&amp; 1110 \\ 1000&amp; 1111&amp; 0011&amp; 0100 \end {matrix} \]
+</p>
+
+<p>
+One has \(\alpha _0=1\), \(\alpha _1=3\), \(\alpha _2=\alpha _3=0\), so \(P_{\mathrm {corr}} (C)=(1-p)^4+3(1-p)^3 p\).
+</p>
+
+<p>
+<b>Approximation.</b> For this code, \(P_{\mathrm {undetect}} = (1-p)^2 p^2 + 2(1-p)p^3\), which is a polynomial of the form \(p^2+o(p^2)\) where \(o(p^2)\) contains powers of \(p\) strictly higher than \(2\). For \(p\ll 1\), that is,
+\(p\) very small, the terms in \(o(p^2)\) are negligible compared to \(p^2\). So for practical purposes we may write \(P_{\mathrm {undetect}}\sim p^2\) which means that the average proportion of bad bits in the output goes down from \(p\)
+(unencoded information) to \(p^2\) — if we can use error detection and retransmission.
+</p>
+
+<p>
+However, if error correction is used (e.g., there is no possibility to retransmit if an error is detected), \(1-P_{\mathrm {corr}}(C)=1-(1-p)^4-3(1-p)^3 p=p+o(p)\), i.e., is of order \(p\). There is no substantial improvement over transmitting the
+unencoded information where the proportion of bad bits in the output is \(p\).
+</p>
+
+<p>
+Note that the rate of \(C\) is \(R= 0.5\), so in this case a two-fold increase in the volume of information which needs to be transmitted has no effect on error correction.
+</p>
+
+<p>
+Shannon theory’s observation about \(C\) is roughly in line with what arises from Hamming’s theory which does not look at specific channels such as \(\mathit {BSC}(p)\): \(C\) detects up to \(1\) error but corrects \(0\) errors.
+</p>
+
+<p>
+The main reason for such a weak performance is that \(C\) is not a good code.
+</p>
+
+<p>
+
+
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<!--
+...... subsection Discussion: how can one improve performance of error-correcting codes?                    ......
+-->
+<h5 id="autosec-40">Discussion: how can one improve performance of error-correcting codes?</h5>
+<a id="lecnotes_html-autopage-40"></a>
+
+
+<p>
+1. One can use longer codes (increase \(n\)).
+</p>
+
+<p>
+However, decoding is going to be a problem. We described the standard array decoding algorithm for linear codes. Its main disadvantage is the <i>storage requirement</i>: the standard array contains <i>all vectors</i> of length \(n\) and must be
+stored in memory while the decoder operates. This requires an amount of memory proportional to \(nq^n\).
+</p>
+
+<p>
+<b>Example:</b> The Voyager 1 and 2 deep space missions used a binary code of length \(24\) to transmit colour photographs of Jupiter and Saturn back to Earth in 1979–81. A standard array decoder for this code would require \(24\times
+2^{24}\) bits of memory, which is \(48\) Mbytes. This is little by today’s standards, however, the Voyager 1 spacecraft has recently left the Solar system with \(68\) <i>kilobytes</i> of onboard memory...
+</p>
+
+<p>
+In the next section, we will introduce an improved technique called <i>syndrome decoding</i>. It will require significantly less memory, but decoding a received vector will require more computation. Syndrome decoding is based on the notion of a
+dual code.
+</p>
+
+<p>
+2. One can use codes which correct more errors.
+</p>
+
+<p>
+Codes should still be structured, not random, otherwise decoding may not be computationally feasible. In the rest of the course, we will construct several families of codes algebraically.
+</p>
+
+<p>
+3. One can invent something substantially new, e.g., practical applications of quantum codes.
+</p>
+
+<p>
+This is an idea for the future, and such material will not be covered in the course this year.
+</p>
+
+<p>
+<i>End of discussion.</i>
+</p>
+</section>
+
+</main>
+
+</div>
+
+
+<nav class="botnavigation"><a href="lecnotes_html.html" class="linkhome" >
+Home</a></nav>
+
+</body>
+</html>

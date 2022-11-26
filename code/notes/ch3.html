@@ -1,0 +1,1231 @@
+
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="UTF-8" />
+<meta name="generator" content="LaTeX Lwarp package" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<!--[if lt IE 9]>
+<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+<link rel="stylesheet" type="text/css" href="bazlovstyle.css" />
+
+<script>
+// Lwarp MathJax emulation code
+//
+// Based on code by Davide P. Cervone.
+// Equation numbering: https://github.com/mathjax/MathJax/issues/2427
+// Starred and ifnextchar macros: https://github.com/mathjax/MathJax/issues/2428
+// \left, \right delimiters: https://github.com/mathjax/MathJax/issues/2535
+//
+// Modified by Brian Dunn to adjust equation numbering and add subequations.
+//
+// LaTeX can use \seteqnumber{subequations?}{section}{number} before each equation.
+// subequations? is 0 usually, 1 if inside subequations.
+// section is a string printed as-is, or empty.
+// number is auto-incremented by MathJax between equations.
+//
+MathJax = {
+    subequations: "0",
+    section: "",
+    loader: {
+        load: ['[tex]/tagformat', '[tex]/textmacros'],
+    },
+    startup: {
+        ready() {
+            //      These would be replaced by import commands if you wanted to make
+            //      a proper extension.
+            const Configuration = MathJax._.input.tex.Configuration.Configuration;
+            const CommandMap = MathJax._.input.tex.SymbolMap.CommandMap;
+            const Macro = MathJax._.input.tex.Symbol.Macro;
+            const TexError = MathJax._.input.tex.TexError.default;
+            const ParseUtil = MathJax._.input.tex.ParseUtil.default;
+            const expandable = MathJax._.util.Options.expandable;
+
+
+            //      Insert the replacement string into the TeX string, and check
+            //      that there haven't been too many maxro substitutions (prevents
+            //      infinite loops).
+            const useArgument = (parser, text) => {
+                parser.string = ParseUtil.addArgs(parser, text, parser.string.slice(parser.i));
+                parser.i = 0;
+                if (++parser.macroCount > parser.configuration.options.maxMacros) {
+                    throw new TexError('MaxMacroSub1',
+                    'MathJax maximum macro substitution count exceeded; ' +
+                    'is there a recursive macro call?');
+                }
+            }
+
+
+            //      Create the command map for:
+            //          \ifstar, \ifnextchar, \ifblank, \ifstrequal, \gsub, \seteqnumber
+            new CommandMap('Lwarp-macros', {
+                ifstar: 'IfstarFunction',
+                ifnextchar: 'IfnextcharFunction',
+                ifblank: 'IfblankFunction',
+                ifstrequal: 'IfstrequalFunction',
+                gsubstitute: 'GsubstituteFunction',
+                seteqnumber: 'SeteqnumberFunction'
+            }, {
+                //      This function implements an ifstar macro.
+                IfstarFunction(parser, name) {
+                    const resultstar = parser.GetArgument(name);
+                    const resultnostar = parser.GetArgument(name);
+                    const star = parser.GetStar();                      // true if there is a *
+                    useArgument(parser, star ? resultstar : resultnostar);
+                },
+
+
+                //      This function implements an ifnextchar macro.
+                IfnextcharFunction(parser, name) {
+                    let whichchar = parser.GetArgument(name);
+                    if (whichchar.match(/^(?:0x[0-9A-F]+|[0-9]+)$/i)) {
+                        // $ syntax highlighting
+                        whichchar = String.fromCodePoint(parseInt(whichchar));
+                    }
+                    const resultnextchar = parser.GetArgument(name);
+                    const resultnotnextchar = parser.GetArgument(name);
+                    const gotchar = (parser.GetNext() === whichchar);
+                    useArgument(parser, gotchar ? resultnextchar : resultnotnextchar);
+                },
+
+
+                // This function implements an ifblank macro.
+                IfblankFunction(parser, name) {
+                    const blankarg = parser.GetArgument(name);
+                    const resultblank = parser.GetArgument(name);
+                    const resultnotblank = parser.GetArgument(name);
+                    const isblank = (blankarg.trim() == "");
+                    useArgument(parser, isblank ? resultblank : resultnotblank);
+                },
+
+
+                // This function implements an ifstrequal macro.
+                IfstrequalFunction(parser, name) {
+                    const strequalfirst = parser.GetArgument(name);
+                    const strequalsecond = parser.GetArgument(name);
+                    const resultequal = parser.GetArgument(name);
+                    const resultnotequal = parser.GetArgument(name);
+                    const isequal = (strequalfirst == strequalsecond);
+                    useArgument(parser, isequal ? resultequal : resultnotequal);
+                },
+
+
+                // This function implements a gsub macro.
+                GsubstituteFunction(parser, name) {
+                    const gsubfirst = parser.GetArgument(name);
+                    const gsubsecond = parser.GetArgument(name);
+                    const gsubthird = parser.GetArgument(name);
+                    let gsubresult=gsubfirst.replace(gsubsecond, gsubthird);
+                    useArgument(parser, gsubresult);
+                },
+
+
+                //      This function modifies the equation numbers.
+                SeteqnumberFunction(parser, name) {
+                        //   Get the macro parameters
+                        const star = parser.GetStar();                    // true if there is a *
+                        const optBrackets = parser.GetBrackets(name);     // contents of optional brackets
+                        const newsubequations = parser.GetArgument(name);    // the subequations argument
+                        const neweqsection = parser.GetArgument(name);    // the eq section argument
+                        const neweqnumber = parser.GetArgument(name);     // the eq number argument
+                        MathJax.config.subequations=newsubequations ;     // a string with boolean meaning
+                        MathJax.config.section=neweqsection ;             // a string with numeric meaning
+                        parser.tags.counter = parser.tags.allCounter = neweqnumber ;
+                }
+
+
+            });
+
+
+            //      Create the Lwarp-macros package
+            Configuration.create('Lwarp-macros', {
+                handler: {macro: ['Lwarp-macros']}
+            });
+
+
+            MathJax.startup.defaultReady();
+
+
+            // For forward references:
+            MathJax.startup.input[0].preFilters.add(({math}) => {
+                if (math.inputData.recompile){
+                        MathJax.config.subequations = math.inputData.recompile.subequations;
+                        MathJax.config.section = math.inputData.recompile.section;
+                }
+            });
+            MathJax.startup.input[0].postFilters.add(({math}) => {
+                if (math.inputData.recompile){
+                        math.inputData.recompile.subequations = MathJax.config.subequations;
+                        math.inputData.recompile.section = MathJax.config.section;
+                }
+            });
+
+
+                // For \left, \right with unicode-math:
+                const {DelimiterMap} = MathJax._.input.tex.SymbolMap;
+                const {Symbol} = MathJax._.input.tex.Symbol;
+                const {MapHandler} = MathJax._.input.tex.MapHandler;
+                const delimiter = MapHandler.getMap('delimiter');
+                delimiter.add('\\lBrack', new Symbol('\\lBrack', '\u27E6'));
+                delimiter.add('\\rBrack', new Symbol('\\rBrack', '\u27E7'));
+                delimiter.add('\\lAngle', new Symbol('\\lAngle', '\u27EA'));
+                delimiter.add('\\rAngle', new Symbol('\\rAngle', '\u27EB'));
+                delimiter.add('\\lbrbrak', new Symbol('\\lbrbrak', '\u2772'));
+                delimiter.add('\\rbrbrak', new Symbol('\\rbrbrak', '\u2773'));
+                delimiter.add('\\lbag', new Symbol('\\lbag', '\u27C5'));
+                delimiter.add('\\rbag', new Symbol('\\rbag', '\u27C6'));
+                delimiter.add('\\llparenthesis', new Symbol('\\llparenthesis', '\u2987'));
+                delimiter.add('\\rrparenthesis', new Symbol('\\rrparenthesis', '\u2988'));
+                delimiter.add('\\llangle', new Symbol('\\llangle', '\u2989'));
+                delimiter.add('\\rrangle', new Symbol('\\rrangle', '\u298A'));
+                delimiter.add('\\Lbrbrak', new Symbol('\\Lbrbrak', '\u27EC'));
+                delimiter.add('\\Rbrbrak', new Symbol('\\Rbrbrak', '\u27ED'));
+                delimiter.add('\\lBrace', new Symbol('\\lBrace', '\u2983'));
+                delimiter.add('\\rBrace', new Symbol('\\rBrace', '\u2984'));
+                delimiter.add('\\lParen', new Symbol('\\lParen', '\u2985'));
+                delimiter.add('\\rParen', new Symbol('\\rParen', '\u2986'));
+                delimiter.add('\\lbrackubar', new Symbol('\\lbrackubar', '\u298B'));
+                delimiter.add('\\rbrackubar', new Symbol('\\rbrackubar', '\u298C'));
+                delimiter.add('\\lbrackultick', new Symbol('\\lbrackultick', '\u298D'));
+                delimiter.add('\\rbracklrtick', new Symbol('\\rbracklrtick', '\u298E'));
+                delimiter.add('\\lbracklltick', new Symbol('\\lbracklltick', '\u298F'));
+                delimiter.add('\\rbrackurtick', new Symbol('\\rbrackurtick', '\u2990'));
+                delimiter.add('\\langledot', new Symbol('\\langledot', '\u2991'));
+                delimiter.add('\\rangledot', new Symbol('\\rangledot', '\u2992'));
+                delimiter.add('\\lparenless', new Symbol('\\lparenless', '\u2993'));
+                delimiter.add('\\rparengtr', new Symbol('\\rparengtr', '\u2994'));
+                delimiter.add('\\Lparengtr', new Symbol('\\Lparengtr', '\u2995'));
+                delimiter.add('\\Rparenless', new Symbol('\\Rparenless', '\u2996'));
+                delimiter.add('\\lblkbrbrak', new Symbol('\\lblkbrbrak', '\u2997'));
+                delimiter.add('\\rblkbrbrak', new Symbol('\\rblkbrbrak', '\u2998'));
+                delimiter.add('\\lvzigzag', new Symbol('\\lvzigzag', '\u29D8'));
+                delimiter.add('\\rvzigzag', new Symbol('\\rvzigzag', '\u29D9'));
+                delimiter.add('\\Lvzigzag', new Symbol('\\Lvzigzag', '\u29DA'));
+                delimiter.add('\\Rvzigzag', new Symbol('\\Rvzigzag', '\u29DB'));
+                delimiter.add('\\lcurvyangle', new Symbol('\\lcurvyangle', '\u29FC'));
+                delimiter.add('\\rcurvyangle', new Symbol('\\rcurvyangle', '\u29FD'));
+                delimiter.add('\\Vvert', new Symbol('\\Vvert', '\u2980'));
+        }        // ready
+    },           // startup
+
+
+    tex: {
+        packages: {'[+]': ['tagformat', 'Lwarp-macros', 'textmacros']},
+        tags: "ams",
+                tagformat: {
+                        number: function (n) {
+                             if(MathJax.config.subequations==0)
+                                 return(MathJax.config.section + n);
+                             else
+                                 return(MathJax.config.section + String.fromCharCode(96+n));
+                        },
+                },
+    }
+}
+</script>
+
+
+<script
+        id="MathJax-script"
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+></script>
+
+</head>
+<body>
+
+
+<a id="lecnotes_html-autopage-6"></a>
+<nav class="topnavigation"><a href="lecnotes_html.html" class="linkhome" >
+Home</a></nav>
+
+
+<div class="bodyandsidetoc">
+<div class="sidetoccontainer">
+
+
+<nav class="sidetoc">
+
+
+<div class="sidetoctitle">
+
+<p>
+Contents
+</p>
+</div>
+
+
+<div class="sidetoccontents">
+
+<p>
+<a href="lecnotes_html.html" class="linkhome" >
+Home</a>
+</p>
+
+</div>
+
+</nav>
+
+</div>
+
+
+<main class="bodycontainer">
+
+
+<section class="textbody">
+
+<!--MathJax customizations:-->
+
+
+<div class="hidden">
+
+\(\newcommand{\footnotename}{footnote}\)
+
+\(\def \LWRfootnote {1}\)
+
+\(\newcommand {\footnote }[2][\LWRfootnote ]{{}^{\mathrm {#1}}}\)
+
+\(\newcommand {\footnotemark }[1][\LWRfootnote ]{{}^{\mathrm {#1}}}\)
+
+\(\let \LWRorighspace \hspace \)
+
+\(\renewcommand {\hspace }{\ifstar \LWRorighspace \LWRorighspace }\)
+
+\(\newcommand {\mathnormal }[1]{{#1}}\)
+
+\(\newcommand \ensuremath [1]{#1}\)
+
+\(\newcommand {\LWRframebox }[2][]{\fbox {#2}} \newcommand {\framebox }[1][]{\LWRframebox } \)
+
+\(\newcommand {\setlength }[2]{}\)
+
+\(\newcommand {\addtolength }[2]{}\)
+
+\(\newcommand {\setcounter }[2]{}\)
+
+\(\newcommand {\addtocounter }[2]{}\)
+
+\(\newcommand {\arabic }[1]{}\)
+
+\(\newcommand {\number }[1]{}\)
+
+\(\newcommand {\noalign }[1]{\text {#1}\notag \\}\)
+
+\(\newcommand {\cline }[1]{}\)
+
+\(\newcommand {\directlua }[1]{\text {(directlua)}}\)
+
+\(\newcommand {\luatexdirectlua }[1]{\text {(directlua)}}\)
+
+\(\newcommand {\protect }{}\)
+
+\(\def \LWRabsorbnumber #1 {}\)
+
+\(\def \LWRabsorbquotenumber &quot;#1 {}\)
+
+\(\newcommand {\LWRabsorboption }[1][]{}\)
+
+\(\newcommand {\LWRabsorbtwooptions }[1][]{\LWRabsorboption }\)
+
+\(\def \mathchar {\ifnextchar &quot;\LWRabsorbquotenumber \LWRabsorbnumber }\)
+
+\(\def \mathcode #1={\mathchar }\)
+
+\(\let \delcode \mathcode \)
+
+\(\let \delimiter \mathchar \)
+
+\(\def \oe {\unicode {x0153}}\)
+
+\(\def \OE {\unicode {x0152}}\)
+
+\(\def \ae {\unicode {x00E6}}\)
+
+\(\def \AE {\unicode {x00C6}}\)
+
+\(\def \aa {\unicode {x00E5}}\)
+
+\(\def \AA {\unicode {x00C5}}\)
+
+\(\def \o {\unicode {x00F8}}\)
+
+\(\def \O {\unicode {x00D8}}\)
+
+\(\def \l {\unicode {x0142}}\)
+
+\(\def \L {\unicode {x0141}}\)
+
+\(\def \ss {\unicode {x00DF}}\)
+
+\(\def \SS {\unicode {x1E9E}}\)
+
+\(\def \dag {\unicode {x2020}}\)
+
+\(\def \ddag {\unicode {x2021}}\)
+
+\(\def \P {\unicode {x00B6}}\)
+
+\(\def \copyright {\unicode {x00A9}}\)
+
+\(\def \pounds {\unicode {x00A3}}\)
+
+\(\let \LWRref \ref \)
+
+\(\renewcommand {\ref }{\ifstar \LWRref \LWRref }\)
+
+\( \newcommand {\multicolumn }[3]{#3}\)
+
+\(\require {textcomp}\)
+
+\(\newcommand {\intertext }[1]{\text {#1}\notag \\}\)
+
+\(\let \Hat \hat \)
+
+\(\let \Check \check \)
+
+\(\let \Tilde \tilde \)
+
+\(\let \Acute \acute \)
+
+\(\let \Grave \grave \)
+
+\(\let \Dot \dot \)
+
+\(\let \Ddot \ddot \)
+
+\(\let \Breve \breve \)
+
+\(\let \Bar \bar \)
+
+\(\let \Vec \vec \)
+
+\(\newcommand {\real }{\mathbb {R}} \)
+
+\(\newcommand {\RR }{\mathbb {R}} \)
+
+\(\newcommand {\ZZ }{\mathbb Z} \)
+
+\(\newcommand {\F }{\mathbb F} \)
+
+\(\newcommand {\Ham }{\mathrm {Ham}}\)
+
+\(\newcommand {\PP }{\mathbb P}\)
+
+\(\newcommand {\co }[1]{\overline {#1}} \)
+
+\(\newcommand {\ul }[1]{\underline {#1}} \)
+
+\(\newcommand {\bo }[1]{\mathbf {#1}} \)
+
+\(\newcommand {\concat }[2]{[\, #1 \,|\, #2 \,]} \)
+
+\(\newcommand {\Encode }{\texttt {ENCODE}} \)
+
+\(\newcommand {\Decode }{\texttt {DECODE}} \)
+
+\(\newcommand {\RM }{R} \)
+
+\(\newcommand {\Rep }{\text {Rep}} \)
+
+</div>
+
+<p>
+<!--
+...... chapter ch3 ......
+-->
+<h3 id="autosec-7">Chapter&nbsp;<span class="sectionnumber">3&#x2003;</span>Linear codes</h3>
+<a id="lecnotes_html-autopage-7"></a>
+<a id="lecnotes_html-autofile-7"></a>
+
+<p>
+Version 2022-10-05. <a href="lecnotes_html.pdf" target="_blank" >To PDF version of the notes</a>
+</p>
+
+<p>
+<b>Synopsis.</b> <i>We define the most important class of codes called the linear codes. Their ability to correct errors is no worse than that of general codes, but linear codes are easier to implement in practice and allow us to use algebraic methods.
+We learn how to find the minimum distance by looking at weights, and how to define a linear code by its generator matrix.</i>
+</p>
+<!--
+...... subsection The definition of a linear code ......
+-->
+<h5 id="autosec-8">The definition of a linear code</h5>
+<a id="lecnotes_html-autopage-8"></a>
+<!--
+...... subsection Reminder (vector spaces) ......
+-->
+<h5 id="autosec-9">Reminder (vector spaces)</h5>
+<a id="lecnotes_html-autopage-9"></a>
+
+
+<p>
+Let \(\F _q\) denote the field of \(q\) elements. When we use \(\F _q\) as the alphabet, we refer to words in \(\F _q^n\) as (row) <b>vectors</b>. The set \(\F _q^n\) of all vectors of length \(n\) has the structure of a <b>vector space</b>
+over the field \(\F _q\). If the vectors \(\ul u\), \(\ul v\) are in \(\F _q^n\), we can add the vectors together: \(\ul u+\ul v\in \F _q^n\), and multiply a vector by a scalar: \(\lambda \ul u \in \F _q^n\) for all \(\lambda \in \F _q\). The
+addition and the scalar multiplication are performed <b>componentwise</b>. We will often write vectors in compact form, as words:
+</p>
+
+<p>
+\[ 011011, 100110\in \F _2^6 \qquad \mapsto \qquad 011011+100110 = 111101\in \F _2^6.            \]
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-10"></a>
+<span class="amsthmnamedefinition">Definition</span><span class="amsthmnotedefinition"> (linear code)</span>.   A <b><i>linear code</i></b> is a subspace of the vector space \(\F _q^n\).
+</p>
+
+<p>
+Codewords of a linear code are called <b><i>codevectors</i></b>.
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-11"></a>
+<span class="amsthmnamedefinition">Remark</span>.   This means that the zero vector \(\ul 0\) belongs to \(C\), and that sums and scalar multiples of codevectors are again codevectors. Thus, \(C\) is a vector space in its own right.
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<!--
+...... subsection Discussion: Why are linear codes useful?                ......
+-->
+<h5 id="autosec-12">Discussion: Why are linear codes useful?</h5>
+<a id="lecnotes_html-autopage-12"></a>
+
+
+<p>
+<i>Not examinable</i>.
+</p>
+<ul style="list-style-type:none">
+
+<li>
+<p>
+• They seem to be as efficient as general codes. In particular, it was proved that Shannon’s Theorem about the capacity of a channel is still true for linear codes.
+</p>
+
+
+</li>
+<li>
+
+
+<p>
+• It is possible to define a linear code without specifying all the codewords (see below).
+</p>
+
+
+</li>
+<li>
+
+
+<p>
+• The minimum distance is easier to calculate than for general codes (see below).
+</p>
+
+
+</li>
+<li>
+
+
+<p>
+• We can use algebra to design linear codes and to construct efficient encoding and decoding algorithms.
+</p>
+</li>
+</ul>
+
+<p>
+The absolute majority of codes designed by coding theorists are linear codes. In the rest of the course, (almost) all the codes we consider will be linear codes.
+</p>
+
+<p>
+<i>End of discussion.</i>
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-13"></a>
+<span class="amsthmnamedefinition">Example</span><span class="amsthmnotedefinition"> (the most basic examples)</span>.   The trivial code \(\F _q^n\) is a linear code. (Indeed, \(\F _q^n\) is a vector subspace of itself.)
+</p>
+
+<p>
+The repetition code \(\text {Rep}(n,\F _q)\) over \(\F _q\) is a linear code (<i>exercise; will see soon</i>).
+</p>
+
+<p>
+To get non-trivial examples, we need to introduce more structure.
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<!--
+...... subsection The weight ......
+-->
+<h5 id="autosec-14">The weight</h5>
+<a id="lecnotes_html-autopage-14"></a>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-15"></a>
+<span class="amsthmnamedefinition">Definition</span><span class="amsthmnotedefinition"> (weight of a vector, weight of a code)</span>.
+</p>
+
+<p>
+The <b><i>weight \(w(\ul v)\) of a vector</i></b> \(\ul v\in \F _q^n\) is the number of non-zero symbols in \(\ul v\).
+</p>
+
+<p>
+The <b><i>weight \(w(C)\) of a code</i></b> \(C\subseteq \F _q^n\) is \(w(C)=\min \{w(\ul v) \mid \ul v\in C\setminus \{\ul 0\}\}\).
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-16"></a>
+<span class="amsthmnamedefinition">Lemma</span><span class="amsthmnumberdefinition"> <span class="textup">3.1</span></span><span class="amsthmnotedefinition"> (distance and weight)</span>.   <a
+id="lem:dist-weight"></a>
+</p>
+
+<p>
+For any vectors \(\ul v,\ul y\in \F _q^n\), \(d(\ul v,\ul y)=w(\ul v-\ul y)\).
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmproof">
+
+<a id="lecnotes_html-autopage-17"></a>
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<span class="amsthmproofname">Proof.</span> Indeed, \(d(\ul v,\ul y)\) is the number of positions \(i\), \(1\le i\le n\), where \(v_i\ne y_i\). Obviously, this is the same as the number of positions \(i\) where \(v_i- y_i\ne 0\). By
+definition of the weight, this is \(w(\ul v - \ul y)\), as claimed. <span class="theoremendmark">&#x25A1;</span>
+</p>
+
+</li>
+
+</ul>
+
+</div>
+
+<p>
+Recall that the minimum distance, \(d(C)\), of a code \(C\) is a very important parameter which tells us how many errors can the code detect and correct in a codeword. The following theorem shows how one can find \(d(C)\) if \(C\) is linear:
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-18"></a>
+<span class="amsthmnamedefinition">Theorem</span><span class="amsthmnumberdefinition"> <span class="textup">3.2</span></span>.   \(d(C)=w(C)\) for a linear code \(C\).
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmproof">
+
+<a id="lecnotes_html-autopage-19"></a>
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<span class="amsthmproofname">Proof.</span> Take a codevector \(\ul v\) such that \(w(C)=w(\ul v)\). Observe, \(w(\ul v)=w(\ul v-\ul 0)=d(\ul v,\ul 0)\) but \(\ul v\ne \ul 0\in C\) so \(w(\ul v)\ge d(C)\). We proved that
+\(w(C)\ge d(C)\).
+</p>
+
+<p>
+Now take a pair \(\ul y\ne \ul z\in C\) such that \(d(\ul y,\ul z)=d(C)\). Rewrite this as \(w(\ul y-\ul z)\). Since \(C\) is linear, \(\ul y - \ul z\in C\setminus \{0\}\) so \(w(\ul y-\ul z)\ge w(C)\). We proved that \(d(C)\ge
+w(C)\). <span class="theoremendmark">&#x25A1;</span>
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-20"></a>
+<span class="amsthmnamedefinition">Remark</span>.   In the proof, we twice used that \(C\) is linear: first, \(\ul 0\in C\); second, \(\ul y ,\ul z\in C\) implies \(\ul y - \ul z\in C\). This condition is essential.
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-21"></a>
+<span class="amsthmnamedefinition">Remark</span>.   Given a linear code \(C\), one needs to check only \(M-1\) vectors to compute \(d(C)=w(C)\). For a non-linear code, one has to check \(M(M-1)/2\) pairs of words to compute the minimum
+distance \(d\).
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-22"></a>
+<span class="amsthmnamedefinition">Example</span><span class="amsthmnotedefinition"> (The zero sum code)</span>. For any finite field \(\F _q\) and for any \(n\ge 1\) we can define the <b><i>zero sum code</i></b> in \(\F _q^n\)
+as
+</p>
+
+<p>
+\[ Z = \{(v_1,v_2,\dots ,v_n)\in \F _q^n \mid v_1+v_2+\dots +v_n = 0\text { in }\F _q\}.                     \]
+</p>
+
+<p>
+We note that the zero sum code in \(\F _q^n\) is a linear code because \(Z\) is the set of solutions to the homogeneous linear equation \(v_1+\dots +v_n=0\). It is known from linear algebra (and is easy to check directly) that the sum of two vectors
+satisfying this equation also satisfies this equation, and scaling a vector satisfying this equation again satisfies the equation. In other words, \(Z\) is a vector space.
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-23"></a>
+<span class="amsthmnamedefinition">Example</span><span class="amsthmnotedefinition"> (The binary even weight code \(E_n\))</span>.
+</p>
+
+<p>
+The <b><i>binary even weight code of length \(n\)</i></b> is defined as
+</p>
+
+<p>
+\[ E_n=\{\ul v\in \F _2^{n}:       w(\ul v)\text { is even}\}.        \]
+</p>
+
+<p>
+Due to the rules of arithmetic in \(\F _2\) we have
+</p>
+
+<p>
+\[ E_n = \{x_1x_2\ldots x_n :       x_i\in \F _2, \ x_1+x_2+\dots +x_n=0\text { in }\F _2\} \]
+</p>
+
+<p>
+which shows that \(E_n\) is a particular case of a zero sum code, hence is a linear binary code.
+</p>
+
+<p>
+<b>Remark:</b> \(0\) is an even number! The binary even weight code contains the codeword \(00\ldots 0.\)
+</p>
+
+<p>
+<b>Minimum distance = weight:</b> a vector with only one \(1\) has odd weight but a vector \(1100\ldots 0\) of weight \(2\) is in \(E_n\). Hence \(d(E_n)=w(E_n)=2.\) The code detects up to \(1\) error and corrects up to \(0\) errors.
+</p>
+
+<p>
+<b>The number of codewords:</b> in a codeword \(\ul v=(x_1,x_2,\ldots ,x_n)\), the first \(n-1\) bits can be arbitrary (\(2^{n-1}\) combinations), then the last bit is uniquely determined by \(x_n = x_1+x_2+\ldots +x_{n-1},\) where
+\(+\) is the addition is in the field \(\F _2.\) We thus have \(2^{n-1}\) codewords.
+</p>
+
+<p>
+Another argument to that effect is as follows. We can take a binary word and flip (change) its first bit. This operation splits the set \(\F _2^n\) into pairs of vectors, such that the vectors in a pair only differ in the first bit. Each pair contains one
+vector of even weight and one vector of odd weight. Therefore, the number of vectors of even weight is equal to the number of vectors of odd weight, and is \(\frac 12 \#\F _2^n=2^{n-1}.\)
+</p>
+
+<p>
+<b>Conclusion:</b> \(E_n\) is an \([n,n-1,2]_2\)-code.
+</p>
+
+<p>
+<b>Remark:</b> A widely used code. If an error is <i>detected</i>, the recipient will request retransmission of the codeword where the error occurred. Error <i>correction</i> is not available.
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<!--
+...... subsection The code generated by a matrix. A generator matrix of a linear code ......
+-->
+<h5 id="autosec-24">The code generated by a matrix. A generator matrix of a linear code</h5>
+<a id="lecnotes_html-autopage-24"></a>
+
+
+<p>
+We have an unlimited supply of linear codes, due to the following construction.
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-25"></a>
+<span class="amsthmnamedefinition">Definition</span><span class="amsthmnotedefinition"> (the linear code generated by a matrix)</span>.   Let \(G\) be a \(k\times n\) matrix with linearly independent rows \(\ul r_1,\dots ,\ul
+r_k\in \F _q^n\). The code
+</p>
+
+<p>
+\[ C=\{ u_1 \ul r_1 + \ldots +u_k \ul r_k \mid u_1,\ldots ,u_k\in \F _q\} \quad \subseteq \quad \F _q^n \]
+</p>
+
+<p>
+is said to be <b><i>generated by the matrix \(G\)</i></b>. In this case, the function
+</p>
+
+<p>
+\[ \Encode \colon \F _q^k \to C,\qquad \Encode (\ul u) = \ul u G \quad \text {for all }\ul u\in \F _q^k \]
+</p>
+
+<p>
+is the <b><i>encoder</i></b> for \(C\) given by the matrix \(G\).
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-26"></a>
+<span class="amsthmnamedefinition">Proposition</span><span class="amsthmnumberdefinition"> <span class="textup">3.3</span></span><span class="amsthmnotedefinition"> (properties of a code generated by a matrix)</span>.                            In
+the above definition, \(C\) is a linear code. The function \(\Encode \) is a bijective linear map between \(\F _q^k\) and \(C\). The information dimension of \(C\) is \(k\) and is equal to \(\dim C\), the dimension of \(C\) as a vector space.
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmproof">
+
+<a id="lecnotes_html-autopage-27"></a>
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<span class="amsthmproofname">Proof.</span> The definition says that \(C\) is the span of \(\ul r_1,\ldots ,\ul r_k\) in the vector space \(\F _q^n\). By linear algebra, a span is a subspace of \(\F _q^n\) hence a linear code.
+</p>
+
+<p>
+Matrix multiplication is linear in each argument so \(\Encode (\ul u) = \ul u G\) is a linear function of \(\ul u =(u_1,\dots ,u_k)\). As \(C\) consists of vectors of the form \(u_1 \ul r_1 + \dots +u_k \ul r_k=\ul u G\), the image of
+\(\Encode \) is \(C\) so \(\Encode \) is surjective. The kernel of \(\Encode \) is made up of all \((u_1,\dots ,u_k)\) such that \(u_1 \ul r_1 + \ldots +u_k \ul r_k=\ul 0\), but as \(\ul r_1,\ldots ,\ul r_k\) are linearly independent,
+\(\ker \Encode =\{\ul 0\}\) and so \(\Encode \) is injective, hence bijective.
+</p>
+
+<p>
+Therefore, \(M = \# C = \# \F _q^k = q^k\) which shows that the information dimension of \(C\) is \(\log _q(M)=k\). This is also the dimension of \(C\) as a vector space because \(\{\ul r_1,\ldots ,\ul r_k\}\) is a basis of \(C\), being a
+linearly independent set which spans \(C\). <span class="theoremendmark">&#x25A1;</span>
+</p>
+
+</li>
+
+</ul>
+
+</div>
+
+<p>
+Not only every code generated by a matrix is linear, but every linear code is generated by a matrix:
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-28"></a>
+<span class="amsthmnamedefinition">Definition</span><span class="amsthmnotedefinition"> (generator matrix)</span>.
+</p>
+
+<p>
+Let \(C\subseteq \F _q^n\) be a linear code. A <b><i>generator matrix</i></b> of \(C\) is a matrix
+</p>
+
+<p>
+\[ G=\begin {bmatrix} \ul r_1 \\ \ul r_2 \\ \vdots \\ \ul r_k \end {bmatrix}, \]
+</p>
+
+<p>
+where the row vectors \(\ul r_1,\ldots ,\ul r_k\) are a basis of \(C\). (Clearly, \(C\) is generated by any of its generator matrices.)
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-29"></a>
+<span class="amsthmnamedefinition">Example</span>.
+</p>
+<ul style="list-style-type:none">
+
+
+<li>
+<p>
+(a) The identity matrix \(I_n\) is a generator matrix for the trivial code, \(\F _q^n\). Any other \(n\times n\) matrix with linearly independent rows is also a generator matrix for the trivial code of length \(n\).
+</p>
+</li>
+<li>
+
+
+<p>
+(b) The repetition code \(\text {Rep}(n,\F _q)\) has generator matrix \(G=\begin {bmatrix}1&amp;1&amp;\dots &amp;1\end {bmatrix}\), of size \(1\times n\). The matrix \(\lambda G\) for any \(\lambda \in \F _q\), \(\lambda \ne 0\) is
+also a generator matrix for \(\text {Rep}(n,\F _q)\).
+</p>
+</li>
+<li>
+
+
+<p>
+(c) Consider the binary even weight code of length \(3\):
+</p>
+<p>
+\[ E_3=\{000,011,101,110\}.      \]
+</p>
+<p>
+The code has \(4=2^2\) codewords, so the dimension of this code is \(2\). Therefore, a generator matrix has \(2\) rows and \(3\) columns.
+</p>
+<p>
+To write down a generator matrix, we need to take two linearly independent codevectors. We must not use the zero codevector, \(000\), because a linearly independent set must not contain the zero vector.
+</p>
+<p>
+So we can use
+</p>
+<p>
+\[ G=\left [\begin {matrix}0&amp;1&amp;1\\ 1&amp;0&amp;1\end {matrix}\right ] \text { or } G=\left [\begin {matrix}0&amp;1&amp;1\\ 1&amp;1&amp;0\end {matrix}\right ] \text { or } G=\left [\begin
+{matrix}1&amp;0&amp;1\\ 0&amp;1&amp;1\end {matrix}\right ] \text { etc.} \]
+</p>
+<p>
+Each of these matrices is a generator matrix for \(E_3\).
+</p>
+</li>
+</ul>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-30"></a>
+<span class="amsthmnamedefinition">Remark</span><span class="amsthmnotedefinition"> (Defining a linear code by a generator matrix)</span>.   Thus, to work with a linear code, it is enough to store just its generator matrix instead of
+storing all codevectors. This approach to linear codes has its practical advantages and disadvantages.
+</p>
+
+<p>
+<i>Advantage.</i> The single advantage which outweighs everything else is the amount of storage space required.
+</p>
+<blockquote>
+
+<p>
+To better visualise the difference between storing all the \(q^k\) codewords of a linear code and storing only \(k\) rows of a generator matrix, consider the following. A binary code of dimension about \(1500\) was used in computer networks for
+error detection. While it is possible to store \(1500\) rows of a generator matrix, it is definitely not possible to store a list of all \(2^{1500}\) codewords. Indeed, the number \(10^{100}\) (the <i>googol</i>) is believed to be much bigger than the
+number of electrons in the visible Universe; and the googol is less than \(2^{340}\).
+</p>
+</blockquote>
+
+<p>
+<i>Disadvantages.</i> A generator matrix is in general <b>not unique</b>, because a basis of a vector space \(C\) can be chosen in more than one way. It may not be obvious if two matrices generate the same code (although it is easy to test by
+bringing both matrices to reduced row echelon form and comparing the result).
+</p>
+
+<p>
+If a linear code \(C\) is specified by a generator matrix \(G\), it may be difficult to compute the <b>weight</b> \(w(C)\) of \(C\). Of course, the weight of \(C\) does not exceed, but is in general not equal to, the minimum weight of a row of \(G\).
+For some linear codes which have been used in practice, the weight is not known!
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<!--
+...... subsection Generator matrices in standard form ......
+-->
+<h5 id="autosec-32">Generator matrices in standard form</h5>
+<a id="lecnotes_html-autopage-32"></a>
+
+
+<p>
+For a linear code \(C\), the encoder, \(\Encode (\ul u)=\ul uG\), depends on the choice of a generator matrix \(G\). In practice, for many codes there is the best choice:
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-33"></a>
+<span class="amsthmnamedefinition">Definition</span><span class="amsthmnotedefinition"> (generator matrix in standard form)</span>.
+</p>
+
+<p>
+A generator matrix \(G\) is in <i>standard form</i> if its leftmost colums form an identity matrix:
+</p>
+
+<p>
+\[ G = [I_k \,|\, A ] = \left [ \begin {array}{cccc|ccc} 1&amp; 0 &amp; \ldots &amp; 0 &amp; * &amp; \ldots &amp; * \\ 0&amp; 1 &amp; \ldots &amp; 0 &amp; * &amp; \ldots &amp; * \\ &amp; &amp; \ddots &amp; &amp;
+&amp; &amp; \\ 0 &amp; 0 &amp; \ldots &amp; 1 &amp; * &amp; \ldots &amp; * \end {array} \right ].                   \]
+</p>
+
+<p>
+Note that entries in the last \(n-k\) columns, denoted by \(*\), are arbitrary elements of \(\F _q\).
+</p>
+
+</li>
+
+</ul>
+
+</div>
+
+<p>
+If \(G\) is in standard form, then, after encoding, the first \(k\) symbols of the codeword show the original message:
+</p>
+
+<p>
+\[ \ul u\in \F _q^k \quad \mapsto \quad \Encode (\ul u) = \ul u G = \ul u [I_k \,|\, A ] = [ \ul u\, | \,\ul u A] \]
+</p>
+
+<p>
+(this is an easy example of multiplication of block matrices). This means that it is easy to <b><i>unencode</i></b> a codevector, simply by taking its first \(k\) symbols.
+</p>
+
+<p>
+In this situation, the first \(k\) symbols of a codeword are called <i>information symbols</i>. The last \(n-k\) symbols are called <i>check symbols</i>; their job is to protect the information from noise by increasing the Hamming distance between
+codewords.
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-34"></a>
+<span class="amsthmnamedefinition">Theorem</span><span class="amsthmnumberdefinition"> <span class="textup">3.4</span></span><span class="amsthmnotedefinition"> (generator matrix in standard form)</span>.   <a
+id="thm:standardunique"></a> If a generator matrix in standard form exists for a linear code \(C\), it is unique, and any generator matrix can be brought to the standard from by the following operations:
+</p>
+<ul style="list-style-type:none">
+
+
+<li>
+<p>
+(R1) Permutation of rows.
+</p>
+
+
+</li>
+<li>
+
+
+<p>
+(R2) Multiplication of a row by a non-zero scalar.
+</p>
+
+
+</li>
+<li>
+
+
+<p>
+(R3) Adding a scalar multiple of one row to another row.
+</p>
+</li>
+</ul>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmproof">
+
+<a id="lecnotes_html-autopage-35"></a>
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<span class="amsthmproofname">Proof.</span> Not given — a standard fact from linear algebra (uniqueness of reduced row echelon form). We will do some examples to show how to find the generator matrix in standard form. <span
+class="theoremendmark">&#x25A1;</span>
+</p>
+
+</li>
+
+</ul>
+
+</div>
+
+<p>
+<b>Remark.</b> If we apply a sequence of the row operations (R1), (R2) and (R3) to a generator matrix of a code \(C\), we again obtain a generator matrix of \(C\). This is implied in the Theorem, and follows from the fact that a basis of a vector
+space remains a basis under permutations, multiplication of an element of the basis by a scalar, and adding a scalar multiple of an element to another element. This fact is known from linear algebra.
+</p>
+
+<p>
+Examples of finding a generator matrix in standard form, and examples of codes which have no generator matrix in standard form, are given on the example sheets. We consider one example here:
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-36"></a>
+<span class="amsthmnamedefinition">Example</span><span class="amsthmnotedefinition"> (Bringing a generator matrix into standard form)</span>.                 The binary code \(C\) is generated by \(\left [\begin
+{matrix}0&amp;1&amp;1&amp;1&amp;1\\ 1&amp;0&amp;1&amp;1&amp;1 \\ 1&amp;1&amp;0&amp;1&amp;1 \\ 1&amp;1&amp;1&amp;1&amp;0\end {matrix}\right ]\). Find the generator matrix in standard form for \(C\). Find the parameters of
+\(C\). Identify the code \(C\) by its well-known name.
+</p>
+
+<p>
+<b>Solution:</b> apply row operations \(\left [\begin {matrix}0&amp;1&amp;1&amp;1&amp;1\\ 1&amp;0&amp;1&amp;1&amp;1 \\ 1&amp;1&amp;0&amp;1&amp;1 \\ 1&amp;1&amp;1&amp;1&amp;0\end {matrix}\right ]\) \((r_1\leftrightarrow
+r_2)\) \(\left [\begin {matrix} 1&amp;0&amp;1&amp;1&amp;1 \\ 0&amp;1&amp;1&amp;1&amp;1\\ 1&amp;1&amp;0&amp;1&amp;1 \\ 1&amp;1&amp;1&amp;1&amp;0\end {matrix}\right ]\) (\(r_3\to r_3+r_1\), \(r_4\to r_4+r_1\)) \(\left
+[\begin {matrix} 1&amp;0&amp;1&amp;1&amp;1 \\ 0&amp;1&amp;1&amp;1&amp;1\\ 0&amp;1&amp;1&amp;0&amp;0 \\ 0&amp;1&amp;0&amp;0&amp;1\end {matrix}\right ]\) (\(r_2\leftrightarrow r_4\)) \(\left [\begin {matrix}
+1&amp;0&amp;1&amp;1&amp;1 \\ 0&amp;1&amp;0&amp;0&amp;1 \\ 0&amp;1&amp;1&amp;0&amp;0 \\ 0&amp;1&amp;1&amp;1&amp;1\end {matrix}\right ]\) (\(r_3\to r_3+r_2\), \(r_4\to r_4+r_2\)) \(\left [\begin {matrix}
+1&amp;0&amp;1&amp;1&amp;1 \\ 0&amp;1&amp;0&amp;0&amp;1 \\ 0&amp;0&amp;1&amp;0&amp;1 \\ 0&amp;0&amp;1&amp;1&amp;0\end {matrix}\right ]\) (\(r_1\to r_1+r_4\)) \(\left [\begin {matrix} 1&amp;0&amp;0&amp;0&amp;1 \\
+0&amp;1&amp;0&amp;0&amp;1 \\ 0&amp;0&amp;1&amp;0&amp;1 \\ 0&amp;0&amp;1&amp;1&amp;0\end {matrix}\right ]\) (\(r_4\to r_4+r_3\)) \(\left [\begin {matrix} 1&amp;0&amp;0&amp;0&amp;1 \\ 0&amp;1&amp;0&amp;0&amp;1 \\
+0&amp;0&amp;1&amp;0&amp;1 \\ 0&amp;0&amp;0&amp;1&amp;1\end {matrix}\right ]\).
+</p>
+
+<p>
+The parameters of \(C\) are: length 5 (the number of columns of the generator matrix), dimension 4 (the number of rows of the generator matrix). From the generator matrix in standard form (its rows are also codevectors!) we can see that
+\(w(C)\le 2\). In fact, all the rows of the generator matrix are of even weight; hence they lie in the vector space \(E_5\). Hence all their linear combinations lie in \(E_5\). Since \(\dim C = 4 = \dim E_5\), we have \(C=E_5\) (<i>the even weight
+code of length 5</i>) and \(d(C)=w(C)=2\).
+</p>
+
+<p>
+
+
+</p>
+
+</li>
+
+</ul>
+
+</div>
+</section>
+
+</main>
+
+</div>
+
+
+<nav class="botnavigation"><a href="lecnotes_html.html" class="linkhome" >
+Home</a></nav>
+
+</body>
+</html>

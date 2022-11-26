@@ -1,0 +1,764 @@
+
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="UTF-8" />
+<meta name="generator" content="LaTeX Lwarp package" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<!--[if lt IE 9]>
+<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+<link rel="stylesheet" type="text/css" href="bazlovstyle.css" />
+
+<script>
+// Lwarp MathJax emulation code
+//
+// Based on code by Davide P. Cervone.
+// Equation numbering: https://github.com/mathjax/MathJax/issues/2427
+// Starred and ifnextchar macros: https://github.com/mathjax/MathJax/issues/2428
+// \left, \right delimiters: https://github.com/mathjax/MathJax/issues/2535
+//
+// Modified by Brian Dunn to adjust equation numbering and add subequations.
+//
+// LaTeX can use \seteqnumber{subequations?}{section}{number} before each equation.
+// subequations? is 0 usually, 1 if inside subequations.
+// section is a string printed as-is, or empty.
+// number is auto-incremented by MathJax between equations.
+//
+MathJax = {
+    subequations: "0",
+    section: "",
+    loader: {
+        load: ['[tex]/tagformat', '[tex]/textmacros'],
+    },
+    startup: {
+        ready() {
+            //      These would be replaced by import commands if you wanted to make
+            //      a proper extension.
+            const Configuration = MathJax._.input.tex.Configuration.Configuration;
+            const CommandMap = MathJax._.input.tex.SymbolMap.CommandMap;
+            const Macro = MathJax._.input.tex.Symbol.Macro;
+            const TexError = MathJax._.input.tex.TexError.default;
+            const ParseUtil = MathJax._.input.tex.ParseUtil.default;
+            const expandable = MathJax._.util.Options.expandable;
+
+
+            //      Insert the replacement string into the TeX string, and check
+            //      that there haven't been too many maxro substitutions (prevents
+            //      infinite loops).
+            const useArgument = (parser, text) => {
+                parser.string = ParseUtil.addArgs(parser, text, parser.string.slice(parser.i));
+                parser.i = 0;
+                if (++parser.macroCount > parser.configuration.options.maxMacros) {
+                    throw new TexError('MaxMacroSub1',
+                    'MathJax maximum macro substitution count exceeded; ' +
+                    'is there a recursive macro call?');
+                }
+            }
+
+
+            //      Create the command map for:
+            //          \ifstar, \ifnextchar, \ifblank, \ifstrequal, \gsub, \seteqnumber
+            new CommandMap('Lwarp-macros', {
+                ifstar: 'IfstarFunction',
+                ifnextchar: 'IfnextcharFunction',
+                ifblank: 'IfblankFunction',
+                ifstrequal: 'IfstrequalFunction',
+                gsubstitute: 'GsubstituteFunction',
+                seteqnumber: 'SeteqnumberFunction'
+            }, {
+                //      This function implements an ifstar macro.
+                IfstarFunction(parser, name) {
+                    const resultstar = parser.GetArgument(name);
+                    const resultnostar = parser.GetArgument(name);
+                    const star = parser.GetStar();                      // true if there is a *
+                    useArgument(parser, star ? resultstar : resultnostar);
+                },
+
+
+                //      This function implements an ifnextchar macro.
+                IfnextcharFunction(parser, name) {
+                    let whichchar = parser.GetArgument(name);
+                    if (whichchar.match(/^(?:0x[0-9A-F]+|[0-9]+)$/i)) {
+                        // $ syntax highlighting
+                        whichchar = String.fromCodePoint(parseInt(whichchar));
+                    }
+                    const resultnextchar = parser.GetArgument(name);
+                    const resultnotnextchar = parser.GetArgument(name);
+                    const gotchar = (parser.GetNext() === whichchar);
+                    useArgument(parser, gotchar ? resultnextchar : resultnotnextchar);
+                },
+
+
+                // This function implements an ifblank macro.
+                IfblankFunction(parser, name) {
+                    const blankarg = parser.GetArgument(name);
+                    const resultblank = parser.GetArgument(name);
+                    const resultnotblank = parser.GetArgument(name);
+                    const isblank = (blankarg.trim() == "");
+                    useArgument(parser, isblank ? resultblank : resultnotblank);
+                },
+
+
+                // This function implements an ifstrequal macro.
+                IfstrequalFunction(parser, name) {
+                    const strequalfirst = parser.GetArgument(name);
+                    const strequalsecond = parser.GetArgument(name);
+                    const resultequal = parser.GetArgument(name);
+                    const resultnotequal = parser.GetArgument(name);
+                    const isequal = (strequalfirst == strequalsecond);
+                    useArgument(parser, isequal ? resultequal : resultnotequal);
+                },
+
+
+                // This function implements a gsub macro.
+                GsubstituteFunction(parser, name) {
+                    const gsubfirst = parser.GetArgument(name);
+                    const gsubsecond = parser.GetArgument(name);
+                    const gsubthird = parser.GetArgument(name);
+                    let gsubresult=gsubfirst.replace(gsubsecond, gsubthird);
+                    useArgument(parser, gsubresult);
+                },
+
+
+                //      This function modifies the equation numbers.
+                SeteqnumberFunction(parser, name) {
+                        //   Get the macro parameters
+                        const star = parser.GetStar();                    // true if there is a *
+                        const optBrackets = parser.GetBrackets(name);     // contents of optional brackets
+                        const newsubequations = parser.GetArgument(name);    // the subequations argument
+                        const neweqsection = parser.GetArgument(name);    // the eq section argument
+                        const neweqnumber = parser.GetArgument(name);     // the eq number argument
+                        MathJax.config.subequations=newsubequations ;     // a string with boolean meaning
+                        MathJax.config.section=neweqsection ;             // a string with numeric meaning
+                        parser.tags.counter = parser.tags.allCounter = neweqnumber ;
+                }
+
+
+            });
+
+
+            //      Create the Lwarp-macros package
+            Configuration.create('Lwarp-macros', {
+                handler: {macro: ['Lwarp-macros']}
+            });
+
+
+            MathJax.startup.defaultReady();
+
+
+            // For forward references:
+            MathJax.startup.input[0].preFilters.add(({math}) => {
+                if (math.inputData.recompile){
+                        MathJax.config.subequations = math.inputData.recompile.subequations;
+                        MathJax.config.section = math.inputData.recompile.section;
+                }
+            });
+            MathJax.startup.input[0].postFilters.add(({math}) => {
+                if (math.inputData.recompile){
+                        math.inputData.recompile.subequations = MathJax.config.subequations;
+                        math.inputData.recompile.section = MathJax.config.section;
+                }
+            });
+
+
+                // For \left, \right with unicode-math:
+                const {DelimiterMap} = MathJax._.input.tex.SymbolMap;
+                const {Symbol} = MathJax._.input.tex.Symbol;
+                const {MapHandler} = MathJax._.input.tex.MapHandler;
+                const delimiter = MapHandler.getMap('delimiter');
+                delimiter.add('\\lBrack', new Symbol('\\lBrack', '\u27E6'));
+                delimiter.add('\\rBrack', new Symbol('\\rBrack', '\u27E7'));
+                delimiter.add('\\lAngle', new Symbol('\\lAngle', '\u27EA'));
+                delimiter.add('\\rAngle', new Symbol('\\rAngle', '\u27EB'));
+                delimiter.add('\\lbrbrak', new Symbol('\\lbrbrak', '\u2772'));
+                delimiter.add('\\rbrbrak', new Symbol('\\rbrbrak', '\u2773'));
+                delimiter.add('\\lbag', new Symbol('\\lbag', '\u27C5'));
+                delimiter.add('\\rbag', new Symbol('\\rbag', '\u27C6'));
+                delimiter.add('\\llparenthesis', new Symbol('\\llparenthesis', '\u2987'));
+                delimiter.add('\\rrparenthesis', new Symbol('\\rrparenthesis', '\u2988'));
+                delimiter.add('\\llangle', new Symbol('\\llangle', '\u2989'));
+                delimiter.add('\\rrangle', new Symbol('\\rrangle', '\u298A'));
+                delimiter.add('\\Lbrbrak', new Symbol('\\Lbrbrak', '\u27EC'));
+                delimiter.add('\\Rbrbrak', new Symbol('\\Rbrbrak', '\u27ED'));
+                delimiter.add('\\lBrace', new Symbol('\\lBrace', '\u2983'));
+                delimiter.add('\\rBrace', new Symbol('\\rBrace', '\u2984'));
+                delimiter.add('\\lParen', new Symbol('\\lParen', '\u2985'));
+                delimiter.add('\\rParen', new Symbol('\\rParen', '\u2986'));
+                delimiter.add('\\lbrackubar', new Symbol('\\lbrackubar', '\u298B'));
+                delimiter.add('\\rbrackubar', new Symbol('\\rbrackubar', '\u298C'));
+                delimiter.add('\\lbrackultick', new Symbol('\\lbrackultick', '\u298D'));
+                delimiter.add('\\rbracklrtick', new Symbol('\\rbracklrtick', '\u298E'));
+                delimiter.add('\\lbracklltick', new Symbol('\\lbracklltick', '\u298F'));
+                delimiter.add('\\rbrackurtick', new Symbol('\\rbrackurtick', '\u2990'));
+                delimiter.add('\\langledot', new Symbol('\\langledot', '\u2991'));
+                delimiter.add('\\rangledot', new Symbol('\\rangledot', '\u2992'));
+                delimiter.add('\\lparenless', new Symbol('\\lparenless', '\u2993'));
+                delimiter.add('\\rparengtr', new Symbol('\\rparengtr', '\u2994'));
+                delimiter.add('\\Lparengtr', new Symbol('\\Lparengtr', '\u2995'));
+                delimiter.add('\\Rparenless', new Symbol('\\Rparenless', '\u2996'));
+                delimiter.add('\\lblkbrbrak', new Symbol('\\lblkbrbrak', '\u2997'));
+                delimiter.add('\\rblkbrbrak', new Symbol('\\rblkbrbrak', '\u2998'));
+                delimiter.add('\\lvzigzag', new Symbol('\\lvzigzag', '\u29D8'));
+                delimiter.add('\\rvzigzag', new Symbol('\\rvzigzag', '\u29D9'));
+                delimiter.add('\\Lvzigzag', new Symbol('\\Lvzigzag', '\u29DA'));
+                delimiter.add('\\Rvzigzag', new Symbol('\\Rvzigzag', '\u29DB'));
+                delimiter.add('\\lcurvyangle', new Symbol('\\lcurvyangle', '\u29FC'));
+                delimiter.add('\\rcurvyangle', new Symbol('\\rcurvyangle', '\u29FD'));
+                delimiter.add('\\Vvert', new Symbol('\\Vvert', '\u2980'));
+        }        // ready
+    },           // startup
+
+
+    tex: {
+        packages: {'[+]': ['tagformat', 'Lwarp-macros', 'textmacros']},
+        tags: "ams",
+                tagformat: {
+                        number: function (n) {
+                             if(MathJax.config.subequations==0)
+                                 return(MathJax.config.section + n);
+                             else
+                                 return(MathJax.config.section + String.fromCharCode(96+n));
+                        },
+                },
+    }
+}
+</script>
+
+
+<script
+        id="MathJax-script"
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+></script>
+
+</head>
+<body>
+
+
+<a id="lecnotes_html-autopage-8"></a>
+<nav class="topnavigation"><a href="lecnotes_html.html" class="linkhome" >
+Home</a></nav>
+
+
+<div class="bodyandsidetoc">
+<div class="sidetoccontainer">
+
+
+<nav class="sidetoc">
+
+
+<div class="sidetoctitle">
+
+<p>
+Contents
+</p>
+</div>
+
+
+<div class="sidetoccontents">
+
+<p>
+<a href="lecnotes_html.html" class="linkhome" >
+Home</a>
+</p>
+
+</div>
+
+</nav>
+
+</div>
+
+
+<main class="bodycontainer">
+
+
+<section class="textbody">
+
+<!--MathJax customizations:-->
+
+
+<div class="hidden">
+
+\(\newcommand{\footnotename}{footnote}\)
+
+\(\def \LWRfootnote {1}\)
+
+\(\newcommand {\footnote }[2][\LWRfootnote ]{{}^{\mathrm {#1}}}\)
+
+\(\newcommand {\footnotemark }[1][\LWRfootnote ]{{}^{\mathrm {#1}}}\)
+
+\(\let \LWRorighspace \hspace \)
+
+\(\renewcommand {\hspace }{\ifstar \LWRorighspace \LWRorighspace }\)
+
+\(\newcommand {\mathnormal }[1]{{#1}}\)
+
+\(\newcommand \ensuremath [1]{#1}\)
+
+\(\newcommand {\LWRframebox }[2][]{\fbox {#2}} \newcommand {\framebox }[1][]{\LWRframebox } \)
+
+\(\newcommand {\setlength }[2]{}\)
+
+\(\newcommand {\addtolength }[2]{}\)
+
+\(\newcommand {\setcounter }[2]{}\)
+
+\(\newcommand {\addtocounter }[2]{}\)
+
+\(\newcommand {\arabic }[1]{}\)
+
+\(\newcommand {\number }[1]{}\)
+
+\(\newcommand {\noalign }[1]{\text {#1}\notag \\}\)
+
+\(\newcommand {\cline }[1]{}\)
+
+\(\newcommand {\directlua }[1]{\text {(directlua)}}\)
+
+\(\newcommand {\luatexdirectlua }[1]{\text {(directlua)}}\)
+
+\(\newcommand {\protect }{}\)
+
+\(\def \LWRabsorbnumber #1 {}\)
+
+\(\def \LWRabsorbquotenumber &quot;#1 {}\)
+
+\(\newcommand {\LWRabsorboption }[1][]{}\)
+
+\(\newcommand {\LWRabsorbtwooptions }[1][]{\LWRabsorboption }\)
+
+\(\def \mathchar {\ifnextchar &quot;\LWRabsorbquotenumber \LWRabsorbnumber }\)
+
+\(\def \mathcode #1={\mathchar }\)
+
+\(\let \delcode \mathcode \)
+
+\(\let \delimiter \mathchar \)
+
+\(\def \oe {\unicode {x0153}}\)
+
+\(\def \OE {\unicode {x0152}}\)
+
+\(\def \ae {\unicode {x00E6}}\)
+
+\(\def \AE {\unicode {x00C6}}\)
+
+\(\def \aa {\unicode {x00E5}}\)
+
+\(\def \AA {\unicode {x00C5}}\)
+
+\(\def \o {\unicode {x00F8}}\)
+
+\(\def \O {\unicode {x00D8}}\)
+
+\(\def \l {\unicode {x0142}}\)
+
+\(\def \L {\unicode {x0141}}\)
+
+\(\def \ss {\unicode {x00DF}}\)
+
+\(\def \SS {\unicode {x1E9E}}\)
+
+\(\def \dag {\unicode {x2020}}\)
+
+\(\def \ddag {\unicode {x2021}}\)
+
+\(\def \P {\unicode {x00B6}}\)
+
+\(\def \copyright {\unicode {x00A9}}\)
+
+\(\def \pounds {\unicode {x00A3}}\)
+
+\(\let \LWRref \ref \)
+
+\(\renewcommand {\ref }{\ifstar \LWRref \LWRref }\)
+
+\( \newcommand {\multicolumn }[3]{#3}\)
+
+\(\require {textcomp}\)
+
+\(\newcommand {\intertext }[1]{\text {#1}\notag \\}\)
+
+\(\let \Hat \hat \)
+
+\(\let \Check \check \)
+
+\(\let \Tilde \tilde \)
+
+\(\let \Acute \acute \)
+
+\(\let \Grave \grave \)
+
+\(\let \Dot \dot \)
+
+\(\let \Ddot \ddot \)
+
+\(\let \Breve \breve \)
+
+\(\let \Bar \bar \)
+
+\(\let \Vec \vec \)
+
+\(\newcommand {\real }{\mathbb {R}} \)
+
+\(\newcommand {\RR }{\mathbb {R}} \)
+
+\(\newcommand {\ZZ }{\mathbb Z} \)
+
+\(\newcommand {\F }{\mathbb F} \)
+
+\(\newcommand {\Ham }{\mathrm {Ham}}\)
+
+\(\newcommand {\PP }{\mathbb P}\)
+
+\(\newcommand {\co }[1]{\overline {#1}} \)
+
+\(\newcommand {\ul }[1]{\underline {#1}} \)
+
+\(\newcommand {\bo }[1]{\mathbf {#1}} \)
+
+\(\newcommand {\concat }[2]{[\, #1 \,|\, #2 \,]} \)
+
+\(\newcommand {\Encode }{\texttt {ENCODE}} \)
+
+\(\newcommand {\Decode }{\texttt {DECODE}} \)
+
+\(\newcommand {\RM }{R} \)
+
+\(\newcommand {\Rep }{\text {Rep}} \)
+
+</div>
+
+<p>
+<!--
+...... chapter ch1exans ......
+-->
+<h3 id="autosec-9">Chapter&nbsp;<span class="sectionnumber">1&#x2003;</span>Exercises — solutions</h3>
+<a id="lecnotes_html-autopage-9"></a>
+<a id="lecnotes_html-autofile-3"></a>
+
+<p>
+Version 2022-09-24. <a href="lecnotes_html.pdf" target="_blank" >To PDF version of the notes</a>
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-2"></a>
+<span class="amsthmnamedefinition">Exercise</span><span class="amsthmnumberdefinition"> <span class="textup">1.1</span></span>.                    The <b>Manchester code</b> was first used in the Manchester Mark 1 computer at the University
+of Manchester in 1949 and is still used in low-speed data transfer: e.g. TV remote sending signals via infrared. This binary code consists of two codewords: \(10\) and \(01\). The codeword \(10\) is interpreted by the recipient as the message \(0\),
+and \(01\) is understood to mean \(1\); whereas the received word \(00\) or \(11\) indicates a detected error.
+</p>
+
+<p>
+The following error-free fragment of a bit stream encoded by Manchester code (that is: the stream is a sequence of codewords) had been intercepted: \(\dots 010101x01011010\dots \) What was the bit \(x\)?
+</p>
+
+</li>
+
+</ul>
+
+</div>
+
+<p>
+<b>Answer to E1.1. </b> [<a href="ch1ex.html#.">These exercises without answers</a>]
+</p>
+
+<p>
+In \(\dots 010101x01011010\dots \), notice that \(11\) cannot be a codeword. Therefore, the bit stream is split into codewords in the following way:
+</p>
+
+<p>
+\[ \dots 0 | 10 | 10 | 1x | 01 | 01 | 10 | 10 | \dots .          \]
+</p>
+
+<p>
+The codeword \(1x\) must be \(10\) so \(x=0\).
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-3"></a>
+<span class="amsthmnamedefinition">Exercise</span><span class="amsthmnumberdefinition"> <span class="textup">1.2</span></span>.                 Consider the alphabet \(\mathbb Z_{10}=\{0,1,2,3,4,5,6,7,8,9\}\). The <b>Luhn
+checksum</b> of a word \(x_1x_2\dots x_{16}\in (\mathbb Z_{10})^{16}\) is \(\pi (x_1)+x_2+\pi (x_3)+x_4+\pi (x_5)+\dots +x_{16}\text { mod } 10\), viewed as an element of \(\mathbb Z_{10}\). Here \(\pi \colon \mathbb
+Z_{10}\to \mathbb Z_{10}\) is defined by the rule “\(\pi (a)\) is the sum of digits of \(2a\)”. The <b>Luhn code</b> consists of all words in \((\mathbb Z_{10})^{16}\) whose Luhn checksum is \(0\).
+</p>
+
+<p>
+(i) Write down all values of \(\pi \) and check that \(\pi \) is a permutation of the alphabet \(\mathbb Z_{10}\).
+</p>
+
+<p>
+(ii) Find the total number of codewords of the Luhn code.
+</p>
+
+<p>
+(iii) Prove that a single digit error is detected by the Luhn code.
+</p>
+
+<p>
+(iv) Look at your 16-digit debit/credit card numbers. Are they codewords of the Luhn code? If you have a card with a number which is <b>not</b> a codeword of the Luhn code, can you bring it to the tutorial? Thanks!
+</p>
+
+</li>
+
+</ul>
+
+</div>
+
+<p>
+<b>Answer to E1.2. </b> [<a href="ch1ex.html#.">These exercises without answers</a>]
+</p>
+
+<p>
+(i) \(\pi \) is the following permutation of \(\mathbb Z_{10}\):
+</p>
+
+<p>
+\[\begin {pmatrix}0&amp;1&amp;2&amp;3&amp;4&amp;5&amp;6&amp;7&amp;8&amp;9 \\ 0&amp;2&amp;4&amp;6&amp;8&amp;1&amp;3&amp;5&amp;7&amp;9\end {pmatrix}.                      \]
+</p>
+
+<p>
+(ii) Every sequence of 15 digits is the beginning of exactly one Luhn codeword. Indeed, let \(x_1,\ldots ,x_{15}\in \mathbb Z_{10}\) be arbitrary. Calculate \(z=\pi (x_1)+x_2+\pi (x_3)+x_4+\pi (x_5)+\dots +\pi (x_{15})\). Then the one
+and only Luhn codeword of the form \(x_1x_2\dots x_{15}x_{16}\) is determined by \(z+x_{16}\equiv 0\) mod 10. This is the same as \(x_{16}\equiv (-z) \text { mod }10\).
+</p>
+
+<p>
+Therefore, the number of Luhn codewords is equal to the number of sequences of \(15\) digits, that is, \(10^{15}\).
+</p>
+
+<p>
+(iii) If \(x_i\) is replaced by \(y_i\), then the Luhn checksum changes by \(y_i-x_i\) mod 10 (if \(i\) is odd) or by \(\pi (y_i)-\pi (x_i)\) mod 10 (if \(i\) is even). In any case, if \(y_i\ne x_i\), then neither of these changes is zero mod
+\(10\), hence <i>altering a single digit changes the Luhn checksum</i>. A codeword has Luhn checksum 0, hence changing a single digit in a codeword gives a word with non-zero Luhn checksum, i.e., not a codeword, resulting in a detected error. In
+particular, the minimum distance of the Luhn code is at least \(2\). (It is, in fact, \(2\) — you can easily write down two codewords at distance \(2\) from each other.)
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-4"></a>
+<span class="amsthmnamedefinition">Exercise</span><span class="amsthmnumberdefinition"> <span class="textup">1.3</span></span>. (<i>based on a question from a past exam. Not done in the tutorial.</i>). Alice transmitted the same
+binary word of length 6 to Bob three times, but Bob received three different words: \(101010\), \(011100\), \(110001\). Engineer Clara told Bob that at most two bit errors could have occurred in each word during transmission. Help Bob to recover
+the word transmitted by Alice.
+</p>
+
+</li>
+
+</ul>
+
+</div>
+
+<p>
+<b>Answer to E1.3. </b> [<a href="ch1ex.html#.">These exercises without answers</a>]
+</p>
+
+<p>
+Let \(\ul z\) be the word sent by Alice. We are given that each one of the words
+</p>
+
+<p>
+\[ \ul v_1=101010, \qquad \ul v_2=011100, \qquad \ul v_3=110001 \]
+</p>
+
+<p>
+received by Bob contains at most two errors. To work out \(\ul z\), let’s try to see where the errors in \(\ul v_1\), \(\ul v_2\) and \(\ul v_3\) could have occurred. Write \(\ul v_1\), \(\ul v_2\) and \(\ul v_3\) as rows of a matrix:
+</p>
+
+<p>
+\[ \begin {matrix} 1&amp;0&amp;1&amp;0&amp;1&amp;0 \\ 0&amp;1&amp;1&amp;1&amp;0&amp;0 \\ 1&amp;1&amp;0&amp;0&amp;0&amp;1 \end {matrix} \]
+</p>
+
+<p>
+Note that each column of the matrix contains both \(0\)s and \(1\)s which cannot both be correct. Hence <i>each column contains at least one error</i>, and in total, there are at least \(6\) errors in the whole matrix. On the other hand, we are
+given that there were <i>at most</i> \(6=2+2+2\) errors. Thus, there are exactly \(6\) errors in the matrix, and the only \(\ul z\) which guarantees \(6\) errors is the word which ensures that there is exactly one error per column — that is, the
+“majority” bits in each column must be correct:
+</p>
+
+<p>
+\[ \begin {matrix} &amp; 1&amp;0&amp;1&amp;0&amp;1&amp;0 \\ &amp; 0&amp;1&amp;1&amp;1&amp;0&amp;0 \\ &amp; 1&amp;1&amp;0&amp;0&amp;0&amp;1 \\ \hline \ul z= &amp; 1 &amp; 1 &amp; 1 &amp; 0 &amp; 0 &amp; 0 \end
+{matrix} \]
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-5"></a>
+<span class="amsthmnamedefinition">Exercise</span><span class="amsthmnumberdefinition"> <span class="textup">1.4</span></span>.   (<i>not done in the tutorial.</i>) Recall that the binary alphabet is \(\F _2=\{0,1\}\). Let the
+code \(\Sigma \subseteq \F _2^7\) consist of the following eight words:
+</p>
+<table>
+
+<tr style="display:none"><th>.</th></tr>
+
+
+<tr>
+<td class="tdc">0</td>
+<td class="tdc">0</td>
+<td class="tdc">0</td>
+<td class="tdc">0</td>
+<td class="tdc">0</td>
+<td class="tdc">0</td>
+<td class="tdc">0,</td>
+</tr>
+
+
+<tr>
+<td class="tdc">1</td>
+<td class="tdc">0</td>
+<td class="tdc">0</td>
+<td class="tdc">1</td>
+<td class="tdc">1</td>
+<td class="tdc">1</td>
+<td class="tdc">0,</td>
+</tr>
+
+
+<tr>
+<td class="tdc">0</td>
+<td class="tdc">1</td>
+<td class="tdc">0</td>
+<td class="tdc">0</td>
+<td class="tdc">1</td>
+<td class="tdc">1</td>
+<td class="tdc">1,</td>
+</tr>
+
+
+<tr>
+<td class="tdc">1</td>
+<td class="tdc">0</td>
+<td class="tdc">1</td>
+<td class="tdc">0</td>
+<td class="tdc">0</td>
+<td class="tdc">1</td>
+<td class="tdc">1,</td>
+</tr>
+
+
+<tr>
+<td class="tdc">1</td>
+<td class="tdc">1</td>
+<td class="tdc">0</td>
+<td class="tdc">1</td>
+<td class="tdc">0</td>
+<td class="tdc">0</td>
+<td class="tdc">1,</td>
+</tr>
+
+
+<tr>
+<td class="tdc">1</td>
+<td class="tdc">1</td>
+<td class="tdc">1</td>
+<td class="tdc">0</td>
+<td class="tdc">1</td>
+<td class="tdc">0</td>
+<td class="tdc">0,</td>
+</tr>
+
+
+<tr>
+<td class="tdc">0</td>
+<td class="tdc">1</td>
+<td class="tdc">1</td>
+<td class="tdc">1</td>
+<td class="tdc">0</td>
+<td class="tdc">1</td>
+<td class="tdc">0,</td>
+</tr>
+
+
+<tr>
+<td class="tdc">0</td>
+<td class="tdc">0</td>
+<td class="tdc">1</td>
+<td class="tdc">1</td>
+<td class="tdc">1</td>
+<td class="tdc">0</td>
+<td class="tdc">1.</td>
+</tr>
+</table>
+
+<p>
+Show that the Hamming distance between each pair of codewords is the same. (You will probably have to use brute force as we are yet to describe an algebraic structure behind this code.)
+</p>
+
+<p>
+What is \(\Decode (0001110)\)? Give an example of a word which has more than one nearest neighbour in \(\Sigma \). Try to see if there are words with three, four etc. nearest neighbours. Try to write a word with a maximum possible number of
+nearest neighbours in \(\Sigma \).
+</p>
+
+</li>
+
+</ul>
+
+</div>
+
+<p>
+<b>Answer to E1.4. </b> [<a href="ch1ex.html#.">These exercises without answers</a>]
+</p>
+
+<p>
+The Hamming distances between all pairs of distinct codewords can be found directly by looking at the 28 possible pairs. (The number of pairs of distinct codewords is \(M(M-1)/2\) where \(M=\#\Sigma \).)
+</p>
+
+<p>
+This can be optimised by observing that the non-zero codewords are cyclic shifts of \(1001110\). Because applying a cyclic shift to both \(\ul v\) and \(\ul w\) does not change the Hamming distance between \(\ul v\) and \(\ul w\), it is enough
+to only find the distance \(d(0000000,1001110)\) and the distance from \(1001110\) to all the other codewords. All distances turn out to be&nbsp;\(4\).
+</p>
+
+<p>
+The nearest neighbour of \(0001110\) in \(\Sigma \) is \(1001110\) (by inspection), at distance 1. Hence \(\Decode (0001110)=1001110\).
+</p>
+
+<p>
+The rest of the question is somewhat open-ended; we address it only partially. Here is an example of a word with <i>seven</i> nearest neighbours in \(\Sigma \): \(1111111\). All the non-zero codewords of \(\Sigma \) are at distance \(3\) from
+this word. It looks as if there is no word equidistant from <i>all</i> codewords, i.e., with 8 nearest neighbours; check this!
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-7"></a>
+<span class="amsthmnamedefinition">Remark</span>. More efficient ways of calculating the parameters of \(\Sigma \) (and other so-called <i>simplex codes</i>) will arise when we learn how to deal with linear codes, Hamming codes and cyclic
+codes. To give you a hint: in \(\Sigma \), the <em>difference</em> of two codewords (viewed as vectors in \(\F _2^7\)) is again a codeword, so \(d=4\).
+</p>
+
+</li>
+
+</ul>
+
+</div>
+</section>
+
+</main>
+
+</div>
+
+
+<nav class="botnavigation"><a href="lecnotes_html.html" class="linkhome" >
+Home</a></nav>
+
+</body>
+</html>

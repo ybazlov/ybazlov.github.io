@@ -1,0 +1,1184 @@
+
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="UTF-8" />
+<meta name="generator" content="LaTeX Lwarp package" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<!--[if lt IE 9]>
+<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+<link rel="stylesheet" type="text/css" href="bazlovstyle.css" />
+
+<script>
+// Lwarp MathJax emulation code
+//
+// Based on code by Davide P. Cervone.
+// Equation numbering: https://github.com/mathjax/MathJax/issues/2427
+// Starred and ifnextchar macros: https://github.com/mathjax/MathJax/issues/2428
+// \left, \right delimiters: https://github.com/mathjax/MathJax/issues/2535
+//
+// Modified by Brian Dunn to adjust equation numbering and add subequations.
+//
+// LaTeX can use \seteqnumber{subequations?}{section}{number} before each equation.
+// subequations? is 0 usually, 1 if inside subequations.
+// section is a string printed as-is, or empty.
+// number is auto-incremented by MathJax between equations.
+//
+MathJax = {
+    subequations: "0",
+    section: "",
+    loader: {
+        load: ['[tex]/tagformat', '[tex]/textmacros'],
+    },
+    startup: {
+        ready() {
+            //      These would be replaced by import commands if you wanted to make
+            //      a proper extension.
+            const Configuration = MathJax._.input.tex.Configuration.Configuration;
+            const CommandMap = MathJax._.input.tex.SymbolMap.CommandMap;
+            const Macro = MathJax._.input.tex.Symbol.Macro;
+            const TexError = MathJax._.input.tex.TexError.default;
+            const ParseUtil = MathJax._.input.tex.ParseUtil.default;
+            const expandable = MathJax._.util.Options.expandable;
+
+
+            //      Insert the replacement string into the TeX string, and check
+            //      that there haven't been too many maxro substitutions (prevents
+            //      infinite loops).
+            const useArgument = (parser, text) => {
+                parser.string = ParseUtil.addArgs(parser, text, parser.string.slice(parser.i));
+                parser.i = 0;
+                if (++parser.macroCount > parser.configuration.options.maxMacros) {
+                    throw new TexError('MaxMacroSub1',
+                    'MathJax maximum macro substitution count exceeded; ' +
+                    'is there a recursive macro call?');
+                }
+            }
+
+
+            //      Create the command map for:
+            //          \ifstar, \ifnextchar, \ifblank, \ifstrequal, \gsub, \seteqnumber
+            new CommandMap('Lwarp-macros', {
+                ifstar: 'IfstarFunction',
+                ifnextchar: 'IfnextcharFunction',
+                ifblank: 'IfblankFunction',
+                ifstrequal: 'IfstrequalFunction',
+                gsubstitute: 'GsubstituteFunction',
+                seteqnumber: 'SeteqnumberFunction'
+            }, {
+                //      This function implements an ifstar macro.
+                IfstarFunction(parser, name) {
+                    const resultstar = parser.GetArgument(name);
+                    const resultnostar = parser.GetArgument(name);
+                    const star = parser.GetStar();                      // true if there is a *
+                    useArgument(parser, star ? resultstar : resultnostar);
+                },
+
+
+                //      This function implements an ifnextchar macro.
+                IfnextcharFunction(parser, name) {
+                    let whichchar = parser.GetArgument(name);
+                    if (whichchar.match(/^(?:0x[0-9A-F]+|[0-9]+)$/i)) {
+                        // $ syntax highlighting
+                        whichchar = String.fromCodePoint(parseInt(whichchar));
+                    }
+                    const resultnextchar = parser.GetArgument(name);
+                    const resultnotnextchar = parser.GetArgument(name);
+                    const gotchar = (parser.GetNext() === whichchar);
+                    useArgument(parser, gotchar ? resultnextchar : resultnotnextchar);
+                },
+
+
+                // This function implements an ifblank macro.
+                IfblankFunction(parser, name) {
+                    const blankarg = parser.GetArgument(name);
+                    const resultblank = parser.GetArgument(name);
+                    const resultnotblank = parser.GetArgument(name);
+                    const isblank = (blankarg.trim() == "");
+                    useArgument(parser, isblank ? resultblank : resultnotblank);
+                },
+
+
+                // This function implements an ifstrequal macro.
+                IfstrequalFunction(parser, name) {
+                    const strequalfirst = parser.GetArgument(name);
+                    const strequalsecond = parser.GetArgument(name);
+                    const resultequal = parser.GetArgument(name);
+                    const resultnotequal = parser.GetArgument(name);
+                    const isequal = (strequalfirst == strequalsecond);
+                    useArgument(parser, isequal ? resultequal : resultnotequal);
+                },
+
+
+                // This function implements a gsub macro.
+                GsubstituteFunction(parser, name) {
+                    const gsubfirst = parser.GetArgument(name);
+                    const gsubsecond = parser.GetArgument(name);
+                    const gsubthird = parser.GetArgument(name);
+                    let gsubresult=gsubfirst.replace(gsubsecond, gsubthird);
+                    useArgument(parser, gsubresult);
+                },
+
+
+                //      This function modifies the equation numbers.
+                SeteqnumberFunction(parser, name) {
+                        //   Get the macro parameters
+                        const star = parser.GetStar();                    // true if there is a *
+                        const optBrackets = parser.GetBrackets(name);     // contents of optional brackets
+                        const newsubequations = parser.GetArgument(name);    // the subequations argument
+                        const neweqsection = parser.GetArgument(name);    // the eq section argument
+                        const neweqnumber = parser.GetArgument(name);     // the eq number argument
+                        MathJax.config.subequations=newsubequations ;     // a string with boolean meaning
+                        MathJax.config.section=neweqsection ;             // a string with numeric meaning
+                        parser.tags.counter = parser.tags.allCounter = neweqnumber ;
+                }
+
+
+            });
+
+
+            //      Create the Lwarp-macros package
+            Configuration.create('Lwarp-macros', {
+                handler: {macro: ['Lwarp-macros']}
+            });
+
+
+            MathJax.startup.defaultReady();
+
+
+            // For forward references:
+            MathJax.startup.input[0].preFilters.add(({math}) => {
+                if (math.inputData.recompile){
+                        MathJax.config.subequations = math.inputData.recompile.subequations;
+                        MathJax.config.section = math.inputData.recompile.section;
+                }
+            });
+            MathJax.startup.input[0].postFilters.add(({math}) => {
+                if (math.inputData.recompile){
+                        math.inputData.recompile.subequations = MathJax.config.subequations;
+                        math.inputData.recompile.section = MathJax.config.section;
+                }
+            });
+
+
+                // For \left, \right with unicode-math:
+                const {DelimiterMap} = MathJax._.input.tex.SymbolMap;
+                const {Symbol} = MathJax._.input.tex.Symbol;
+                const {MapHandler} = MathJax._.input.tex.MapHandler;
+                const delimiter = MapHandler.getMap('delimiter');
+                delimiter.add('\\lBrack', new Symbol('\\lBrack', '\u27E6'));
+                delimiter.add('\\rBrack', new Symbol('\\rBrack', '\u27E7'));
+                delimiter.add('\\lAngle', new Symbol('\\lAngle', '\u27EA'));
+                delimiter.add('\\rAngle', new Symbol('\\rAngle', '\u27EB'));
+                delimiter.add('\\lbrbrak', new Symbol('\\lbrbrak', '\u2772'));
+                delimiter.add('\\rbrbrak', new Symbol('\\rbrbrak', '\u2773'));
+                delimiter.add('\\lbag', new Symbol('\\lbag', '\u27C5'));
+                delimiter.add('\\rbag', new Symbol('\\rbag', '\u27C6'));
+                delimiter.add('\\llparenthesis', new Symbol('\\llparenthesis', '\u2987'));
+                delimiter.add('\\rrparenthesis', new Symbol('\\rrparenthesis', '\u2988'));
+                delimiter.add('\\llangle', new Symbol('\\llangle', '\u2989'));
+                delimiter.add('\\rrangle', new Symbol('\\rrangle', '\u298A'));
+                delimiter.add('\\Lbrbrak', new Symbol('\\Lbrbrak', '\u27EC'));
+                delimiter.add('\\Rbrbrak', new Symbol('\\Rbrbrak', '\u27ED'));
+                delimiter.add('\\lBrace', new Symbol('\\lBrace', '\u2983'));
+                delimiter.add('\\rBrace', new Symbol('\\rBrace', '\u2984'));
+                delimiter.add('\\lParen', new Symbol('\\lParen', '\u2985'));
+                delimiter.add('\\rParen', new Symbol('\\rParen', '\u2986'));
+                delimiter.add('\\lbrackubar', new Symbol('\\lbrackubar', '\u298B'));
+                delimiter.add('\\rbrackubar', new Symbol('\\rbrackubar', '\u298C'));
+                delimiter.add('\\lbrackultick', new Symbol('\\lbrackultick', '\u298D'));
+                delimiter.add('\\rbracklrtick', new Symbol('\\rbracklrtick', '\u298E'));
+                delimiter.add('\\lbracklltick', new Symbol('\\lbracklltick', '\u298F'));
+                delimiter.add('\\rbrackurtick', new Symbol('\\rbrackurtick', '\u2990'));
+                delimiter.add('\\langledot', new Symbol('\\langledot', '\u2991'));
+                delimiter.add('\\rangledot', new Symbol('\\rangledot', '\u2992'));
+                delimiter.add('\\lparenless', new Symbol('\\lparenless', '\u2993'));
+                delimiter.add('\\rparengtr', new Symbol('\\rparengtr', '\u2994'));
+                delimiter.add('\\Lparengtr', new Symbol('\\Lparengtr', '\u2995'));
+                delimiter.add('\\Rparenless', new Symbol('\\Rparenless', '\u2996'));
+                delimiter.add('\\lblkbrbrak', new Symbol('\\lblkbrbrak', '\u2997'));
+                delimiter.add('\\rblkbrbrak', new Symbol('\\rblkbrbrak', '\u2998'));
+                delimiter.add('\\lvzigzag', new Symbol('\\lvzigzag', '\u29D8'));
+                delimiter.add('\\rvzigzag', new Symbol('\\rvzigzag', '\u29D9'));
+                delimiter.add('\\Lvzigzag', new Symbol('\\Lvzigzag', '\u29DA'));
+                delimiter.add('\\Rvzigzag', new Symbol('\\Rvzigzag', '\u29DB'));
+                delimiter.add('\\lcurvyangle', new Symbol('\\lcurvyangle', '\u29FC'));
+                delimiter.add('\\rcurvyangle', new Symbol('\\rcurvyangle', '\u29FD'));
+                delimiter.add('\\Vvert', new Symbol('\\Vvert', '\u2980'));
+        }        // ready
+    },           // startup
+
+
+    tex: {
+        packages: {'[+]': ['tagformat', 'Lwarp-macros', 'textmacros']},
+        tags: "ams",
+                tagformat: {
+                        number: function (n) {
+                             if(MathJax.config.subequations==0)
+                                 return(MathJax.config.section + n);
+                             else
+                                 return(MathJax.config.section + String.fromCharCode(96+n));
+                        },
+                },
+    }
+}
+</script>
+
+
+<script
+        id="MathJax-script"
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+></script>
+
+</head>
+<body>
+
+
+<a id="lecnotes_html-autopage-6"></a>
+<nav class="topnavigation"><a href="lecnotes_html.html" class="linkhome" >
+Home</a></nav>
+
+
+<div class="bodyandsidetoc">
+<div class="sidetoccontainer">
+
+
+<nav class="sidetoc">
+
+
+<div class="sidetoctitle">
+
+<p>
+Contents
+</p>
+</div>
+
+
+<div class="sidetoccontents">
+
+<p>
+<a href="lecnotes_html.html" class="linkhome" >
+Home</a>
+</p>
+
+</div>
+
+</nav>
+
+</div>
+
+
+<main class="bodycontainer">
+
+
+<section class="textbody">
+
+<!--MathJax customizations:-->
+
+
+<div class="hidden">
+
+\(\newcommand{\footnotename}{footnote}\)
+
+\(\def \LWRfootnote {1}\)
+
+\(\newcommand {\footnote }[2][\LWRfootnote ]{{}^{\mathrm {#1}}}\)
+
+\(\newcommand {\footnotemark }[1][\LWRfootnote ]{{}^{\mathrm {#1}}}\)
+
+\(\let \LWRorighspace \hspace \)
+
+\(\renewcommand {\hspace }{\ifstar \LWRorighspace \LWRorighspace }\)
+
+\(\newcommand {\mathnormal }[1]{{#1}}\)
+
+\(\newcommand \ensuremath [1]{#1}\)
+
+\(\newcommand {\LWRframebox }[2][]{\fbox {#2}} \newcommand {\framebox }[1][]{\LWRframebox } \)
+
+\(\newcommand {\setlength }[2]{}\)
+
+\(\newcommand {\addtolength }[2]{}\)
+
+\(\newcommand {\setcounter }[2]{}\)
+
+\(\newcommand {\addtocounter }[2]{}\)
+
+\(\newcommand {\arabic }[1]{}\)
+
+\(\newcommand {\number }[1]{}\)
+
+\(\newcommand {\noalign }[1]{\text {#1}\notag \\}\)
+
+\(\newcommand {\cline }[1]{}\)
+
+\(\newcommand {\directlua }[1]{\text {(directlua)}}\)
+
+\(\newcommand {\luatexdirectlua }[1]{\text {(directlua)}}\)
+
+\(\newcommand {\protect }{}\)
+
+\(\def \LWRabsorbnumber #1 {}\)
+
+\(\def \LWRabsorbquotenumber &quot;#1 {}\)
+
+\(\newcommand {\LWRabsorboption }[1][]{}\)
+
+\(\newcommand {\LWRabsorbtwooptions }[1][]{\LWRabsorboption }\)
+
+\(\def \mathchar {\ifnextchar &quot;\LWRabsorbquotenumber \LWRabsorbnumber }\)
+
+\(\def \mathcode #1={\mathchar }\)
+
+\(\let \delcode \mathcode \)
+
+\(\let \delimiter \mathchar \)
+
+\(\def \oe {\unicode {x0153}}\)
+
+\(\def \OE {\unicode {x0152}}\)
+
+\(\def \ae {\unicode {x00E6}}\)
+
+\(\def \AE {\unicode {x00C6}}\)
+
+\(\def \aa {\unicode {x00E5}}\)
+
+\(\def \AA {\unicode {x00C5}}\)
+
+\(\def \o {\unicode {x00F8}}\)
+
+\(\def \O {\unicode {x00D8}}\)
+
+\(\def \l {\unicode {x0142}}\)
+
+\(\def \L {\unicode {x0141}}\)
+
+\(\def \ss {\unicode {x00DF}}\)
+
+\(\def \SS {\unicode {x1E9E}}\)
+
+\(\def \dag {\unicode {x2020}}\)
+
+\(\def \ddag {\unicode {x2021}}\)
+
+\(\def \P {\unicode {x00B6}}\)
+
+\(\def \copyright {\unicode {x00A9}}\)
+
+\(\def \pounds {\unicode {x00A3}}\)
+
+\(\let \LWRref \ref \)
+
+\(\renewcommand {\ref }{\ifstar \LWRref \LWRref }\)
+
+\( \newcommand {\multicolumn }[3]{#3}\)
+
+\(\require {textcomp}\)
+
+\(\newcommand {\intertext }[1]{\text {#1}\notag \\}\)
+
+\(\let \Hat \hat \)
+
+\(\let \Check \check \)
+
+\(\let \Tilde \tilde \)
+
+\(\let \Acute \acute \)
+
+\(\let \Grave \grave \)
+
+\(\let \Dot \dot \)
+
+\(\let \Ddot \ddot \)
+
+\(\let \Breve \breve \)
+
+\(\let \Bar \bar \)
+
+\(\let \Vec \vec \)
+
+\(\newcommand {\real }{\mathbb {R}} \)
+
+\(\newcommand {\RR }{\mathbb {R}} \)
+
+\(\newcommand {\ZZ }{\mathbb Z} \)
+
+\(\newcommand {\F }{\mathbb F} \)
+
+\(\newcommand {\Ham }{\mathrm {Ham}}\)
+
+\(\newcommand {\PP }{\mathbb P}\)
+
+\(\newcommand {\co }[1]{\overline {#1}} \)
+
+\(\newcommand {\ul }[1]{\underline {#1}} \)
+
+\(\newcommand {\bo }[1]{\mathbf {#1}} \)
+
+\(\newcommand {\concat }[2]{[\, #1 \,|\, #2 \,]} \)
+
+\(\newcommand {\Encode }{\texttt {ENCODE}} \)
+
+\(\newcommand {\Decode }{\texttt {DECODE}} \)
+
+\(\newcommand {\RM }{R} \)
+
+\(\newcommand {\Rep }{\text {Rep}} \)
+
+</div>
+
+<p>
+<!--
+...... chapter ch8 ......
+-->
+<h3 id="autosec-7">Chapter&nbsp;<span class="sectionnumber">8&#x2003;</span>The MacWilliams identity. The Average Weight Equation. Plotkin bound. Simplex codes</h3>
+<a id="lecnotes_html-autopage-7"></a>
+<a id="lecnotes_html-autofile-20"></a>
+
+<p>
+Version 2022-11-11. <a href="lecnotes_html.pdf" target="_blank" >To PDF version of the notes</a>
+</p>
+
+<p>
+<b>Synopsis.</b> <i>It turns out that the weights of codevectors of the dual code \(C^\perp \) are completely determined by weights of codevectors of \(C\). This remarkable fact was proved by <b>Florence Jessie MacWilliams</b> (1917–1990),
+an English-born American mathematician who spent most of her career at Bell Labs and Harvard in the United States. We state the general case of the MacWilliams identity. We prove it for codes over \(\F _p\) where \(p\) is a prime (the proof is
+not examinable). As an example of an application, we deduce a formula called the Average Weight Equation, as well as the Plotkin bound. (These two facts are also proved independently of the MacWilliams identity.) We can use the MacWilliams
+identity to study Hamming codes by analysing their dual codes, called <b>simplex codes.</b></i>
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-8"></a>
+<span class="amsthmnamedefinition">Theorem</span><span class="amsthmnumberdefinition"> <span class="textup">8.1</span></span><span class="amsthmnotedefinition"> (The MacWilliams identity)</span>.   <a
+id="thm:macwilliams"></a> If \(C\) is a \(q\)-ary linear code, \(W_{C^\perp }(x,y)= \dfrac {1}{\#C} W_C(x+(q-1)y, \, x-y)\).
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmproof">
+
+<a id="lecnotes_html-autopage-9"></a>
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<span class="amsthmproofname"><b><i>Proof for prime \(q=p\). This proof is not examinable</i></b>.</span>
+</p>
+
+<p>
+Since \(p\) is a prime, the field \(\F _p\) consists of elements \(0,1,\dots ,p-1\) (residues of integers modulo \(p\)). Being able to explicitly list the field elements — not possible for a general prime power \(q\) — simplifies the proof.
+</p>
+
+<p>
+Let \(C\subseteq \F _p^n\) be linear. We fix the complex number \(\omega = e^{2\pi i/p}\), a primitive \(p\)th root of&nbsp;\(1\). We have \(\omega ^p=1\) and \(\omega ,\omega ^2,\ldots ,\omega ^{p-1}\ne 1\). We can write \(\omega
+^a\) if \(a\in \F _p\) — this complex number is well-defined, even though \(a\) is only defined modulo \(p\).
+</p>
+
+<p>
+Given \(\ul c\in C\), \(\ul v\in \F _p^n\), denote
+</p>
+
+<p>
+\[ \Phi (\ul c,\ul v)=\omega ^{\ul c \cdot \ul v} x^{n-w(\ul v)} y^{w(\ul v)}.                    \]
+</p>
+
+<p>
+We will compute \(\sum \limits _{\ul c\in C,\ \ul v\in \F _p^n} \Phi (\ul c,\ul v)\) in two different ways.
+</p>
+
+<p>
+<span class="underline"><i>Way 1</i></span>. If \(\ul v\in C^\perp \), then \(\ul c \cdot \ul v=0\) for all \(\ul c\in C\), so \(\Phi (\ul c,\ul v)= x^{n-w(\ul v)} y^{w(\ul v)}\).
+</p>
+
+<p>
+If, however, \(\ul v\notin C^\perp \), there is a codevector \(\ul d\in C\) such that \(\ul d \cdot \ul v=a\ne 0\) in \(\F _p\). Observe that \(\Phi (\ul d+\ul c,\ul v)=\omega ^{\ul d \cdot \ul v}\Phi (\ul c,\ul v)=\omega ^a
+\Phi (\ul c,\ul v)\). We know that \(\ul d+C=C\), so
+</p>
+
+<p>
+\[ \sum _{\ul c\in C}\Phi (\ul c,\ul v) = \sum _{\ul c\in C}\Phi (\ul d+\ul c,\ul v) = \omega ^a \sum _{\ul c\in C}\Phi (\ul c,\ul v) \quad \implies \quad (\omega ^a-1)\sum _{\ul c\in C}\Phi (\ul c,\ul v)=0.                                    \]
+</p>
+
+<p>
+Simce \(\omega ^a\ne 1\), we have
+</p>
+
+<p>
+\[ \sum _{\ul c\in C}\Phi (\ul c,\ul v)=0 \quad \text {for }\ul v\notin C^\perp .                      \]
+</p>
+
+<p>
+We conclude that
+</p>
+
+<p>
+\[ \sum \limits _{\ul c\in C,\ \ul v\in \F _p^n} \Phi (\ul c,\ul v) =\sum \limits _{\ul c\in C,\ \ul v\in C^\perp } \Phi (\ul c,\ul v) =\#C \sum _{\ul v\in C^\perp } x^{n-w(\ul v)} y^{w(\ul v)} =(\#C)W_{C^\perp
+}(x,y).      \]
+</p>
+
+<p>
+<span class="underline"><i>Way 2</i></span>. If \(v\) is a symbol, \(v\in \F _p\), we introduce the “weight of \(v\)”, \(w(v)\), as follows: \(w(v)=1\) if \(v\ne 0\) and \(w(v)=0\) if \(v=0\). Surely, for a vector \(\ul v\in \F _p^n\) we
+have \(w(\ul v)=w(v_1)+\dots +w(v_n)\). We then rewrite
+</p>
+<span class="hidden"> \(\seteqnumber{0}{8.}{0}\)</span>
+
+
+
+<!--
+
+
+
+                                                                                                        Φ(c, v) = ω c1 v1 +···+cn vn x1−w(v1 ) y w(v1 ) . . . x1−w(vn ) y w(vn )
+                                                                                                                 = ω c1 v1 x1−w(v1 ) y w(v1 ) . . . ω cn vn x1−w(vn ) y w(vn ) .
+
+
+
+-->
+
+
+
+<p>
+
+
+\begin{align*}
+\Phi (\ul c,\ul v) &amp; = \omega ^{c_1v_1+\dots +c_nv_n} x^{1-w(v_1)}y^{w(v_1)}\dots x^{1-w(v_n)}y^{w(v_n)} \\ &amp; = \omega ^{c_1v_1}x^{1-w(v_1)}y^{w(v_1)}\dots \omega ^{c_nv_n}x^{1-w(v_n)}y^{w(v_n)}.
+\end{align*}
+We now sum over \(\ul v\in \F _p^n\) first: each coordinate of \(\ul v\) runs over \(\F _p=\{0,1,\ldots ,p-1\}\). So, for a fixed \(\ul c\in C\),
+</p>
+<span class="hidden"> \(\seteqnumber{0}{8.}{0}\)</span>
+
+
+
+<!--
+
+
+                                                                                                                   p−1           p−1
+                                                                                             X                     X             X
+                                                                                                       Φ(c, v) =           ···           Φ(c, v)
+                                                                                             v∈Fn
+                                                                                                p                  v1 =0         vn =0
+
+                                                                                                                   p−1                                        p−1
+                                                                                                                   X                                          X
+                                                                                                               =           ω c1 v1 x1−w(v1 ) y w(v1 ) · · ·           ω cn vn x1−w(vn ) y w(vn ) .                                                      (*)
+                                                                                                                   v1 =0                                      vn =0
+
+
+
+
+-->
+
+
+
+<p>
+
+
+\begin{align*}
+\sum _{\ul v\in \F _p^n} \Phi (\ul c,\ul v) &amp; = \sum _{v_1=0}^{p-1} \dots \sum _{v_n=0}^{p-1} \Phi (\ul c,\ul v) \\ &amp; =\sum _{v_1=0}^{p-1} \omega ^{c_1v_1}x^{1-w(v_1)}y^{w(v_1)} \dots \sum
+_{v_n=0}^{p-1}\omega ^{c_nv_n}x^{1-w(v_n)}y^{w(v_n)}.             \tag {*}
+\end{align*}
+Let us analyse the first factor in the product on the right-hand side of (*):
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{8.}{0}\)</span>
+
+<!--
+
+
+                                                                                                               p−1                                              p−1
+                                                                                                               X                                                X
+                                                                                                                       ω c1 v1 x1−w(v1 ) y w(v1 ) = x +                 ω c1 v1 y.
+                                                                                                                                                                               
+                                                                                                               v1 =0                                            v1 =1
+
+
+-->
+
+<p>
+
+
+\begin{equation*}
+\sum _{v_1=0}^{p-1}\omega ^{c_1v_1}x^{1-w(v_1)}y^{w(v_1)} = x+\bigl (\sum _{v_1=1}^{p-1} \omega ^{c_1v_1} \bigr )y.
+\end{equation*}
+
+
+</p>
+
+<p>
+If \(c_1=0\), the coefficient of \(y\) is clearly \(1+1+\dots +1=p-1\), whereas if \(c_1\ne 0\), the coefficient of \(y\) is the sum of a geometric progression
+</p>
+
+<p>
+\[ \sum _{v_1=1}^{p-1} \omega ^{c_1v_1} = -1 + \sum _{v_1=0}^{p-1} \omega ^{c_1v_1} =-1+\frac {1-(\omega ^{c_1})^p}{1-\omega ^{c_1}} = -1+ \frac {0}{1-\omega ^{c_1}} = -1 \]
+</p>
+
+<p>
+since \((\omega ^{c_1})^p=1\). Hence the first factor on the right-hand side of (*) is
+</p>
+
+<p>
+\[ \left \{ \begin {array}{rl} x+(p-1)y, &amp; \text { if }c_1=0, \\ x-y, &amp; \text { if }c_1\ne 0 \end {array} \right .                                                    \]
+</p>
+
+<p>
+The same applies to the second, ..., \(n\)th factor in (*), hence (*) has \(w(\ul c)\) factors equal to \(x-y\) and \(n-w(\ul c)\) factors equal to \(x+(p-1)y\). In other words, (*) evaluates as \((x+(p-1)y)^{n-w(\ul c)}(x-y)^{w(\ul c)}\).
+Therefore,
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{8.}{0}\)</span>
+
+<!--
+
+
+                                                                                     XX                        X
+                                                                                                  Φ(c, v) =          (x + (p − 1)y)n−w(c) (x − y)w(c) = WC (x + (p − 1)y, x − y).
+                                                                                     c∈C   v∈Fn
+                                                                                              p                c∈C
+
+
+-->
+
+<p>
+
+
+\begin{equation*}
+\sum _{\ul c\in C}\sum _{\ul v\in \F _p^n} \Phi (\ul c,\ul v) = \sum _{\ul c\in C} (x+(p-1)y)^{n-w(\ul c)}(x-y)^{w(\ul c)} =W_C(x+(p-1)y,\, x-y).
+\end{equation*}
+
+
+</p>
+
+<p>
+Comparing <i>Way 2</i> and <i>Way 1</i>, we conclude that \(W_C(x+(p-1)y,\, x-y)=(\#C)W_{C^\perp }(x,y)\). This is the MacWilliams identity for \(q=p\). <span class="theoremendmark">&#x25A1;</span>
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-10"></a>
+<span class="amsthmnamedefinition">Example</span><span class="amsthmnotedefinition"> (the weight enumerator of \(E_n\))</span>.
+</p>
+
+<p>
+The binary MacWilliams identity allows us to immediately obtain a short formula for the weight enumerator of the even weight code \(E_n\). Indeed, \(E_n=\text {Rep}(n,2)^\perp \), and the binary repetition code has weight enumerator
+\(W_{\text {Rep}(n,2)}(x,y)=x^n+y^n\) (see example sheets). Also, \(\#\text {Rep}(n,2)=2\). Hence
+</p>
+
+<p>
+\[ W_{E_n}(x,y)=\frac {1}{\#\text {Rep}(n,2)}W_{\text {Rep}(n,2)}(x+y,x-y)=\frac 12((x+y)^n+(x-y)^n).                    \]
+</p>
+
+<p>
+Using the binomial formula, we can expand this sum as \(x^n + \binom n2 x^{n-2}y^2 + \binom n4 x^{n-4}y^4+\ldots \) In particular, this proves that \(w(E_n)=d(E_n)=2\) as the lowest positive power of \(x\) in this polynomial is two.
+</p>
+
+<p>
+
+
+</p>
+
+</li>
+
+</ul>
+
+</div>
+
+<p>
+The proof of the following result involves a surprising use of the MacWilliams identity. (An alternative approach is also given.)
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-11"></a>
+<span class="amsthmnamedefinition">Theorem</span><span class="amsthmnumberdefinition"> <span class="textup">8.2</span></span><span class="amsthmnotedefinition"> (The Average Weight Equation)</span>.                <a
+id="thm:awe"></a> If \(C\) is a \(q\)-ary linear code, the average of the weights of all the codevectors of \(C\) is \((n-z)(1-q^{-1})\), where \(z\) is the number of zero columns in a generator matrix of \(C\).
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmproof">
+
+<a id="lecnotes_html-autopage-12"></a>
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<span class="amsthmproofname">Proof.</span> If the \(i\)th column of a generator matrix of \(C\) is zero, the \(i\)th symbol of every codevector of \(C\) is zero. We can then shorten the code by deleting the \(i\)th coordinate — this does not
+change the weight of any codevector because only zeros are deleted. We repeat this operation \(z\) times so that the generator matrix has no more zero columns and obtain a code of length \(n-z\) with the same average weight. Hence it is enough to
+prove that a code \(C\) of length \(n\) generated by \(G\) without zero columns has average weight \(n(1-q^{-1})\).
+</p>
+
+<p>
+Assume now that \(G\) has no zero columns. Since \(G\) is a check matrix for the dual code \(C^\perp \), by Distance Theorem&nbsp;<a href="ch7.html#thm:distance">7.2</a> \(w(C^\perp )&gt;1\). Note that the coefficient of \(t\) in the
+polynomial \(W_{C^\perp }(1,t)\) is the number of weight \(1\) vectors in \(C^\perp \), hence zero. As with any polynomial in \(t\), this coefficient can be obtained&nbsp;as
+</p>
+
+<p>
+\[ \bigl .\dfrac {d}{dt}W_{C^\perp }(1,t)\bigr |_{t=0}.         \]
+</p>
+
+<p>
+By the MacWilliams identity, the equation \(0=\bigl .\dfrac {d}{dt}W_{C^\perp }(1,t)\bigr |_{t=0}\) rewrites as
+</p>
+<span class="hidden"> \(\seteqnumber{0}{8.}{0}\)</span>
+
+
+
+<!--
+
+
+
+                                                                                        d 1
+                                                                                    0=        WC (1 + (q − 1)t, 1 − t) t=0
+                                                                                        dt #C
+                                                                                         1    ∂                         ∂
+                                                                                                                                           
+                                                                                      =         WC (x, y) × (q − 1) +      WC (x, y) × (−1)
+                                                                                        #C ∂x                          ∂x                       x=1+(q−1)t, y=1−t, t=0
+                                                                                         1    ∂                         ∂
+                                                                                                                                           
+                                                                                      =         WC (x, y) × (q − 1) +      WC (x, y) × (−1)
+                                                                                        #C ∂x                          ∂x                       x=1, y=1
+                                                                                         1 X             ∂      ∂  n−w(c) w(c)
+                                                                                                                                
+                                                                                      =          (q − 1)    −      x        y
+                                                                                        #C               ∂x    ∂y                   x=1, y=1
+                                                                                              c∈C
+
+                                                                                         1 X                                          1 X
+                                                                                      =      (q − 1)(n − w(c)) − w(c) = (q − 1)n − q      w(c).
+                                                                                        #C                                           #C
+                                                                                             c∈C                                                c∈C
+
+
+
+
+-->
+
+
+
+<p>
+
+
+\begin{align*}
+0&amp;=\bigl .\frac {d}{dt} \frac {1}{\#C} W_C(1+(q-1)t,1-t)\bigr |_{t=0} \\ &amp;= \frac {1}{\#C}\Bigl .\Bigl (\frac {\partial }{\partial x}W_C(x,y)\times (q-1) + \frac {\partial }{\partial x}W_C(x,y)\times (-1)
+\Bigr ) \Bigr |_{x=1+(q-1)t,\ y=1-t,\ t=0} \\ &amp;= \frac {1}{\#C}\Bigl .\Bigl (\frac {\partial }{\partial x}W_C(x,y)\times (q-1) + \frac {\partial }{\partial x}W_C(x,y)\times (-1) \Bigr ) \Bigr |_{x=1,\ y=1} \\
+&amp;= \frac {1}{\#C}\Bigl .\Bigl ( \sum _{\ul c\in C} \bigl ((q-1)\frac {\partial }{\partial x}- \frac {\partial }{\partial y}\bigr ) x^{n-w(\ul c)} y^{w(\ul c)} \Bigr ) \Bigr |_{x=1,\ y=1} \\ &amp;= \frac
+{1}{\#C}\sum _{\ul c\in C} (q-1)(n-w(\ul c))-w(\ul c) = (q-1)n -q\frac {1}{\#C}\sum _{\ul c\in C}w(\ul c).
+\end{align*}
+It follows that the average weight, \(\frac {1}{\#C}\sum \limits _{\ul c\in C}w(\ul c)\), is equal to \((q-1)n/q\) as claimed. <span class="theoremendmark">&#x25A1;</span>
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmproof">
+
+<a id="lecnotes_html-autopage-13"></a>
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<span class="amsthmproofname">An alternative proof of Theorem <a href="ch8.html#thm:awe">8.2</a> without the MacWilliams identity.</span> In the same way as in the previous proof, we conclude that it is enough to prove that a code \(C\)
+of length \(n\) generated by \(G\) without zero columns has average weight \(n(1-q^{-1})\).
+</p>
+
+<p>
+Assume that \(C\) is generated by \(G\) without zero columns. Consider a matrix \([C]\) where the rows are <i>all</i> the codevectors of \(C\).
+</p>
+
+<p>
+For a symbol \(a\in \F _q\), let \(\mathcal R_i(a)\) denote the set of rows of \([C]\) which have the symbol \(a\) in position \(i\). We claim that \(\#\mathcal R_i(0)=\#\mathcal R_i(a)\) for all \(i=1,\dots ,n\) and for all \(a\in \F
+_q\). We prove this claim for \(i=1\), the proof for other \(i\) is similar.
+</p>
+
+<p>
+Since column \(1\) of \(G\) is not a zero column, there is a row \(\ul r\) of \(G\) which has a non-zero symbol \(b\) in position \(1\). Let \(\ul v=(ab^{-1})\ul r\), and note that \(\ul r\in C\) (all rows of \(G\) are codevectors) and so \(\ul
+v\in C\). Consider the map \(R_1(0)\to R_1(a)\) given by \(\ul c \mapsto \ul v + \ul c.\) This map indeed sends a vector which begins with \(0\) to a vector which begins with \(a\), and it is clear that this is a bijection (the inverse map
+being \(\ul c \mapsto \ul c - \ul v\)). Hence \(\#\mathcal R_1(0)=\#\mathcal R_1(a),\) as claimed.
+</p>
+
+<p>
+But this means that every symbol of \(\F _q\) occurs in column \(i\) of \([C]\) the same number of times. Since there are \(\#C\) symbols in the \(i\)th column of \([C]\), each of the \(q\) symbols occurs \(q^{-1}\#C\) times in the \(i\)th
+column. Hence each symbol occurs \(nq^{-1}\#C\) times in the matrix \([C].\)
+</p>
+
+<p>
+To prove the Average Weight Equation, we observe that \(\sum _{\ul c \in C} w(\ul c)\) is the total number of non-zero symbols in \([C]\). Each of the \(q-1\) non-zero symbols occurs \(nq^{-1}\#C\) times, so this sum must be
+\((q-1)nq^{-1}\#C=n(1-q^{-1})\#C.\) We conclude that \(\frac {1}{\#C}\sum _{\ul c \in C} w(\ul c) =\frac {1}{\#C}n(1-q^{-1})\#C=n(1-q^{-1}).\) <span class="theoremendmark">&#x25A1;</span>
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-14"></a>
+<span class="amsthmnamedefinition">Example</span>.        The easiest case where we can explicitly verify the Average Weight Equation is \(C=\text {Rep}(n,q)\), the \(q\)-ary repetition code of length \(n\). The code consists of the zero vector
+and \(q-1\) vectors of the form \(aa\dots a\) where \(a\in \F _q\setminus \{0\}\), of weight \(n\). The total number of codevectors is \(q\). The average weight of a codevector of \(\text {Rep}(n,q)\) is therefore
+</p>
+
+<p>
+\[ \frac {1\times 0 + (q-1)\times n}{q} = n(1-q^{-1}), \]
+</p>
+
+<p>
+which agrees with the Average Weight Equation because \(z=0\): the one-row generator matrix \(\begin {bmatrix}1&amp;1&amp;\dots &amp;1\end {bmatrix}\) of the code does not contain a zero column.
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-15"></a>
+<span class="amsthmnamedefinition">Exercise</span>.   Verify the Average Weight Equation by explicit calculation for the trivial code \(\F _q^n\).
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<!--
+...... subsection Simplex codes ......
+-->
+<h5 id="autosec-16">Simplex codes</h5>
+<a id="lecnotes_html-autopage-16"></a>
+
+
+<p>
+What is the weight enumerator of \(\mathrm {Ham}(r,q)\)? This question can be answered using the MacWilliams identity. In the particular case \(q=2\), the answer can be explored further to give the probability \(P_{\mathrm {undetect}}\) for
+the binary Hamming code (we do not pursue this here).
+</p>
+
+<p>
+Recall from the previous chapter that the Hamming codes are defined via an interesting check matrix whose columns form <i>a maximal set of columns where no two columns are proportional</i>. What is the code <i>generated</i> by this matrix?
+We analyse these codes in the rest of this chapter.
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-17"></a>
+<span class="amsthmnamedefinition">Definition</span><span class="amsthmnotedefinition"> (simplex code)</span>.   A <b><i>simplex code</i></b> \(\Sigma (r,q)\) is defined as \(\mathrm {Ham}(r,q)^\perp \).
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-18"></a>
+<span class="amsthmnamedefinition">Remark</span>.           Recall that a <i>regular simplex</i> in an \(n\)-dimensional euclidean space \(\mathbb R^n\) is a convex polytope whose vertices are \(n+1\) points with the same distance between each
+pair of points. Thus, a 2-dimensional regular simplex is an equilateral triangle, and a 3-dimensional regular simplex is a regular tetrahedron. The following result motivates our terminology.
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-19"></a>
+<span class="amsthmnamedefinition">Theorem</span><span class="amsthmnumberdefinition"> <span class="textup">8.3</span></span><span class="amsthmnotedefinition"> (properties of a simplex code)</span>.   <a
+id="thm:simplex"></a> The simplex code \(\Sigma (r,q)\) has length \(n=(q^r-1)/(q-1)\) and dimension \(r\). The Hamming distance between each pair of codewords is \(q^{r-1}\).
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmproof">
+
+<a id="lecnotes_html-autopage-20"></a>
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<span class="amsthmproofname">Proof.</span> The length and dimension of \(\Sigma (r,q)=\mathrm {Ham}(r,q)^\perp \) are dictated by the parameters of the Hamming code. It remains to calculate the distances.
+</p>
+
+<p>
+Since \(\Sigma (r,q)\) is a linear code, it is enough to show that the weight of every non-zero \(\ul v\in \Sigma (r,q)\) is \(q^{r-1}\).
+</p>
+
+<p>
+By linear algebra, there is a basis of \(\Sigma (r,q)\) which contains \(\ul v\), hence \(\ul v\) is the first row of some generator matrix \(H&apos;\) of \(\Sigma (r,q)\).
+</p>
+
+<p>
+Since \(H&apos;\) is a check matrix for \(\Ham (r,q)\) and \(d(\Ham (r,q))=3\), by the Distance Theorem no two columns of \(H&apos;\) are proportional, hence the columns of \(H&apos;\) represent distinct lines in \(\F _q^r\). Therefore, the
+weight of \(\ul v\) (the first row of \(H&apos;\)) is the number of lines where the <i>first</i> entry of a representative vector is not zero.
+</p>
+
+<p>
+The total number of possible columns of size \(r\) with non-zero top entry is \((q-1)\) (choices for the top entry) \(\times q^{r-1}\) (choices for the other entries which are unrestricted). But \((q-1)\) non-zero columns form a line, hence the
+number of required lines is \((q-1)q^{r-1}/(q-1)=q^{r-1}\). Hence \(w(\ul v)=q^{r-1}\) as claimed. <span class="theoremendmark">&#x25A1;</span>
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<!--
+...... subsection The weight enumerator of a binary Hamming code ......
+-->
+<h5 id="autosec-21">The weight enumerator of a binary Hamming code</h5>
+<a id="lecnotes_html-autopage-21"></a>
+
+
+<p>
+By Theorem <a href="ch8.html#thm:simplex">8.3</a>, the weight enumerator of the simplex code \(\Sigma (r,q)\) is
+</p>
+
+<p>
+\[ W_{\Sigma (r,q)}(x,y) = x^n + (q^r-1)x^{n-q^{r-1}}y^{q^{r-1}} \]
+</p>
+
+<p>
+where \(n=\dfrac {q^r-1}{q-1}\). This formula reflects the fact that there is one codevector of weight \(0\) and \(q^r-1\) codevectors of weight \(q^{r-1}\) in \(\Sigma (r,q)\).
+</p>
+
+<p>
+The weight enumerator of \(\mathrm {Ham}(r,q)=\Sigma (r,q)^\perp \) can then be obtained using the MacWilliams identity. We do this for a binary Hamming code.
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-22"></a>
+<span class="amsthmnamedefinition">Proposition</span><span class="amsthmnumberdefinition"> <span class="textup">8.4</span></span><span class="amsthmnotedefinition"> (the weight enumerator of \(\mathrm
+{Ham}(r,2)\))</span>.   <a id="prop:WHam"></a>
+</p>
+
+<p>
+\[ W_{\mathrm {Ham}(r,2)}(x,y) = \dfrac {1}{n+1}\left ( (x+y)^n + n(x+y)^{(n-1)/2}(x-y)^{(n+1)/2}\right ) \]
+</p>
+
+<p>
+where \(n=2^r-1\).
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmproof">
+
+<a id="lecnotes_html-autopage-23"></a>
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<span class="amsthmproofname">Proof.</span> The MacWilliams identity, which is Theorem <a href="ch8.html#thm:macwilliams">8.1</a>, in the case of binary codes gives \(W_{C^\perp }(x,y)=\frac {1}{\#C}W_C(x+y,x-y)\). We put
+\(C=\Sigma (r,2)\) so that \(C^\perp =\Ham (r,2)\). Then \(q^r-1=2^r-1=n\) so that \(\#C=2^r=n+1\) and the weight of each non-zero codevector in \(\Sigma (r,2)\) is \(q^{r-1}=2^{r-1}=\frac {n+1}2\). We also have \(n-q^{r-1} =
+n-\frac {n+1}{2}=\frac {n-1}{2}\).
+</p>
+
+<p>
+Substituting these in the MacWilliams identity, we obtain the formula for \(W_{\Ham (r,2)}\) as stated. <span class="theoremendmark">&#x25A1;</span>
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<!--
+...... subsection Example ......
+-->
+<h5 id="autosec-24">Example</h5>
+<a id="lecnotes_html-autopage-24"></a>
+
+
+<p>
+The original Hamming code \(\mathrm {Ham}(3,2)\) has weight enumerator
+</p>
+
+<p>
+\[\frac 18\left ( (x+y)^7 + 7(x+y)^3(x-y)^4 \right ) = x^7+7 x^4 y^3+7 x^3 y^4+y^7.   \]
+</p>
+<!--
+...... subsection Exercise ......
+-->
+<h5 id="autosec-25">Exercise</h5>
+<a id="lecnotes_html-autopage-25"></a>
+
+
+<p>
+Prove the above formula by explicitly expanding the left-hand side.
+</p>
+<!--
+...... subsection Exercise ......
+-->
+<h5 id="autosec-26">Exercise</h5>
+<a id="lecnotes_html-autopage-26"></a>
+
+
+<p>
+Use Proposition&nbsp;<a href="ch8.html#prop:WHam">8.4</a> to show that every binary Hamming code contains the vector \(111\ldots 1\) (all bits equal to \(1\)).
+</p>
+<!--
+...... subsection The Plotkin Bound ......
+-->
+<h5 id="autosec-27">The Plotkin Bound</h5>
+<a id="lecnotes_html-autopage-27"></a>
+
+
+<p>
+The Plotkin bound was obtained by Morris Plotkin in 1960 for arbitrary (not necessarily linear) binary codes. It applies to codes with very large minimum distance: \(d&gt;n/2\) where \(n\) is the length of the code. A proof of the general case of
+the bound by a direct counting argument can be found in the literature. We will only prove the statement for linear codes, which will serve as an example of the power of the MacWilliams identity and its corollary, the Average Weight Equation.
+(<i>Historical note</i>: the MacWilliams identity was proved in 1961, i.e., after the Plotkin bound.)
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-28"></a>
+<span class="amsthmnamedefinition">Proposition</span><span class="amsthmnumberdefinition"> <span class="textup">8.5</span></span><span class="amsthmnotedefinition"> (The Plotkin bound for binary linear codes)</span>.   If
+\(C\subseteq \F _2^n\) is a linear code such that \(d=d(C)&gt;n/2\), then \(\#C \le \dfrac {d}{d-n/2}\).
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmproof">
+
+<a id="lecnotes_html-autopage-29"></a>
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<span class="amsthmproofname">Proof.</span> Let \(M=\#C\). The code \(C\) contains the zero vector, \(\ul 0\), and \(M-1\) vectors of weight <i>at least</i> \(d\). Then the average weight of a codevector of \(C\) is <i>at least</i>
+</p>
+
+<p>
+\[ \frac {1\times 0 + (M-1)\times d}{M} = \bigl (1-\frac {1}{M}\bigr )d.          \]
+</p>
+
+<p>
+So from the Average Weight Equation (where \(z\) is the number of zero columns in a generator matrix of \(C\)) we obtain
+</p>
+
+<p>
+\[ (n-z)\bigl (1-\frac 12\bigr ) \ge \bigl (1-\frac 1M\bigr )d \quad \implies \quad \frac n2\ge \bigl (1-\frac 1M\bigr )d \quad \iff \quad \frac {n}{2d} \ge 1-\frac 1M \]
+</p>
+
+<p>
+so that \(1/M\ge 1-n/(2d)=(2d-n)/(2d)\) and \(M\le 2d/(2d-n)\), as claimed. <span class="theoremendmark">&#x25A1;</span>
+</p>
+
+</li>
+
+</ul>
+
+</div>
+</section>
+
+</main>
+
+</div>
+
+
+<nav class="botnavigation"><a href="lecnotes_html.html" class="linkhome" >
+Home</a></nav>
+
+</body>
+</html>

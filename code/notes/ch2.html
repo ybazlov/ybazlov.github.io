@@ -1,0 +1,1069 @@
+
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="UTF-8" />
+<meta name="generator" content="LaTeX Lwarp package" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<!--[if lt IE 9]>
+<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+<link rel="stylesheet" type="text/css" href="bazlovstyle.css" />
+
+<script>
+// Lwarp MathJax emulation code
+//
+// Based on code by Davide P. Cervone.
+// Equation numbering: https://github.com/mathjax/MathJax/issues/2427
+// Starred and ifnextchar macros: https://github.com/mathjax/MathJax/issues/2428
+// \left, \right delimiters: https://github.com/mathjax/MathJax/issues/2535
+//
+// Modified by Brian Dunn to adjust equation numbering and add subequations.
+//
+// LaTeX can use \seteqnumber{subequations?}{section}{number} before each equation.
+// subequations? is 0 usually, 1 if inside subequations.
+// section is a string printed as-is, or empty.
+// number is auto-incremented by MathJax between equations.
+//
+MathJax = {
+    subequations: "0",
+    section: "",
+    loader: {
+        load: ['[tex]/tagformat', '[tex]/textmacros'],
+    },
+    startup: {
+        ready() {
+            //      These would be replaced by import commands if you wanted to make
+            //      a proper extension.
+            const Configuration = MathJax._.input.tex.Configuration.Configuration;
+            const CommandMap = MathJax._.input.tex.SymbolMap.CommandMap;
+            const Macro = MathJax._.input.tex.Symbol.Macro;
+            const TexError = MathJax._.input.tex.TexError.default;
+            const ParseUtil = MathJax._.input.tex.ParseUtil.default;
+            const expandable = MathJax._.util.Options.expandable;
+
+
+            //      Insert the replacement string into the TeX string, and check
+            //      that there haven't been too many maxro substitutions (prevents
+            //      infinite loops).
+            const useArgument = (parser, text) => {
+                parser.string = ParseUtil.addArgs(parser, text, parser.string.slice(parser.i));
+                parser.i = 0;
+                if (++parser.macroCount > parser.configuration.options.maxMacros) {
+                    throw new TexError('MaxMacroSub1',
+                    'MathJax maximum macro substitution count exceeded; ' +
+                    'is there a recursive macro call?');
+                }
+            }
+
+
+            //      Create the command map for:
+            //          \ifstar, \ifnextchar, \ifblank, \ifstrequal, \gsub, \seteqnumber
+            new CommandMap('Lwarp-macros', {
+                ifstar: 'IfstarFunction',
+                ifnextchar: 'IfnextcharFunction',
+                ifblank: 'IfblankFunction',
+                ifstrequal: 'IfstrequalFunction',
+                gsubstitute: 'GsubstituteFunction',
+                seteqnumber: 'SeteqnumberFunction'
+            }, {
+                //      This function implements an ifstar macro.
+                IfstarFunction(parser, name) {
+                    const resultstar = parser.GetArgument(name);
+                    const resultnostar = parser.GetArgument(name);
+                    const star = parser.GetStar();                      // true if there is a *
+                    useArgument(parser, star ? resultstar : resultnostar);
+                },
+
+
+                //      This function implements an ifnextchar macro.
+                IfnextcharFunction(parser, name) {
+                    let whichchar = parser.GetArgument(name);
+                    if (whichchar.match(/^(?:0x[0-9A-F]+|[0-9]+)$/i)) {
+                        // $ syntax highlighting
+                        whichchar = String.fromCodePoint(parseInt(whichchar));
+                    }
+                    const resultnextchar = parser.GetArgument(name);
+                    const resultnotnextchar = parser.GetArgument(name);
+                    const gotchar = (parser.GetNext() === whichchar);
+                    useArgument(parser, gotchar ? resultnextchar : resultnotnextchar);
+                },
+
+
+                // This function implements an ifblank macro.
+                IfblankFunction(parser, name) {
+                    const blankarg = parser.GetArgument(name);
+                    const resultblank = parser.GetArgument(name);
+                    const resultnotblank = parser.GetArgument(name);
+                    const isblank = (blankarg.trim() == "");
+                    useArgument(parser, isblank ? resultblank : resultnotblank);
+                },
+
+
+                // This function implements an ifstrequal macro.
+                IfstrequalFunction(parser, name) {
+                    const strequalfirst = parser.GetArgument(name);
+                    const strequalsecond = parser.GetArgument(name);
+                    const resultequal = parser.GetArgument(name);
+                    const resultnotequal = parser.GetArgument(name);
+                    const isequal = (strequalfirst == strequalsecond);
+                    useArgument(parser, isequal ? resultequal : resultnotequal);
+                },
+
+
+                // This function implements a gsub macro.
+                GsubstituteFunction(parser, name) {
+                    const gsubfirst = parser.GetArgument(name);
+                    const gsubsecond = parser.GetArgument(name);
+                    const gsubthird = parser.GetArgument(name);
+                    let gsubresult=gsubfirst.replace(gsubsecond, gsubthird);
+                    useArgument(parser, gsubresult);
+                },
+
+
+                //      This function modifies the equation numbers.
+                SeteqnumberFunction(parser, name) {
+                        //   Get the macro parameters
+                        const star = parser.GetStar();                    // true if there is a *
+                        const optBrackets = parser.GetBrackets(name);     // contents of optional brackets
+                        const newsubequations = parser.GetArgument(name);    // the subequations argument
+                        const neweqsection = parser.GetArgument(name);    // the eq section argument
+                        const neweqnumber = parser.GetArgument(name);     // the eq number argument
+                        MathJax.config.subequations=newsubequations ;     // a string with boolean meaning
+                        MathJax.config.section=neweqsection ;             // a string with numeric meaning
+                        parser.tags.counter = parser.tags.allCounter = neweqnumber ;
+                }
+
+
+            });
+
+
+            //      Create the Lwarp-macros package
+            Configuration.create('Lwarp-macros', {
+                handler: {macro: ['Lwarp-macros']}
+            });
+
+
+            MathJax.startup.defaultReady();
+
+
+            // For forward references:
+            MathJax.startup.input[0].preFilters.add(({math}) => {
+                if (math.inputData.recompile){
+                        MathJax.config.subequations = math.inputData.recompile.subequations;
+                        MathJax.config.section = math.inputData.recompile.section;
+                }
+            });
+            MathJax.startup.input[0].postFilters.add(({math}) => {
+                if (math.inputData.recompile){
+                        math.inputData.recompile.subequations = MathJax.config.subequations;
+                        math.inputData.recompile.section = MathJax.config.section;
+                }
+            });
+
+
+                // For \left, \right with unicode-math:
+                const {DelimiterMap} = MathJax._.input.tex.SymbolMap;
+                const {Symbol} = MathJax._.input.tex.Symbol;
+                const {MapHandler} = MathJax._.input.tex.MapHandler;
+                const delimiter = MapHandler.getMap('delimiter');
+                delimiter.add('\\lBrack', new Symbol('\\lBrack', '\u27E6'));
+                delimiter.add('\\rBrack', new Symbol('\\rBrack', '\u27E7'));
+                delimiter.add('\\lAngle', new Symbol('\\lAngle', '\u27EA'));
+                delimiter.add('\\rAngle', new Symbol('\\rAngle', '\u27EB'));
+                delimiter.add('\\lbrbrak', new Symbol('\\lbrbrak', '\u2772'));
+                delimiter.add('\\rbrbrak', new Symbol('\\rbrbrak', '\u2773'));
+                delimiter.add('\\lbag', new Symbol('\\lbag', '\u27C5'));
+                delimiter.add('\\rbag', new Symbol('\\rbag', '\u27C6'));
+                delimiter.add('\\llparenthesis', new Symbol('\\llparenthesis', '\u2987'));
+                delimiter.add('\\rrparenthesis', new Symbol('\\rrparenthesis', '\u2988'));
+                delimiter.add('\\llangle', new Symbol('\\llangle', '\u2989'));
+                delimiter.add('\\rrangle', new Symbol('\\rrangle', '\u298A'));
+                delimiter.add('\\Lbrbrak', new Symbol('\\Lbrbrak', '\u27EC'));
+                delimiter.add('\\Rbrbrak', new Symbol('\\Rbrbrak', '\u27ED'));
+                delimiter.add('\\lBrace', new Symbol('\\lBrace', '\u2983'));
+                delimiter.add('\\rBrace', new Symbol('\\rBrace', '\u2984'));
+                delimiter.add('\\lParen', new Symbol('\\lParen', '\u2985'));
+                delimiter.add('\\rParen', new Symbol('\\rParen', '\u2986'));
+                delimiter.add('\\lbrackubar', new Symbol('\\lbrackubar', '\u298B'));
+                delimiter.add('\\rbrackubar', new Symbol('\\rbrackubar', '\u298C'));
+                delimiter.add('\\lbrackultick', new Symbol('\\lbrackultick', '\u298D'));
+                delimiter.add('\\rbracklrtick', new Symbol('\\rbracklrtick', '\u298E'));
+                delimiter.add('\\lbracklltick', new Symbol('\\lbracklltick', '\u298F'));
+                delimiter.add('\\rbrackurtick', new Symbol('\\rbrackurtick', '\u2990'));
+                delimiter.add('\\langledot', new Symbol('\\langledot', '\u2991'));
+                delimiter.add('\\rangledot', new Symbol('\\rangledot', '\u2992'));
+                delimiter.add('\\lparenless', new Symbol('\\lparenless', '\u2993'));
+                delimiter.add('\\rparengtr', new Symbol('\\rparengtr', '\u2994'));
+                delimiter.add('\\Lparengtr', new Symbol('\\Lparengtr', '\u2995'));
+                delimiter.add('\\Rparenless', new Symbol('\\Rparenless', '\u2996'));
+                delimiter.add('\\lblkbrbrak', new Symbol('\\lblkbrbrak', '\u2997'));
+                delimiter.add('\\rblkbrbrak', new Symbol('\\rblkbrbrak', '\u2998'));
+                delimiter.add('\\lvzigzag', new Symbol('\\lvzigzag', '\u29D8'));
+                delimiter.add('\\rvzigzag', new Symbol('\\rvzigzag', '\u29D9'));
+                delimiter.add('\\Lvzigzag', new Symbol('\\Lvzigzag', '\u29DA'));
+                delimiter.add('\\Rvzigzag', new Symbol('\\Rvzigzag', '\u29DB'));
+                delimiter.add('\\lcurvyangle', new Symbol('\\lcurvyangle', '\u29FC'));
+                delimiter.add('\\rcurvyangle', new Symbol('\\rcurvyangle', '\u29FD'));
+                delimiter.add('\\Vvert', new Symbol('\\Vvert', '\u2980'));
+        }        // ready
+    },           // startup
+
+
+    tex: {
+        packages: {'[+]': ['tagformat', 'Lwarp-macros', 'textmacros']},
+        tags: "ams",
+                tagformat: {
+                        number: function (n) {
+                             if(MathJax.config.subequations==0)
+                                 return(MathJax.config.section + n);
+                             else
+                                 return(MathJax.config.section + String.fromCharCode(96+n));
+                        },
+                },
+    }
+}
+</script>
+
+
+<script
+        id="MathJax-script"
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+></script>
+
+</head>
+<body>
+
+
+<a id="lecnotes_html-autopage-9"></a>
+<nav class="topnavigation"><a href="lecnotes_html.html" class="linkhome" >
+Home</a></nav>
+
+
+<div class="bodyandsidetoc">
+<div class="sidetoccontainer">
+
+
+<nav class="sidetoc">
+
+
+<div class="sidetoctitle">
+
+<p>
+Contents
+</p>
+</div>
+
+
+<div class="sidetoccontents">
+
+<p>
+<a href="lecnotes_html.html" class="linkhome" >
+Home</a>
+</p>
+
+</div>
+
+</nav>
+
+</div>
+
+
+<main class="bodycontainer">
+
+
+<section class="textbody">
+
+<!--MathJax customizations:-->
+
+
+<div class="hidden">
+
+\(\newcommand{\footnotename}{footnote}\)
+
+\(\def \LWRfootnote {1}\)
+
+\(\newcommand {\footnote }[2][\LWRfootnote ]{{}^{\mathrm {#1}}}\)
+
+\(\newcommand {\footnotemark }[1][\LWRfootnote ]{{}^{\mathrm {#1}}}\)
+
+\(\let \LWRorighspace \hspace \)
+
+\(\renewcommand {\hspace }{\ifstar \LWRorighspace \LWRorighspace }\)
+
+\(\newcommand {\mathnormal }[1]{{#1}}\)
+
+\(\newcommand \ensuremath [1]{#1}\)
+
+\(\newcommand {\LWRframebox }[2][]{\fbox {#2}} \newcommand {\framebox }[1][]{\LWRframebox } \)
+
+\(\newcommand {\setlength }[2]{}\)
+
+\(\newcommand {\addtolength }[2]{}\)
+
+\(\newcommand {\setcounter }[2]{}\)
+
+\(\newcommand {\addtocounter }[2]{}\)
+
+\(\newcommand {\arabic }[1]{}\)
+
+\(\newcommand {\number }[1]{}\)
+
+\(\newcommand {\noalign }[1]{\text {#1}\notag \\}\)
+
+\(\newcommand {\cline }[1]{}\)
+
+\(\newcommand {\directlua }[1]{\text {(directlua)}}\)
+
+\(\newcommand {\luatexdirectlua }[1]{\text {(directlua)}}\)
+
+\(\newcommand {\protect }{}\)
+
+\(\def \LWRabsorbnumber #1 {}\)
+
+\(\def \LWRabsorbquotenumber &quot;#1 {}\)
+
+\(\newcommand {\LWRabsorboption }[1][]{}\)
+
+\(\newcommand {\LWRabsorbtwooptions }[1][]{\LWRabsorboption }\)
+
+\(\def \mathchar {\ifnextchar &quot;\LWRabsorbquotenumber \LWRabsorbnumber }\)
+
+\(\def \mathcode #1={\mathchar }\)
+
+\(\let \delcode \mathcode \)
+
+\(\let \delimiter \mathchar \)
+
+\(\def \oe {\unicode {x0153}}\)
+
+\(\def \OE {\unicode {x0152}}\)
+
+\(\def \ae {\unicode {x00E6}}\)
+
+\(\def \AE {\unicode {x00C6}}\)
+
+\(\def \aa {\unicode {x00E5}}\)
+
+\(\def \AA {\unicode {x00C5}}\)
+
+\(\def \o {\unicode {x00F8}}\)
+
+\(\def \O {\unicode {x00D8}}\)
+
+\(\def \l {\unicode {x0142}}\)
+
+\(\def \L {\unicode {x0141}}\)
+
+\(\def \ss {\unicode {x00DF}}\)
+
+\(\def \SS {\unicode {x1E9E}}\)
+
+\(\def \dag {\unicode {x2020}}\)
+
+\(\def \ddag {\unicode {x2021}}\)
+
+\(\def \P {\unicode {x00B6}}\)
+
+\(\def \copyright {\unicode {x00A9}}\)
+
+\(\def \pounds {\unicode {x00A3}}\)
+
+\(\let \LWRref \ref \)
+
+\(\renewcommand {\ref }{\ifstar \LWRref \LWRref }\)
+
+\( \newcommand {\multicolumn }[3]{#3}\)
+
+\(\require {textcomp}\)
+
+\(\newcommand {\intertext }[1]{\text {#1}\notag \\}\)
+
+\(\let \Hat \hat \)
+
+\(\let \Check \check \)
+
+\(\let \Tilde \tilde \)
+
+\(\let \Acute \acute \)
+
+\(\let \Grave \grave \)
+
+\(\let \Dot \dot \)
+
+\(\let \Ddot \ddot \)
+
+\(\let \Breve \breve \)
+
+\(\let \Bar \bar \)
+
+\(\let \Vec \vec \)
+
+\(\newcommand {\real }{\mathbb {R}} \)
+
+\(\newcommand {\RR }{\mathbb {R}} \)
+
+\(\newcommand {\ZZ }{\mathbb Z} \)
+
+\(\newcommand {\F }{\mathbb F} \)
+
+\(\newcommand {\Ham }{\mathrm {Ham}}\)
+
+\(\newcommand {\PP }{\mathbb P}\)
+
+\(\newcommand {\co }[1]{\overline {#1}} \)
+
+\(\newcommand {\ul }[1]{\underline {#1}} \)
+
+\(\newcommand {\bo }[1]{\mathbf {#1}} \)
+
+\(\newcommand {\concat }[2]{[\, #1 \,|\, #2 \,]} \)
+
+\(\newcommand {\Encode }{\texttt {ENCODE}} \)
+
+\(\newcommand {\Decode }{\texttt {DECODE}} \)
+
+\(\newcommand {\RM }{R} \)
+
+\(\newcommand {\Rep }{\text {Rep}} \)
+
+</div>
+
+<p>
+<!--
+...... chapter ch2 ......
+-->
+<h3 id="autosec-10">Chapter&nbsp;<span class="sectionnumber">2&#x2003;</span>Parameters. Channel coding. Bounds</h3>
+<a id="lecnotes_html-autopage-10"></a>
+<a id="lecnotes_html-autofile-4"></a>
+
+<p>
+Version 2022-10-11. <a href="lecnotes_html.pdf" target="_blank" >To PDF version of the notes</a>           <a id="ch:basic"></a>
+</p>
+
+<p>
+<b>Synopsis.</b> <i>Basic properties of a code \(C\) can be expressed by numbers called <b>parameters.</b> We learn why such parameters as the <b>rate</b>, \(R\), and the <b>minimum distance</b>, \(d(C)\), are important when \(C\) is
+used for channel coding. We also learn to use the notation \((n,M,d)_q\) and \([n,k,d]_q\). It turns out that there is essentially a trade-off between the rate and the minimum distance: both cannot be high (good) at the same time. This trade-off is
+expressed by inequalities known as <b>bounds</b>. We only prove the Hamming bound and the Singleton bound in this course, although other bounds have been obtained in coding theory research.</i>
+</p>
+
+<p>
+We work with a finite alphabet \(F\) and denote by \(q\) the number of elements of \(F\): \(q=\#F\). We assume \(q\ge 2\).
+</p>
+<!--
+...... subsection Parameters of a code ......
+-->
+<h5 id="autosec-11">Parameters of a code</h5>
+<a id="lecnotes_html-autopage-11"></a>
+
+
+<p>
+Parameters are numerical characteristics of a code. Most important parameters are listed in the following
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-12"></a>
+<span class="amsthmnamedefinition">Definition</span><span class="amsthmnotedefinition"> (parameters of a code)</span>.
+</p>
+
+<p>
+Let \(C\subseteq F^n\) be a code. Then:
+</p>
+<ul style="list-style-type:none">
+
+
+<li>
+<p>
+• \(n\) is the <b><i>length</i></b> of the code;
+</p>
+
+
+</li>
+<li>
+
+
+<p>
+• \(M\) denotes the <b><i>number of codewords</i></b>, i.e., \(M=\#C\);
+</p>
+
+
+</li>
+<li>
+
+
+<p>
+• \(k=\log _q M\) is the <b><i>information dimension</i></b> of \(C\)<br />
+(<i>warning</i>: \(k\) may not be an integer, although we will see that \(k\) is an integer for all useful types of codes and should be an integer in the most common use case, see below);
+</p>
+
+
+</li>
+<li>
+
+
+<p>
+• \(d(C) = \min \{ d(\ul v, \ul w):       \ul v,\ul w\in C, \ul v\ne \ul w\}\) is the <b><i>minimum distance</i></b> of \(C\) (already seen in the previous chapter);
+</p>
+
+
+</li>
+<li>
+
+
+<p>
+• \(R=k/n\) is the <b><i>rate</i></b> of \(C\);
+</p>
+
+
+</li>
+<li>
+
+
+<p>
+• \(\delta = d/n\) is the <b><i>relative distance</i></b> of \(C\).
+</p>
+</li>
+</ul>
+
+<p>
+We say that \(C\) is <i><b>an \((n,M,d)_q\)-code</b></i> or <i><b>an \([n,k,d]_q\)-code</b></i>.
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<!--
+...... subsection The minimum distance and the strength of error detection/correction ......
+-->
+<h5 id="autosec-13">The minimum distance and the strength of error detection/correction</h5>
+<a id="lecnotes_html-autopage-13"></a>
+<!--
+......   paragraph Notation ......
+-->
+
+
+<p>
+<span class="paragraph" id="autosec-14">Notation</span>
+<a id="lecnotes_html-autopage-14"></a>
+\([a]\) denotes the integer part of a real \(a\); e.g., \([3]=[3.5]=[\pi ]=3\), \([7.99]=7\).
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-15"></a>
+<span class="amsthmnamedefinition">Theorem</span><span class="amsthmnumberdefinition"> <span class="textup">2.1</span></span><span class="amsthmnotedefinition"> (The number of errors detected/corrected by a code)</span>.
+<a id="thm:detect-correct"></a> Let \(C\) be a code with \(d(C)=d\). Throughout the course, \(t\) will denote \([ (d-1)/2]\). Let \(\ul v\in C\) and \(\ul y\in F^n\).
+</p>
+
+<p>
+1. If \(1\le d(\ul v,\ul y)\le d-1\), then \(\ul y\notin C\). Thus, if at most \(d-1\) errors occur in a transmitted codeword, they will be <i>detected</i>.
+</p>
+
+<p>
+2. If \(d(\ul v,\ul y)\le t\), then \(\ul y\) has a unique nearest neighbour in \(C\), which is \(\ul v\). Thus if at most \(t\) errors occur in a codeword, any decoder will <i>correct</i> them by decoding \(\ul y\) back to&nbsp;\(\ul c\).
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmproof">
+
+<a id="lecnotes_html-autopage-16"></a>
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<span class="amsthmproofname">Proof.</span> 1. If \(\ul y\in C\) then by definition of minimum distance \(d(\ul v,\ul y)=0\) or \(d(\ul v,\ul y)\ge d\) so the statement follows by contrapositive.
+</p>
+
+<p>
+2. We use proof by contradiction, so we must assume for contradiction that \(\ul w\) is a nearest neighbour of \(\ul y\) in \(C\) such that \(\ul w\ne \ul v\). Then \(d(\ul y,\ul w)\le d(\ul y,\ul v)\le t\) so by the triangle inequality
+</p>
+
+<p>
+\[ 0 &lt; d(\ul v,\ul w)\le d(\ul v,\ul y)+d(\ul y,\ul w)\le t+t=2t\le d-1.          \]
+</p>
+
+<p>
+This contradicts \(d\) being the minimum distance of \(C\). <span class="theoremendmark">&#x25A1;</span>
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-17"></a>
+<span class="amsthmnamedefinition">Remark</span>.   The Theorem is expressed by saying that <i>a code of minimal distance \(d\) detects up to \(d-1\) errors and corrects up to \([(d-1)/2]\) errors in a codeword.</i>
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<!--
+...... subsection Channel coding. The meaning of rate ......
+-->
+<h5 id="autosec-18">Channel coding. The meaning of rate</h5>
+<a id="lecnotes_html-autopage-18"></a>
+
+
+<p>
+To understand why the information dimension \(k\) and hence the rate \(R\) are defined via logarithm, we consider the most common use case known as <i><b>channel coding</b></i>. Information is transmitted via a noisy channel, and one
+wants to detect or correct errors.
+</p>
+
+<p>
+Information may contain arbitrary sequences of symbols, not just codewords. However, to take advantage error detection and correction, the sender must send only codewords. This is achieved in the following workflow:
+</p>
+<ul style="list-style-type:none">
+
+<li>
+<p>
+• The information stream is split up into chunks, called <b><i>messages</i></b>. In this course we assume that all messages have the same length \(k\), hence lie in \(F^k\).
+</p>
+
+
+</li>
+<li>
+
+
+<p>
+• We set up an injective function
+</p>
+<p>
+\[ \Encode \colon F^k\to C \]
+</p>
+<p>
+called the <b><i>encoder</i></b>. By the Pigeonhole Principle, such a function can exist only if \(k\le n\).
+</p>
+
+
+</li>
+<li>
+
+
+<p>
+• When a message \(\ul m\in F^k\) arrives, the sender replaces it with the codeword \(\ul c = \Encode (\ul m)\) and sends \(\ul c\) into the channel.
+</p>
+
+
+</li>
+<li>
+
+
+<p>
+• The received word \(\ul y\in F^n\) is either tested to see if \(\ul y\in C\) (<i>error detection</i>) or fed into the function \(\Decode \colon F^n\to C\) (<i>error correction</i>).
+</p>
+
+
+</li>
+<li>
+
+
+<p>
+• Codewords not in the image of \(\Encode \) are never transmitted so assume \(\Encode \) is surjective hence bijective and \(\#C=\#F^k\). The receiver <b><i>unencodes</i></b> the decoded codeword to a message, applying the function
+\(\Encode ^{-1}\colon C \to F^k\).
+</p>
+</li>
+</ul>
+
+<p>
+The workflow is illustrated by the following diagram:
+</p>
+
+<p>
+\[ \fbox {sender} \xrightarrow [\text { message }]{\ul m} \xrightarrow [\text { codeword }]{\ \Encode (\ul m)\ } \fbox {channel} \xrightarrow [\text { word }]{\text { received }} \xrightarrow {\ \Decode ()\ }
+\xrightarrow {\ \Encode ^{-1}()\ } \fbox {receiver} \]
+</p>
+
+<p>
+The cardinality of \(F^k\) is \(q^k\), because a word \((u_1,u_2,\dots ,u_k)\in F^k\) can be chosen in \(q^k\) ways: \(q\) choices for \(u_1\), \(q\) independent choices for \(u_2\) and so on, hence
+</p>
+
+<p>
+\[ M = \# C = q^k \qquad \iff \qquad k = \log _q M. \]
+</p>
+
+<p>
+We note that <i>in the typical use case, the information dimension \(k\) is an integer</i> (the number of symbols in a message).
+</p>
+
+<p>
+We also note that the rate \(R\) is the ratio of “useful information” carried by a codeword (the number of symbols in a message) to the length of the codeword (the total number of symbols which need to be transmitted, per message). One always has
+\(R\le 1\). When a code of rate \(R\) is used, the total number of symbols is \(R^{-1}\) times greater than the number of symbols in unencoded information.
+</p>
+
+<p>
+Thus, encoding increases transmission costs. This is a price to pay for error detection and correction.
+</p>
+<!--
+...... subsection Bounds ......
+-->
+<h5 id="autosec-19">Bounds</h5>
+<a id="lecnotes_html-autopage-19"></a>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-20"></a>
+<span class="amsthmnamedefinition">Proposition</span><span class="amsthmnumberdefinition"> <span class="textup">2.2</span></span><span class="amsthmnotedefinition"> (trivial bound)</span>.   <a
+id="prop:trivialbound"></a> If \([n,k,d]_q\)-codes exist, \(k\le n\) and \(d\le n\).
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmproof">
+
+<a id="lecnotes_html-autopage-21"></a>
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<span class="amsthmproofname">Proof.</span> Let \(C\) be an \([n,k,d]_q\)-code. Then, by definition, \(C\) is a non-empty subset of \(F^n\) with \(\#F=q\). The cardinality of a set is greater than or equal to the cardinality of its subset. In
+particular, \(M=\#C\le \#F^n=q^n\). Applying the monotone function \(\log _q\) to both sides of the inequality, we obtain \(k=\log _q M \le n\). (<i>By the way, the equality \(k=n\) is attained only if \(C=F^n\), i.e., \(C\) is a trivial code.</i>)
+</p>
+
+<p>
+Furthermore, as noted earlier, the Hamming distance between any two words of length \(n\) is an integer between \(0\) and \(n\). Therefore, \(0&lt;d(C)\le n\) for any code of length \(n\). (<i>The equality \(d=n\) can be attained by non-trivial
+codes, for example \(\text {Rep}(n,F)\).</i>) <span class="theoremendmark">&#x25A1;</span>
+</p>
+
+</li>
+
+</ul>
+
+</div>
+
+<p>
+To state the next bound, we recall that \(\binom {n}{i}\) is the number of ways to choose \(i\) positions out of \(n\). This integer is called the binomial coefficient. It is given by the formula \(\binom n i = \frac {n!}{(n-i)!\,i!} = \frac
+{n(n-1)\ldots (n-i+1)}{1\cdot 2\cdot \ldots \cdot i}\).
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-22"></a>
+<span class="amsthmnamedefinition">Theorem</span><span class="amsthmnumberdefinition"> <span class="textup">2.3</span></span><span class="amsthmnotedefinition"> (Hamming bound)</span>.   <a id="thm:HB"></a> If
+\((n,M,d)_q\)-codes exist, \(\displaystyle \smash {M\le \frac {q^ n}{ \sum \limits _{i=0}^t \binom {n}{i}(q-1)^i}} \) where \(t=\left [ (d-1)/2 \right ]\).
+</p>
+
+</li>
+
+</ul>
+
+</div>
+
+<p>
+Before proving the Theorem, we introduce
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-23"></a>
+<span class="amsthmnamedefinition">Definition</span><span class="amsthmnotedefinition"> (Hamming sphere)</span>.
+</p>
+
+<p>
+If \(\ul y\in F^n\) and \(0\le r\le n\), the set
+</p>
+
+<p>
+\[ S_r(\ul y)=\{\ul v\in F^n:    d(\ul v,\ul y)\le r\}.   \]
+</p>
+
+<p>
+is the <b><i>Hamming sphere</i></b> with centre \(\ul y\) and radius \(r\).
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<!--
+...... subsection ......
+-->
+<h5 id="autosec-24"></h5>
+<a id="lecnotes_html-autopage-24"></a>
+
+
+<p>
+The number of words in the Hamming sphere of radius \(r\) does not depend on the centre, \(\ul y\), of the sphere and is found as follows.
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-25"></a>
+<span class="amsthmnamedefinition">Lemma</span><span class="amsthmnumberdefinition"> <span class="textup">2.4</span></span><span class="amsthmnotedefinition"> (The cardinality of a Hamming sphere)</span>.   <a
+id="lem:S_r"></a> \(\displaystyle {\#S_r(\ul y)=\sum _{i=0}^r \binom {n}{i}(q-1)^i} \).
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmproof">
+
+<a id="lecnotes_html-autopage-26"></a>
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<span class="amsthmproofname">Proof.</span> To construct a word \(\ul v\) at distance \(i\) from \(\ul y\), we need to choose \(i\) positions out of \(n\) where \(\ul y\) will differ from \(\ul v\). Then we need to change the symbol in each
+of the \(i\) chosen positions to one of the other \(q-1\) symbols. The total number of choices for \(\ul v\) which is at distance exactly \(i\) from \(\ul y\) is thus \(\binom {n}{i}(q-1)^i\).
+</p>
+
+<p>
+The Hamming sphere contains all vectors at distance \(0\le i\le r\) from \(\ul v\), so we sum over \(i\) from \(0\) up to \(r\). The Lemma is proved. <span class="theoremendmark">&#x25A1;</span>
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmproof">
+
+<a id="lecnotes_html-autopage-27"></a>
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<span class="amsthmproofname"><b>Proof of Theorem <a href="ch2.html#thm:HB">2.3</a></b>.</span> First of all, we prove that spheres of radius \(t\) centred at distinct codewords \(\ul c\) do not overlap. Indeed, by Theorem <a
+href="ch2.html#thm:detect-correct">2.1</a>(2), each word in \(S_t(\ul c)\) has unique nearest neighbour, which is \(\ul c\). Hence a word in \(S_t(\ul c)\) cannot lie in another such sphere (a word cannot have two <i>unique</i> nearest
+neighbours!)
+</p>
+
+<p>
+Therefore, the whole set \(F^n\) contains \(M\) <i>disjoint</i> spheres centred at codewords. By Lemma&nbsp;<a href="ch2.html#lem:S_r">2.4</a>, each of the \(M\) spheres contains \(\sum _{i=0}^t \binom {n}{i}(q-1)^i\) words. The
+number of elements in a disjoint union of sets is equal to the sum of cardinalities of the sets, hence the total number of words in the \(M\) spheres is \(M\sum _{i=0}^t \binom {n}{i}(q-1)^i\). Since the union of the \(M\) spheres is a subset of
+\(F^n\), this does not exceed \(\#F^n=q^n\). The bound follows. <span class="theoremendmark">&#x25A1;</span>
+</p>
+
+</li>
+
+</ul>
+
+</div>
+
+<p>
+Given the length \(n\) and the minimum distance \(d\), we may wish to know whether there are codes with the number of codewords <em>equal</em> to the Hamming bound. Such a code would be the most economical (highest possible number
+\(M\) of codewords). Such codes have a special name:
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-28"></a>
+<span class="amsthmnamedefinition">Definition</span><span class="amsthmnotedefinition"> (perfect code)</span>.   A code which attains the Hamming bound is called a <b><i>perfect</i></b> code.
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-29"></a>
+<span class="amsthmnamedefinition">Remark</span>.           “<em>Attains the bound</em>” means that the inequality in the bound becomes an equality for this code.
+</p>
+
+<p>
+(A mistake is sometimes made in saying that perfect codes are those that satisfy the Hamming bound. In fact, every code <i>satisfies</i> the Hamming bound!)
+</p>
+
+<p>
+It turns out that, unfortunately, meaningful perfect codes are quite rare. When the number of symbols in the alphabet is a prime power, a complete classification of perfect codes up to parameter equivalence is known; we will see it later in the course.
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<!--
+...... subsection The Singleton bound ......
+-->
+<h5 id="autosec-30">The Singleton bound</h5>
+<a id="lecnotes_html-autopage-30"></a>
+
+
+<p>
+Another upper bound on the number \(M\) of codewords can be conveniently stated for \(k=\log _q M\).
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-31"></a>
+<span class="amsthmnamedefinition">Theorem</span><span class="amsthmnumberdefinition"> <span class="textup">2.5</span></span><span class="amsthmnotedefinition"> (Singleton bound)</span>.   <a id="thm:SB"></a> If
+\([n,k,d]_q\) codes exist, \(k\le n-d+1\).
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmproof">
+
+<a id="lecnotes_html-autopage-32"></a>
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<span class="amsthmproofname">Proof.</span> Let \(C\) be an \([n,k,d]_q\)-code. Consider the function \(f\colon C\to F^{n-d+1}\) where \(f(\ul v)\) is the word obtained from \(\ul v\) by deleting the last \(d-1\) symbols.
+</p>
+
+<p>
+I claim that \(f\) is an injective function. Indeed, if \(\ul v,\ul w\in C\), \(\ul v\ne \ul w\), then by definition of the minimum distance, \(\ul v\) and \(\ul w\) differ in at least \(d\) positions. Since \(f\) deletes only \(d-1\) symbols, the
+words \(f(\ul v)\) and \(f(\ul w)\) still differ in at least one position. So \(f(\ul v)\ne f(\ul w)\). Injectivity of \(f\) is proved.
+</p>
+
+<p>
+Now, by the Pigeonhole Principle, injective functions \(f\colon C \to F^{n-d+1}\) exist only if \(\#C \le \#F^{n-d+1}\). We conclude that \(\#C\le q^{n-d+1}\) so that \(k=\log _q\#C \le n-d+1\) as claimed. <span
+class="theoremendmark">&#x25A1;</span>
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-33"></a>
+<span class="amsthmnamedefinition">Definition</span><span class="amsthmnotedefinition"> (maximum distance separable code, MDS code)</span>.
+</p>
+
+<p>
+A code which attains the Singleton bound is called a <em>maximum distance separable</em> (<em>MDS</em>) code.
+</p>
+
+<p>
+
+
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-34"></a>
+<span class="amsthmnamedefinition">Remark</span>.         It is important to remember that the converses to Theorems <a href="ch2.html#thm:HB">2.3</a> and <a href="ch2.html#thm:SB">2.5</a> do not hold. That is, if the numbers
+\(n,k,d,q\) satisfy the Hamming bound and/or the Singleton bound, it does not automatically imply that an \([n,k,d]_q\)-code exists.
+</p>
+
+<p>
+See the Exercises after this chapter for non-trivial examples related to the Hamming and Singleton bounds. Further examples will be constructed when we introduce linear codes in the next chapter and Hamming and Golay codes later in the course.
+</p>
+
+</li>
+
+</ul>
+
+</div>
+</section>
+
+</main>
+
+</div>
+
+
+<nav class="botnavigation"><a href="lecnotes_html.html" class="linkhome" >
+Home</a></nav>
+
+</body>
+</html>
