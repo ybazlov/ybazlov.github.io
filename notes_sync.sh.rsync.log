@@ -42,3 +42,6 @@
 2022/12/02 16:25:23 [195271] .d..t...... ./
 2022/12/02 16:25:23 [195271] sent 352 bytes  received 18 bytes  246.67 bytes/sec
 2022/12/02 16:25:23 [195271] total size is 1,450,844  speedup is 3,921.20
+2022/12/02 16:28:02 [195675] building file list
+2022/12/02 16:28:02 [195675] sent 813 bytes  received 11 bytes  549.33 bytes/sec
+2022/12/02 16:28:02 [195675] total size is 33,852,343  speedup is 41,082.94
