@@ -235,7 +235,7 @@ MathJax = {
 <body>
 
 
-<a id="lecnotes_html-autopage-9"></a>
+<a id="lecnotes_html-autopage-38"></a>
 <nav class="topnavigation"><a href="lecnotes_html.html" class="linkhome" >
 Home</a></nav>
 
@@ -431,14 +431,14 @@ Home</a>
 
 <p>
 <!--
-...... chapter ch3exans ......
+...... chapter ch11ex ......
 -->
-<h3 id="autosec-10">Chapter&nbsp;<span class="sectionnumber">3&#x2003;</span>Exercises — solutions</h3>
-<a id="lecnotes_html-autopage-10"></a>
-<a id="lecnotes_html-autofile-9"></a>
+<h3 id="autosec-39">Chapter&nbsp;<span class="sectionnumber">11&#x2003;</span>Exercises to Chapter 11 </h3>
+<a id="lecnotes_html-autopage-39"></a>
+<a id="lecnotes_html-autofile-30"></a>
 
 <p>
-Version 2022-10-05. <a href="lecnotes_html.pdf" target="_blank" >To PDF version of the notes</a>
+Version 2022-12-02. <a href="lecnotes_html.pdf" target="_blank" >To PDF version of the notes</a>
 </p>
 <div class="amsthmbodydefinition">
 
@@ -449,11 +449,8 @@ Version 2022-10-05. <a href="lecnotes_html.pdf" target="_blank" >To PDF version 
 <li>
 <p>
 <a id="lecnotes_html-autopage-2"></a>
-<span class="amsthmnamedefinition">Exercise</span><span class="amsthmnumberdefinition"> <span class="textup">3.1</span></span>.
-</p>
-
-<p>
-Write down a generator matrix for the repetition code \(\Rep (5,\F _7)\).
+<span class="amsthmnamedefinition">Exercise</span><span class="amsthmnumberdefinition"> <span class="textup">11.1</span></span><span class="amsthmnotedefinition"> (identification of the Reed-Muller codes with
+\(m=3\))</span>.   Let \(m=3\). Write down the value vectors (in \(\F _2^8\)) of all the monomials in the Boolean algebra. Hence find generator matrices of the codes \(\RM (r,3)\), \(0\le r \le 3\). Try to recognise the codes obtained.
 </p>
 
 </li>
@@ -463,20 +460,18 @@ Write down a generator matrix for the repetition code \(\Rep (5,\F _7)\).
 </div>
 
 <p>
-<b>Answer to E3.1. </b> [<a href="ch3ex.html#.">These exercises without answers</a>]
+<b>Partial answer.</b> We use a slightly unconventional ordering of binary words in \(V^3\). The value vectors of all the monomials in the Boolean algebra with \(m=3\):
 </p>
 
 <p>
-\(\Rep (n,\F _q)\) consists of all vectors proportional to the vector \(11\dots 11\) of \(n\) ones. Hence the only row of the \(1\times n\) matrix \(\begin {bmatrix} 1&amp; 1 &amp; \dots &amp; 1 &amp; 1\end {bmatrix}\) spans the code,
-i.e., forms a spanning set, which is obviously linearly independent.
+\[ \begin {array}{lccccccccl} &amp; 001 &amp; 010 &amp; 011 &amp; 100 &amp; 101 &amp; 110 &amp; 111 &amp; \ \ 000 \\ \hline {\mathbf 1} &amp; 1&amp;1&amp;1&amp;1&amp;1&amp;1&amp;1&amp;1 &amp; \\ \hline v_1 &amp;
+0&amp; 0&amp; 0&amp; 1&amp; 1&amp; 1&amp; 1&amp; 0&amp; \\ v_2 &amp; 0&amp; 1&amp; 1&amp; 0&amp; 0&amp; 1&amp; 1&amp; 0&amp;\\ v_3 &amp; 1&amp; 0&amp; 1&amp; 0&amp; 1&amp; 0&amp; 1&amp; 0&amp;\\ \hline v_1v_2 &amp;
+0&amp; 0&amp; 0&amp; 0&amp; 0&amp; 1&amp; 1&amp; 0&amp;\\ v_1v_3 &amp; 0&amp; 0&amp; 0&amp; 0&amp; 1&amp; 0&amp; 1&amp;0&amp;\\ v_2v_3 &amp; 0&amp; 0&amp; 1&amp; 0&amp; 0&amp; 0&amp; 1&amp;0&amp;\\ \hline
+v_1v_2v_3&amp;0&amp;0&amp;0&amp;0&amp;0&amp;0&amp;1&amp;0&amp; \end {array} \]
 </p>
 
 <p>
-Multiplying the above generator matrix by any scalar \(\lambda \in \F _q\setminus \{0\}\) also gives a generator matrix for \(\Rep (n,\F _q)\).
-</p>
-
-<p>
-For \(\Rep (5,\F _7)\) we get \(\begin {bmatrix} 1&amp; 1 &amp; 1 &amp; 1 &amp; 1\end {bmatrix}\) or any matrix obtained by scaling this one by a non-zero scalar in \(\F _7\).
+[<a href="ch11exans.html#.">Answers to these exercises</a>]
 </p>
 <div class="amsthmbodydefinition">
 
@@ -487,25 +482,8 @@ For \(\Rep (5,\F _7)\) we get \(\begin {bmatrix} 1&amp; 1 &amp; 1 &amp; 1 &amp; 
 <li>
 <p>
 <a id="lecnotes_html-autopage-3"></a>
-<span class="amsthmnamedefinition">Exercise</span><span class="amsthmnumberdefinition"> <span class="textup">3.2</span></span><span class="amsthmnotedefinition"> (<b>important — you need to know the ISBN-10 code
-for the exam</b>)</span>.      Consider the field \(\F _{11}=\{0,1,2,3,4,5,6,7,8,9,X\}\) of integers modulo \(11\); by convention, \(X\) means ten.
-</p>
-
-<p>
-The <b>ISBN-10 checksum</b> of a word \(x_1x_2\dots x_{10}\) in \(\F _{11}^{10}\) is
-</p>
-
-<p>
-\[ 1x_1+2x_2+\dots +10x_{10} = \sum _{i=1}^{10}ix_i \in \F _{11}.           \]
-</p>
-
-<p>
-The <b>ISBN-10</b> code, which was used to give unique IDs to books until it was superseded by ISBN-13, consists of all vectors in \(\F _{11}^{10}\) which have zero checksum. It is a linear code (the set of solutions to a homogeneous linear
-equation is a vector space).
-</p>
-
-<p>
-Show that the code detects a single error. Show that the code detects a transposition error (when two adjacent digits are swapped in a codeword, it is no longer a codeword). Show that the code has \(d=2\) hence is not perfect.
+<span class="amsthmnamedefinition">Exercise</span><span class="amsthmnumberdefinition"> <span class="textup">11.2</span></span><span class="amsthmnotedefinition"> (“the Mariner 9 code”)</span>.   Check that \(\RM (1,5)\)
+is a \([32,6,16]_2\) code and detects up to \(15\) errors in a \(32\)-bit codeword.
 </p>
 
 </li>
@@ -515,21 +493,7 @@ Show that the code detects a single error. Show that the code detects a transpos
 </div>
 
 <p>
-<b>Answer to E3.2. </b> [<a href="ch3ex.html#.">These exercises without answers</a>]
-</p>
-
-<p>
-If the \(i\)th digit in a word \(x_1\dots x_{10}\) is changed to \(y_i\), the checksum is changed by \(iy_i-ix_i=i(y_i-x_i)\). Note that \(i\ne 0\) and \(y_i-x_i\ne 0\) in \(\F _{11}\), hence \(i(y_i-x_i)\ne 0\) because in a field, the
-product of non-zero elements is not zero. Hence, changing one digit changes the ISBN-10 checksum; so a codeword becomes a non-codeword. This shows that \(d\ge 2\).
-</p>
-
-<p>
-To observe that \(d=2\), take the codewords \(0000000000\) and \(0000110000\).
-</p>
-
-<p>
-To show that the code detects a transposition error, we check that when two adjacent symbols are swapped, the checksum is changed. Indeed, when \(\dots xy\dots \) is changed to \(\dots yx\dots \) (symbols in positions \(i\), \(i+1\)), the
-checksum changes by \(iy+(i+1)x - (ix+(i+1)y) = x-y\). This is not zero mod 11 as long as \(x\ne y\) (but if \(x=y\), there was no error!) Therefore, a codeword becomes a non-codeword as a result of a transposition error.
+[<a href="ch11exans.html#.">Answers to these exercises</a>]
 </p>
 <div class="amsthmbodydefinition">
 
@@ -540,16 +504,7 @@ checksum changes by \(iy+(i+1)x - (ix+(i+1)y) = x-y\). This is not zero mod 11 a
 <li>
 <p>
 <a id="lecnotes_html-autopage-4"></a>
-<span class="amsthmnamedefinition">Exercise</span><span class="amsthmnumberdefinition"> <span class="textup">3.3</span></span><span class="amsthmnotedefinition"> (an exam style question)</span>.                       Let \(C\) be the ternary
-linear code generated by \(G=\left [\begin {matrix}0&amp; 1&amp; 2&amp; 1\\ 2&amp; 0&amp; 1&amp; 1\end {matrix}\right ]\). (Reminder: <i>ternary</i> means that the alphabet is \(\F _3\).)
-</p>
-
-<p>
-(a) List all the codevectors of \(C\). Find \(d(C)\) by inspection. Deduce that \(C\) is a perfect code. Does \(C\) attain the Singleton bound?
-</p>
-
-<p>
-(b) Find a generator matrix of \(C\) in standard form.
+<span class="amsthmnamedefinition">Exercise</span><span class="amsthmnumberdefinition"> <span class="textup">11.3</span></span>.   Show that \(\RM (r,m)\) is a self-orthogonal code, if and only if \(r&lt;m/2\).
 </p>
 
 </li>
@@ -559,54 +514,7 @@ linear code generated by \(G=\left [\begin {matrix}0&amp; 1&amp; 2&amp; 1\\ 2&am
 </div>
 
 <p>
-<b>Answer to E3.3. </b> [<a href="ch3ex.html#.">These exercises without answers</a>]
-</p>
-
-<p>
-(a) First of all, it is useful to recall that the total number of codevectors is \(q^k\) where \(k\) is the number of rows in the generator matrix. In this case, \(q^k=3^2=9\).
-</p>
-
-<p>
-We need to list all the \(9\) linear combinations of the two rows of the matrix \(G\),
-</p>
-
-<p>
-\[ \ul r_1 = [\begin {matrix}0&amp; 1&amp; 2&amp; 1\end {matrix}], \quad \ul r_2=[\begin {matrix}2&amp; 0&amp; 1&amp; 1\end {matrix}].                           \]
-</p>
-
-<p>
-Let us do this by encoding all vectors of length \(2\), in matrix form. Remember, ‘encoding in matrix form’ simply means that the codevector \(\lambda _1 \ul r_1 + \lambda _2 \ul r_2\) is written as \([ \begin {matrix} \lambda _1 &amp;
-\lambda _2 \\ \end {matrix}]G\) where \(G=\begin {bmatrix}\ul r_1 \\ \ul r_2 \end {bmatrix}\):
-</p>
-
-<p>
-\([ \begin {matrix} 0 &amp; 0 \\ \end {matrix} ]G=[ \begin {matrix} 0 &amp; 0 &amp; 0 &amp; 0 \\ \end {matrix} ]\), \([ \begin {matrix} 0 &amp; 1 \\ \end {matrix} ]G=[ \begin {matrix} 2 &amp; 0 &amp; 1 &amp; 1 \\
-\end {matrix} ]\), \([ \begin {matrix} 0 &amp; 2 \\ \end {matrix} ]G=[ \begin {matrix} 1 &amp; 0 &amp; 2 &amp; 2 \\ \end {matrix} ]\),<br />
-\([ \begin {matrix} 1 &amp; 0 \\ \end {matrix} ]G=[ \begin {matrix} 0 &amp; 1 &amp; 2 &amp; 1 \\ \end {matrix} ]\), \([ \begin {matrix} 1 &amp; 1 \\ \end {matrix} ]G=[ \begin {matrix} 2 &amp; 1 &amp; 0 &amp; 2 \\
-\end {matrix} ]\), \([ \begin {matrix} 1 &amp; 2 \\ \end {matrix} ]G=[ \begin {matrix} 1 &amp; 1 &amp; 1 &amp; 0 \\ \end {matrix} ]\),<br />
-\([ \begin {matrix} 2 &amp; 0 \\ \end {matrix} ]G=[ \begin {matrix} 0 &amp; 2 &amp; 1 &amp; 2 \\ \end {matrix} ]\), \([ \begin {matrix} 2 &amp; 1 \\ \end {matrix} ]G=[ \begin {matrix}2&amp;2&amp;2&amp;0\\ \end
-{matrix} ]\), \([ \begin {matrix} 2 &amp; 2 \\ \end {matrix} ]G=[ \begin {matrix} 1 &amp; 2 &amp; 0 &amp; 1 \\ \end {matrix} ]\).
-</p>
-
-<p>
-To find \(d(C)\), one could of course check all 36 pairwise distances between codewords — but this is wrong, because we know that \(C\) is a linear code, so by a theorem from the course, \(d(C)=w(C)\). Having checked each of the \(8\) non-zero
-codevectors obtained above, we conclude that \(w(C)=3\).
-</p>
-
-<p>
-To show that \(C\) is perfect, let us check the Hamming bound (in logarithmic form): \(t=1\) so \(k=n-\log _q(\binom n0+\binom n1(q-1))\), \(2=4-\log _3(1+4\times 2)\), \(2=4-\log _39\) — true. Hence the code is perfect.
-</p>
-
-<p>
-<b>Exercise:</b> show that \(C\) is an MDS code (attains the Singleton bound).
-</p>
-
-<p>
-(b) Once <b>we know all the codevectors</b>, finding a generator matrix in standard form does not require any further calculations. Simply select the codevectors which begin with 10 and 01:
-</p>
-
-<p>
-\[ G = \left [\begin {matrix}1&amp;0&amp;2&amp;2 \\ 0&amp;1&amp;2&amp;1\end {matrix}\right ].                   \]
+[<a href="ch11exans.html#.">Answers to these exercises</a>]
 </p>
 <div class="amsthmbodydefinition">
 
@@ -617,22 +525,8 @@ To show that \(C\) is perfect, let us check the Hamming bound (in logarithmic fo
 <li>
 <p>
 <a id="lecnotes_html-autopage-5"></a>
-<span class="amsthmnamedefinition">Exercise</span><span class="amsthmnumberdefinition"> <span class="textup">3.4</span></span>.                    If \(\ul v=(x_1,x_2,\ldots ,x_n)\) is a binary vector, we extend \(\ul v\) to obtain the vector
-\(\widehat {\ul v}\) \(=(x_1,\ldots ,\) \(x_n,x_{n+1})\) where \(x_{n+1}=x_1+\ldots +x_n\) in \(\F _2\). That is, a vector is extended by appending one bit so that the resulting vector has even weight.
-</p>
-
-<p>
-If \(C\) is a binary linear code, we define the <b>extended code</b> \(\widehat C =\{\widehat {\ul c}:         \ul c\in C\}\).
-</p>
-
-<p>
-(a) Prove that \(d(\widehat C)\) is even. Prove that \(\widehat C\) is never perfect. Which code do you get by extending a trivial binary code, i.e., what is the code \(\widehat {\F _2^n}\)? Is it true that \(\widehat {E_n}=E_{n+1}\)? What is
-\(\widehat {\Rep (n,\F _2)}\)?
-</p>
-
-<p>
-(b) It is said that <i>extending a binary code may improve error detection but cannot improve error correction</i>. Do you agree with this statement? Justify your answer. (<b>Warning:</b> this is a mathematical question and not an ‘opinion’
-question. Your arguments must be based on the theory covered in the course. Such questions may appear in the exam.)
+<span class="amsthmnamedefinition">Exercise</span><span class="amsthmnumberdefinition"> <span class="textup">11.4</span></span>.   Show that the code \(\RM (m-2,m)\) is, up to linear equivalence, an extended Hamming code
+\(\widehat {\Ham }(m,2)\).
 </p>
 
 </li>
@@ -642,150 +536,7 @@ question. Your arguments must be based on the theory covered in the course. Such
 </div>
 
 <p>
-<b>Answer to E3.4. </b> [<a href="ch3ex.html#.">These exercises without answers</a>]
-</p>
-
-<p>
-(a) By construction, the weight of each codevector of \(\widehat C\) is even. Hence \(w(\widehat C)=d(\widehat C)\) is even, so by one of the earlier exercises, \(\widehat C\) is not perfect (the minimum distance of a perfect code is odd).
-</p>
-
-<p>
-Every codevector of \(\widehat {\F _2^n}\) has length \(n+1\) and is of even weight, hence lies in the ieven weight code \(E_{n+1}\). Thus, \(\widehat {\F _2^n}\subseteq E_{n+1}\). Observing that \(\#\widehat {\F _2^n} = 2^n =
-\#E_{n+1}\), we conclude that \(\widehat {\F _2^n}= E_{n+1}\).
-</p>
-
-<p>
-We have \(\widehat {E_n}\ne E_{n+1}\) because the cardinality of \(\widehat {E_n}\) is \(2^{n-1}\) but \(\#E_{n+1}=2^n\). Rather, \(\widehat {E_n}\) is obtained by appending a zero bit to every vector in \(E_n\).
-</p>
-
-<p>
-Finally, \(\Rep (n,\F _2)\) consists of two vectors, \(\ul 0\) and \(\ul 1 = 11\ldots 11\). We have \(\widehat {\ul 0}=\ul 0\) (of length \(n+1\)), and \(\widehat {11\dots 11} \) is either \(11\dots 111\) (\(n+1\) ones) if \(n\) is odd, or
-\(11\dots 110\) if \(n\) is even. Thus, \(\widehat {\Rep (n,\F _2)}\) is \(\Rep (n+1,\F _2)\) iff \(n\) is odd.
-</p>
-
-<p>
-(b) To address error detection and correction, we need to relate the question to the minimal distance of the code, which is the same as weight since we work with linear codes. Assume that \(w(C)=d\) so that the code detects up to \(d-1\) bit errors
-and corrects up to \([(d-1)/2]\) errors. Let \(\ul v\in C\) be a non-zero vector of minimum weight \(d\). Consider two cases.
-</p>
-
-<p>
-<i>Case 1</i>, \(d\) is odd. Then \(\widehat v\) has weight \(d+1\) and clearly no non-zero vector in \(\widehat C\) has smaller weight. Hence \(d(\widehat C)=d+1\), and \(\widehat C\) detects up to \(d\) errors; that is, error detection has
-improved after extending the code. But \([(d-1)/2]=(d-1)/2\) which is an integer, and \([(d+1-1)/2]=[(d-1)/2 + 0.5] = (d-1)/2\), hence error correction has not improved.
-</p>
-
-<p>
-<i>Case 2</i>, \(d\) is even. <b>Exercise:</b> show that \(d(\widehat C)=d\) so that neither error detection nor error correction have improved.
-</p>
-
-<p>
-In summary, it make sense to extend a binary code of odd weight to improve error detection. As a trade-off, the length of the code increases and the dimension stays the same, so that the rate, \(R=k/n\), decreases.
-</p>
-<div class="amsthmbodydefinition">
-
-<ul style="list-style-type:none">
-
-
-
-<li>
-<p>
-<a id="lecnotes_html-autopage-6"></a>
-<span class="amsthmnamedefinition">Exercise</span><span class="amsthmnumberdefinition"> <span class="textup">3.5</span></span>.                    (a) Show that the binary linear code generated by      \(\begin {bmatrix}1&amp;1&amp;0&amp;0\\
-0&amp;0&amp;1&amp;1 \end {bmatrix}\) has no generator matrix in standard form.
-</p>
-
-<p>
-(b) The ISBN-10 code has a generator matrix in standard form. Find it.
-</p>
-
-</li>
-
-</ul>
-
-</div>
-
-<p>
-<b>Answer to E3.5. </b> [<a href="ch3ex.html#.">These exercises without answers</a>]
-</p>
-
-<p>
-(a) The codevectors of this code are \(0000\), \(1100\), \(0011\) and \(1111\). The first row of a generator matrix in standard form must start with \(10\), but there is no such codevector.
-</p>
-
-<p>
-(b) We know that \(n=10\) and \(k=9\), so the generator matrix will have 9 rows and 10 columns; hence the first 9 columns will form the identity matrix, and we are left to fill the last column only. Look at the first row of the generator matrix in
-standard form. It is of the form \(100000000*\). It must also be a codevector: its ISBN-10 checksum is \(1\times 1 + 2\times 0 + 3\times 0 +\dots +9\times 0 + 10\times *=0\), so \(1+10*=0\) whence \(*=1\). We similarly deal with the
-second row, \(010000000*\): we have \(2\times 1 + 10*=0\) so \(*=2\). Continuing in this fashion, we obtain
-</p>
-
-<p>
-\[G=\left [\begin {matrix}1000000001\\0100000002\\0010000003\\0001000004\\ \ddots \\0000000019\end {matrix}\right ].\]
-</p>
-<div class="amsthmbodydefinition">
-
-<ul style="list-style-type:none">
-
-
-
-<li>
-<p>
-<a id="lecnotes_html-autopage-7"></a>
-<span class="amsthmnamedefinition">Exercise</span><span class="amsthmnumberdefinition"> <span class="textup">3.6</span></span>.                    The binary simplex code \(\Sigma \) of length 7, which we introduced earlier by listing all
-codevectors, is a linear code (you may wish to check this):
-</p>
-
-<p>
-\[\begin {matrix} 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0\\ 1 &amp; 0 &amp; 0 &amp; 1 &amp; 1 &amp; 1 &amp; 0\\ 0 &amp; 1 &amp; 0 &amp; 0 &amp; 1 &amp; 1 &amp; 1\\ 1 &amp; 0 &amp; 1 &amp; 0 &amp; 0 &amp;
-1 &amp; 1 \end {matrix} \qquad \qquad \begin {matrix} 1 &amp; 1 &amp; 0 &amp; 1 &amp; 0 &amp; 0 &amp; 1\\ 1 &amp; 1 &amp; 1 &amp; 0 &amp; 1 &amp; 0 &amp; 0\\ 0 &amp; 1 &amp; 1 &amp; 1 &amp; 0 &amp; 1 &amp; 0\\ 0
-&amp; 0 &amp; 1 &amp; 1 &amp; 1 &amp; 0 &amp; 1 \end {matrix} \]
-</p>
-
-<p>
-Write down the standard form generator matrix for \(\Sigma \) <i>without doing any calculations</i>. Now look at the seven columns of your generator matrix: does it have two equal columns? Write down another generator matrix for the same
-code. What can you say about its columns?
-</p>
-
-</li>
-
-</ul>
-
-</div>
-
-<p>
-<b>Answer to E3.6. </b> [<a href="ch3ex.html#.">These exercises without answers</a>]
-</p>
-
-<p>
-The code has 8 codevectors hence is of dimension 3. The generator matrix will therefore have 3 rows and 8 columns. Since all the codevectors are given, we simply need to select the codevectors which begin with \(100\), \(010\) and \(001\). Here
-they are:
-</p>
-
-<p>
-\[G=\left [\begin {matrix} 1 &amp; 0 &amp; 0 &amp; 1 &amp; 1 &amp; 1 &amp; 0\\ 0 &amp; 1 &amp; 0 &amp; 0 &amp; 1 &amp; 1 &amp; 1\\ 0 &amp; 0 &amp; 1 &amp; 1 &amp; 1 &amp; 0 &amp; 1 \end {matrix}\right ].                                  \]
-</p>
-
-<p>
-We observe that all the columns of \(G\) are distinct. They are all the possible nonzero binary column vectors of size 3. (There are \(2^r\) binary column vectors of size \(r\), among which \(2^r-1\) are non-zero.)
-</p>
-
-<p>
-Let us try a different generator matrix, not in standard form: for example,
-</p>
-
-<p>
-\[G&apos;=\left [\begin {matrix} 1 &amp; 1 &amp; 0 &amp; 1 &amp; 0 &amp; 0 &amp; 1\\ 1 &amp; 1 &amp; 1 &amp; 0 &amp; 1 &amp; 0 &amp; 0\\ 0 &amp; 1 &amp; 1 &amp; 1 &amp; 0 &amp; 1 &amp; 0\\ \end {matrix}\right ].                                       \]
-</p>
-
-<p>
-Note that \(G&apos;\) is a generator matrix for \(\Sigma \), since its rows are codevectors of \(\Sigma \), are linearly independent (look at the first three bits to see that no two rows sum up to give the third row), and it has \(3=\dim \Sigma \)
-rows. Miraculously, \(G&apos;\) consists of the same columns as \(G\) — that is, all the three-dimensional non-zero binary column vectors — but in a different order.
-</p>
-
-<p>
-This is a special property of binary simplex codes, which we will prove when we study Hamming codes.
-</p>
-
-<p>
-<b>Exercise:</b> rearrange the columns of \(G\) to obtain a matrix which generates a code different from \(\Sigma \).
+[<a href="ch11exans.html#.">Answers to these exercises</a>]
 </p>
 </section>
 

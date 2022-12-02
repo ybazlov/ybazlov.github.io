@@ -492,7 +492,7 @@ Given \(\ul c\in C\), \(\ul v\in \F _p^n\), denote
 </p>
 
 <p>
-\[ \Phi (\ul c,\ul v)=\omega ^{\ul c \cdot \ul v} x^{n-w(\ul v)} y^{w(\ul v)}.                    \]
+\[ \Phi (\ul c,\ul v)=\omega ^{\ul c \cdot \ul v} x^{n-w(\ul v)} y^{w(\ul v)}.                  \]
 </p>
 
 <p>
@@ -517,7 +517,7 @@ Simce \(\omega ^a\ne 1\), we have
 </p>
 
 <p>
-\[ \sum _{\ul c\in C}\Phi (\ul c,\ul v)=0 \quad \text {for }\ul v\notin C^\perp .                      \]
+\[ \sum _{\ul c\in C}\Phi (\ul c,\ul v)=0 \quad \text {for }\ul v\notin C^\perp .                    \]
 </p>
 
 <p>
@@ -541,8 +541,8 @@ have \(w(\ul v)=w(v_1)+\dots +w(v_n)\). We then rewrite
 
 
 
-                                                                                                        Φ(c, v) = ω c1 v1 +···+cn vn x1−w(v1 ) y w(v1 ) . . . x1−w(vn ) y w(vn )
-                                                                                                                 = ω c1 v1 x1−w(v1 ) y w(v1 ) . . . ω cn vn x1−w(vn ) y w(vn ) .
+                                                                                                      Φ(c, v) = ω c1 v1 +···+cn vn x1−w(v1 ) y w(v1 ) . . . x1−w(vn ) y w(vn )
+                                                                                                               = ω c1 v1 x1−w(v1 ) y w(v1 ) . . . ω cn vn x1−w(vn ) y w(vn ) .
 
 
 
@@ -565,16 +565,16 @@ We now sum over \(\ul v\in \F _p^n\) first: each coordinate of \(\ul v\) runs ov
 <!--
 
 
-                                                                                                                   p−1           p−1
-                                                                                             X                     X             X
-                                                                                                       Φ(c, v) =           ···           Φ(c, v)
-                                                                                             v∈Fn
-                                                                                                p                  v1 =0         vn =0
+                                                                                                                 p−1           p−1
+                                                                                            X                    X             X
+                                                                                                     Φ(c, v) =           ···           Φ(c, v)
+                                                                                            v∈Fn
+                                                                                               p                 v1 =0         vn =0
 
-                                                                                                                   p−1                                        p−1
-                                                                                                                   X                                          X
-                                                                                                               =           ω c1 v1 x1−w(v1 ) y w(v1 ) · · ·           ω cn vn x1−w(vn ) y w(vn ) .                                                      (*)
-                                                                                                                   v1 =0                                      vn =0
+                                                                                                                 p−1                                        p−1
+                                                                                                                 X                                          X
+                                                                                                             =           ω c1 v1 x1−w(v1 ) y w(v1 ) · · ·           ω cn vn x1−w(vn ) y w(vn ) .                                                        (*)
+                                                                                                                 v1 =0                                      vn =0
 
 
 
@@ -598,11 +598,11 @@ Let us analyse the first factor in the product on the right-hand side of (*):
 <!--
 
 
-                                                                                                               p−1                                              p−1
-                                                                                                               X                                                X
-                                                                                                                       ω c1 v1 x1−w(v1 ) y w(v1 ) = x +                 ω c1 v1 y.
-                                                                                                                                                                               
-                                                                                                               v1 =0                                            v1 =1
+                                                                                                             p−1                                              p−1
+                                                                                                             X                                                X
+                                                                                                                     ω c1 v1 x1−w(v1 ) y w(v1 ) = x +                 ω c1 v1 y.
+                                                                                                                                                                             
+                                                                                                             v1 =0                                            v1 =1
 
 
 -->
@@ -630,7 +630,7 @@ since \((\omega ^{c_1})^p=1\). Hence the first factor on the right-hand side of 
 </p>
 
 <p>
-\[ \left \{ \begin {array}{rl} x+(p-1)y, &amp; \text { if }c_1=0, \\ x-y, &amp; \text { if }c_1\ne 0 \end {array} \right .                                                    \]
+\[ \left \{ \begin {array}{rl} x+(p-1)y, &amp; \text { if }c_1=0, \\ x-y, &amp; \text { if }c_1\ne 0 \end {array} \right .                                                  \]
 </p>
 
 <p>
@@ -643,10 +643,10 @@ Therefore,
 <!--
 
 
-                                                                                     XX                        X
-                                                                                                  Φ(c, v) =          (x + (p − 1)y)n−w(c) (x − y)w(c) = WC (x + (p − 1)y, x − y).
-                                                                                     c∈C   v∈Fn
-                                                                                              p                c∈C
+                                                                                     XX                      X
+                                                                                                Φ(c, v) =          (x + (p − 1)y)n−w(c) (x − y)w(c) = WC (x + (p − 1)y, x − y).
+                                                                                     c∈C v∈Fn
+                                                                                            p                c∈C
 
 
 -->
@@ -768,13 +768,13 @@ By the MacWilliams identity, the equation \(0=\bigl .\dfrac {d}{dt}W_{C^\perp }(
                                                                                          1    ∂                         ∂
                                                                                                                                            
                                                                                       =         WC (x, y) × (q − 1) +      WC (x, y) × (−1)
-                                                                                        #C ∂x                          ∂x                       x=1+(q−1)t, y=1−t, t=0
+                                                                                        #C ∂x                          ∂x                     x=1+(q−1)t, y=1−t, t=0
                                                                                          1    ∂                         ∂
                                                                                                                                            
                                                                                       =         WC (x, y) × (q − 1) +      WC (x, y) × (−1)
-                                                                                        #C ∂x                          ∂x                       x=1, y=1
-                                                                                         1 X             ∂      ∂  n−w(c) w(c)
-                                                                                                                                
+                                                                                        #C ∂x                          ∂x                     x=1, y=1
+                                                                                         1               ∂      ∂  n−w(c) w(c)
+                                                                                            X                                   
                                                                                       =          (q − 1)    −      x        y
                                                                                         #C               ∂x    ∂y                   x=1, y=1
                                                                                               c∈C
@@ -782,7 +782,7 @@ By the MacWilliams identity, the equation \(0=\bigl .\dfrac {d}{dt}W_{C^\perp }(
                                                                                          1 X                                          1 X
                                                                                       =      (q − 1)(n − w(c)) − w(c) = (q − 1)n − q      w(c).
                                                                                         #C                                           #C
-                                                                                             c∈C                                                c∈C
+                                                                                             c∈C                                              c∈C
 
 
 
