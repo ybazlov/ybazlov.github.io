@@ -23671,9 +23671,9 @@ We have \(S_k\cup T=\{1,\dots ,m\}\). If \(i&lt;k\) then the set \(S_i\) cannot 
 </p>
 
 <p>
-The left-hand side is a sum of monomials of degree less than \(m\). By Lemma <a href="lecnotes_html.html#??">??</a>, these monomials have value vectors of even weight. A sum of vectors of even weight is a vector of even weight: we know that
-the binary even weight code is linear. But the right-hand side is the monomial \(v_1\dots v_m\) which by Lemma <a href="lecnotes_html.html#??">??</a> has weight \(1\), which is odd. This contradiction proves that monomials are linearly
-independent.
+The left-hand side is a sum of monomials of degree less than \(m\). By Lemma <a href="ch11.html#lem:weight_monomial">11.1</a>, these monomials have value vectors of even weight. A sum of vectors of even weight is a vector of even weight: we
+know that the binary even weight code is linear. But the right-hand side is the monomial \(v_1\dots v_m\) which by Lemma <a href="ch11.html#lem:weight_monomial">11.1</a> has weight \(1\), which is odd. This contradiction proves that
+monomials are linearly independent.
 </p>
 
 <p>
@@ -23797,8 +23797,8 @@ is the repetition code. The length is \(2^m=\# V^m\).
 <li>
 <p>
 <a id="lecnotes_html-autopage-30"></a>
-<span class="amsthmnamedefinition">Example</span><span class="amsthmnotedefinition"> (\(\RM (m,m)\))</span>.              The other extreme is \(\RM (m,m)\) which consists of value vectors of polynomials of degree \(\le m\). All Boolean
-polynomials have degree at most \(m\), and, by Corollary <a href="lecnotes_html.html#??">??</a>, every possible binary vector of length \(2^m\) is a value vector of a polynomial. Hence
+<span class="amsthmnamedefinition">Example</span><span class="amsthmnotedefinition"> (\(\RM (m,m)\))</span>.             The other extreme is \(\RM (m,m)\) which consists of value vectors of polynomials of degree \(\le m\). All Boolean
+polynomials have degree at most \(m\), and, by Corollary <a href="ch11.html#cor:boolean-polynomials">11.3</a>, every possible binary vector of length \(2^m\) is a value vector of a polynomial. Hence
 </p>
 
 <p>
@@ -23850,14 +23850,14 @@ The key result on Reed-Muller codes is the following theorem, which gives the pa
 </p>
 
 <p>
-Value vectors of monomials of degree \(0,1,\ldots ,r\) span \(\RM (r,m)\) by definition of \(\RM (r,m)\), and are linearly independent by Theorem&nbsp;<a href="lecnotes_html.html#??">??</a>, hence form a basis of \(\RM (r,m)\). The
-number of monomials of degree \(d\) is the same as the number of \(d\)-element subsets of \(\{1,\ldots ,m\}\), which is \(\binom md\), so the total number of monomials in the basis of \(\RM (r,m)\) — i.e., the <b>dimension</b> of \(\RM
-(r,m)\) — is as stated.
+Value vectors of monomials of degree \(0,1,\ldots ,r\) span \(\RM (r,m)\) by definition of \(\RM (r,m)\), and are linearly independent by Theorem&nbsp;<a href="ch11.html#thm:monomial-basis">11.2</a>, hence form a basis of \(\RM
+(r,m)\). The number of monomials of degree \(d\) is the same as the number of \(d\)-element subsets of \(\{1,\ldots ,m\}\), which is \(\binom md\), so the total number of monomials in the basis of \(\RM (r,m)\) — i.e., the <b>dimension</b>
+of \(\RM (r,m)\) — is as stated.
 </p>
 
 <p>
-<b>Minimum distance:</b> the code \(\RM (r,m)\) contains monomials of degree \(r\), for example, \(v_1v_2\dots v_r\). By Lemma <a href="lecnotes_html.html#??">??</a>, these have weight \(2^{m-r}\). Hence \(d(\RM (r,m)) = w(\RM
-(r,m))\) is at most \(2^{m-r}\).
+<b>Minimum distance:</b> the code \(\RM (r,m)\) contains monomials of degree \(r\), for example, \(v_1v_2\dots v_r\). By Lemma <a href="ch11.html#lem:weight_monomial">11.1</a>, these have weight \(2^{m-r}\). Hence \(d(\RM
+(r,m)) = w(\RM (r,m))\) is at most \(2^{m-r}\).
 </p>
 
 <p>
@@ -24031,8 +24031,8 @@ We finish the chapter by identifying the dual code of \(\RM (r,m)\), which happe
 </p>
 
 <p>
-If \(f\) is a monomial of degree \(\le r\) and \(g\) is a monomial of degree \(\le m-1-r\), then \(fg\) is a monomial of degree \(\le m-1\). By Lemma&nbsp;<a href="lecnotes_html.html#??">??</a>, there are exactly \(2^{m-\deg fg}\)
-words \(b\in V^m\) such that \((fg)(b)=1\). Since \(m-\deg fg\ge 1\), \(2^{m-\deg fg}\) is an even number, and so the sum \(\sum _{b\in V^m} (fg)(b)\) is zero in \(\F _2\). This shows that \(f\) is orthogonal to \(g\).
+If \(f\) is a monomial of degree \(\le r\) and \(g\) is a monomial of degree \(\le m-1-r\), then \(fg\) is a monomial of degree \(\le m-1\). By Lemma&nbsp;<a href="ch11.html#lem:weight_monomial">11.1</a>, there are exactly \(2^{m-\deg
+fg}\) words \(b\in V^m\) such that \((fg)(b)=1\). Since \(m-\deg fg\ge 1\), \(2^{m-\deg fg}\) is an even number, and so the sum \(\sum _{b\in V^m} (fg)(b)\) is zero in \(\F _2\). This shows that \(f\) is orthogonal to \(g\).
 </p>
 
 <p>
@@ -24063,7 +24063,8 @@ Thus, \(\RM (r,m)^\perp \) contains subspace \(\RM (m-1-r,m)\) of the same dimen
 <li>
 <p>
 <a id="lecnotes_html-autopage-36"></a>
-<span class="amsthmnamedefinition">Exercise</span>.      The code \(\RM (m,m)\) is excluded from Theorem&nbsp;<a href="lecnotes_html.html#??">??</a>. How would you define “\(\RM (-1,m)\)” which should be the dual of \(\RM (m,m)\)?
+<span class="amsthmnamedefinition">Exercise</span>.      The code \(\RM (m,m)\) is excluded from Theorem&nbsp;<a href="ch11.html#thm:rm-duality">11.5</a>. How would you define “\(\RM (-1,m)\)” which should be the dual of \(\RM
+(m,m)\)?
 </p>
 
 </li>
@@ -24073,7 +24074,7 @@ Thus, \(\RM (r,m)^\perp \) contains subspace \(\RM (m-1-r,m)\) of the same dimen
 </div>
 
 <p>
-Theorem&nbsp;<a href="lecnotes_html.html#??">??</a> can be used to identify particular Reed-Muller codes and to deduce their further properties. Examples of this are in the exercises to this chapter.
+Theorem&nbsp;<a href="ch11.html#thm:rm-duality">11.5</a> can be used to identify particular Reed-Muller codes and to deduce their further properties. Examples of this are in the exercises to this chapter.
 </p>
 </section>
 
