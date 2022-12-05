@@ -34,3 +34,29 @@
 2022/11/26 15:13:59 [97340] rsync: connection unexpectedly closed (0 bytes received so far) [sender]
 2022/11/26 15:13:59 [97340] sent 0 bytes  received 0 bytes  total size 0
 2022/11/26 15:13:59 [97340] rsync error: unexplained error (code 255) at io.c(228) [sender=3.2.3]
+2022/12/05 14:13:51 [114489] rsync: connection unexpectedly closed (0 bytes received so far) [sender]
+2022/12/05 14:13:51 [114489] sent 0 bytes  received 0 bytes  total size 0
+2022/12/05 14:13:51 [114489] rsync error: unexplained error (code 255) at io.c(228) [sender=3.2.3]
+2022/12/05 14:13:51 [114492] rsync: connection unexpectedly closed (0 bytes received so far) [sender]
+2022/12/05 14:13:51 [114492] sent 0 bytes  received 0 bytes  total size 0
+2022/12/05 14:13:51 [114492] rsync error: unexplained error (code 255) at io.c(228) [sender=3.2.3]
+2022/12/05 14:13:51 [114497] rsync: connection unexpectedly closed (0 bytes received so far) [sender]
+2022/12/05 14:13:51 [114497] sent 0 bytes  received 0 bytes  total size 0
+2022/12/05 14:13:51 [114497] rsync error: unexplained error (code 255) at io.c(228) [sender=3.2.3]
+2022/12/05 14:13:51 [114500] rsync: connection unexpectedly closed (0 bytes received so far) [sender]
+2022/12/05 14:13:51 [114500] sent 0 bytes  received 0 bytes  total size 0
+2022/12/05 14:13:51 [114500] rsync error: unexplained error (code 255) at io.c(228) [sender=3.2.3]
+2022/12/05 14:14:20 [114676] rsync: connection unexpectedly closed (0 bytes received so far) [sender]
+2022/12/05 14:14:20 [114676] sent 0 bytes  received 0 bytes  total size 0
+2022/12/05 14:14:20 [114676] rsync error: unexplained error (code 255) at io.c(228) [sender=3.2.3]
+2022/12/05 14:14:20 [114683] building file list
+2022/12/05 14:14:20 [114683] .d..t...... ./
+2022/12/05 14:14:21 [114683] sent 817 bytes  received 18 bytes  1,670.00 bytes/sec
+2022/12/05 14:14:21 [114683] total size is 33,852,343  speedup is 40,541.73
+2022/12/05 14:14:31 [114693] rsync: connection unexpectedly closed (0 bytes received so far) [sender]
+2022/12/05 14:14:31 [114693] sent 0 bytes  received 0 bytes  total size 0
+2022/12/05 14:14:31 [114693] rsync error: unexplained error (code 255) at io.c(228) [sender=3.2.3]
+2022/12/05 14:14:31 [114697] building file list
+2022/12/05 14:14:31 [114697] .d..t...... ./
+2022/12/05 14:14:31 [114697] sent 372 bytes  received 18 bytes  780.00 bytes/sec
+2022/12/05 14:14:31 [114697] total size is 1,450,844  speedup is 3,720.11
