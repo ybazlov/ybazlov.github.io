@@ -46,3 +46,6 @@
 2022/12/05 14:25:02 [115756] building file list
 2022/12/05 14:25:02 [115756] sent 369 bytes  received 11 bytes  760.00 bytes/sec
 2022/12/05 14:25:02 [115756] total size is 1,450,844  speedup is 3,818.01
+2022/12/05 16:16:12 [1136938] building file list
+2022/12/05 16:16:12 [1136938] sent 912 bytes  received 11 bytes  1,846.00 bytes/sec
+2022/12/05 16:16:12 [1136938] total size is 39,346,048  speedup is 42,628.44
