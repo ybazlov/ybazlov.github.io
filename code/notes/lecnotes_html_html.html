@@ -7743,12 +7743,12 @@ Let us do this by encoding all vectors of length \(2\), in matrix form. Remember
 </p>
 
 <p>
-\([ \begin {matrix} 0 &amp; 0 \\ \end {matrix} ]G=[ \begin {matrix} 0 &amp; 0 &amp; 0 &amp; 0 \\ \end {matrix} ]\),                     \([ \begin {matrix} 0 &amp; 1 \\ \end {matrix} ]G=[ \begin {matrix} 2 &amp; 0 &amp; 1 &amp; 1 \\
-\end {matrix} ]\), \([ \begin {matrix} 0 &amp; 2 \\ \end {matrix} ]G=[ \begin {matrix} 1 &amp; 0 &amp; 2 &amp; 2 \\                     \end {matrix} ]\),<br />
-\([ \begin {matrix} 1 &amp; 0 \\ \end {matrix} ]G=[ \begin {matrix} 0 &amp; 1 &amp; 2 &amp; 1 \\ \end {matrix} ]\),                     \([ \begin {matrix} 1 &amp; 1 \\ \end {matrix} ]G=[ \begin {matrix} 2 &amp; 1 &amp; 0 &amp; 2 \\
-\end {matrix} ]\), \([ \begin {matrix} 1 &amp; 2 \\ \end {matrix} ]G=[ \begin {matrix} 1 &amp; 1 &amp; 1 &amp; 0 \\                     \end {matrix} ]\),<br />
-\([ \begin {matrix} 2 &amp; 0 \\ \end {matrix} ]G=[ \begin {matrix} 0 &amp; 2 &amp; 1 &amp; 2 \\ \end {matrix} ]\),                     \([ \begin {matrix} 2 &amp; 1 \\ \end {matrix} ]G=[ \begin {matrix}2&amp;2&amp;2&amp;0\\ \end
-{matrix} ]\), \([ \begin {matrix} 2 &amp; 2 \\ \end {matrix} ]G=[ \begin {matrix} 1 &amp; 2 &amp; 0 &amp; 1 \\ \end                     {matrix} ]\).
+\([ \begin {matrix} 0 &amp; 0 \\ \end {matrix} ]G=[ \begin {matrix} 0 &amp; 0 &amp; 0 &amp; 0 \\ \end {matrix} ]\), \([ \begin {matrix} 0 &amp; 1 \\ \end {matrix} ]G=[ \begin {matrix} 2 &amp; 0 &amp; 1 &amp; 1 \\
+\end {matrix} ]\), \([ \begin {matrix} 0 &amp; 2 \\ \end {matrix} ]G=[ \begin {matrix} 1 &amp; 0 &amp; 2 &amp; 2 \\ \end {matrix} ]\),<br />
+\([ \begin {matrix} 1 &amp; 0 \\ \end {matrix} ]G=[ \begin {matrix} 0 &amp; 1 &amp; 2 &amp; 1 \\ \end {matrix} ]\), \([ \begin {matrix} 1 &amp; 1 \\ \end {matrix} ]G=[ \begin {matrix} 2 &amp; 1 &amp; 0 &amp; 2 \\
+\end {matrix} ]\), \([ \begin {matrix} 1 &amp; 2 \\ \end {matrix} ]G=[ \begin {matrix} 1 &amp; 1 &amp; 1 &amp; 0 \\ \end {matrix} ]\),<br />
+\([ \begin {matrix} 2 &amp; 0 \\ \end {matrix} ]G=[ \begin {matrix} 0 &amp; 2 &amp; 1 &amp; 2 \\ \end {matrix} ]\), \([ \begin {matrix} 2 &amp; 1 \\ \end {matrix} ]G=[ \begin {matrix}2&amp;2&amp;2&amp;0\\ \end
+{matrix} ]\), \([ \begin {matrix} 2 &amp; 2 \\ \end {matrix} ]G=[ \begin {matrix} 1 &amp; 2 &amp; 0 &amp; 1 \\ \end {matrix} ]\).
 </p>
 
 <p>
@@ -8964,8 +8964,8 @@ The <b><i>weight enumerator</i></b> of a linear code \(C\subseteq \F _q^n\) is
 <!--
 
 
-                                                                                                         X
-                                                                                           WC (x, y) =         xn−w(v) y w(v)
+                                                                                                         X n−w(v) w(v)
+                                                                                           WC (x, y) =         x   y
                                                                                                          v∈C
 
                                                                                                     = A0 xn + A1 xn−1 y + A2 xn−2 y 2 + . . . + An y n
@@ -16333,7 +16333,7 @@ Given \(\ul c\in C\), \(\ul v\in \F _p^n\), denote
 </p>
 
 <p>
-\[ \Phi (\ul c,\ul v)=\omega ^{\ul c \cdot \ul v} x^{n-w(\ul v)} y^{w(\ul v)}.                    \]
+\[ \Phi (\ul c,\ul v)=\omega ^{\ul c \cdot \ul v} x^{n-w(\ul v)} y^{w(\ul v)}.                  \]
 </p>
 
 <p>
@@ -16358,7 +16358,7 @@ Simce \(\omega ^a\ne 1\), we have
 </p>
 
 <p>
-\[ \sum _{\ul c\in C}\Phi (\ul c,\ul v)=0 \quad \text {for }\ul v\notin C^\perp .                      \]
+\[ \sum _{\ul c\in C}\Phi (\ul c,\ul v)=0 \quad \text {for }\ul v\notin C^\perp .                    \]
 </p>
 
 <p>
@@ -16382,8 +16382,8 @@ have \(w(\ul v)=w(v_1)+\dots +w(v_n)\). We then rewrite
 
 
 
-                                                                                                        Φ(c, v) = ω c1 v1 +···+cn vn x1−w(v1 ) y w(v1 ) . . . x1−w(vn ) y w(vn )
-                                                                                                                 = ω c1 v1 x1−w(v1 ) y w(v1 ) . . . ω cn vn x1−w(vn ) y w(vn ) .
+                                                                                                      Φ(c, v) = ω c1 v1 +···+cn vn x1−w(v1 ) y w(v1 ) . . . x1−w(vn ) y w(vn )
+                                                                                                               = ω c1 v1 x1−w(v1 ) y w(v1 ) . . . ω cn vn x1−w(vn ) y w(vn ) .
 
 
 
@@ -16406,16 +16406,16 @@ We now sum over \(\ul v\in \F _p^n\) first: each coordinate of \(\ul v\) runs ov
 <!--
 
 
-                                                                                                                   p−1           p−1
-                                                                                             X                     X             X
-                                                                                                       Φ(c, v) =           ···           Φ(c, v)
-                                                                                             v∈Fn
-                                                                                                p                  v1 =0         vn =0
+                                                                                                                 p−1           p−1
+                                                                                            X                    X             X
+                                                                                                     Φ(c, v) =           ···           Φ(c, v)
+                                                                                            v∈Fn
+                                                                                               p                 v1 =0         vn =0
 
-                                                                                                                   p−1                                        p−1
-                                                                                                                   X                                          X
-                                                                                                               =           ω c1 v1 x1−w(v1 ) y w(v1 ) · · ·           ω cn vn x1−w(vn ) y w(vn ) .                                                      (*)
-                                                                                                                   v1 =0                                      vn =0
+                                                                                                                 p−1                                        p−1
+                                                                                                                 X                                          X
+                                                                                                             =           ω c1 v1 x1−w(v1 ) y w(v1 ) · · ·           ω cn vn x1−w(vn ) y w(vn ) .                                                        (*)
+                                                                                                                 v1 =0                                      vn =0
 
 
 
@@ -16439,11 +16439,11 @@ Let us analyse the first factor in the product on the right-hand side of (*):
 <!--
 
 
-                                                                                                               p−1                                              p−1
-                                                                                                               X                                                X
-                                                                                                                       ω c1 v1 x1−w(v1 ) y w(v1 ) = x +                 ω c1 v1 y.
-                                                                                                                                                                               
-                                                                                                               v1 =0                                            v1 =1
+                                                                                                             p−1                                              p−1
+                                                                                                             X                                                X
+                                                                                                                     ω c1 v1 x1−w(v1 ) y w(v1 ) = x +                 ω c1 v1 y.
+                                                                                                                                                                             
+                                                                                                             v1 =0                                            v1 =1
 
 
 -->
@@ -16471,7 +16471,7 @@ since \((\omega ^{c_1})^p=1\). Hence the first factor on the right-hand side of 
 </p>
 
 <p>
-\[ \left \{ \begin {array}{rl} x+(p-1)y, &amp; \text { if }c_1=0, \\ x-y, &amp; \text { if }c_1\ne 0 \end {array} \right .                                                    \]
+\[ \left \{ \begin {array}{rl} x+(p-1)y, &amp; \text { if }c_1=0, \\ x-y, &amp; \text { if }c_1\ne 0 \end {array} \right .                                                  \]
 </p>
 
 <p>
@@ -16484,10 +16484,10 @@ Therefore,
 <!--
 
 
-                                                                                     XX                        X
-                                                                                                  Φ(c, v) =          (x + (p − 1)y)n−w(c) (x − y)w(c) = WC (x + (p − 1)y, x − y).
-                                                                                     c∈C   v∈Fn
-                                                                                              p                c∈C
+                                                                                     XX                      X
+                                                                                                Φ(c, v) =          (x + (p − 1)y)n−w(c) (x − y)w(c) = WC (x + (p − 1)y, x − y).
+                                                                                     c∈C v∈Fn
+                                                                                            p                c∈C
 
 
 -->
@@ -16609,13 +16609,13 @@ By the MacWilliams identity, the equation \(0=\bigl .\dfrac {d}{dt}W_{C^\perp }(
                                                                                          1    ∂                         ∂
                                                                                                                                            
                                                                                       =         WC (x, y) × (q − 1) +      WC (x, y) × (−1)
-                                                                                        #C ∂x                          ∂x                       x=1+(q−1)t, y=1−t, t=0
+                                                                                        #C ∂x                          ∂x                     x=1+(q−1)t, y=1−t, t=0
                                                                                          1    ∂                         ∂
                                                                                                                                            
                                                                                       =         WC (x, y) × (q − 1) +      WC (x, y) × (−1)
-                                                                                        #C ∂x                          ∂x                       x=1, y=1
-                                                                                         1 X             ∂      ∂  n−w(c) w(c)
-                                                                                                                                
+                                                                                        #C ∂x                          ∂x                     x=1, y=1
+                                                                                         1               ∂      ∂  n−w(c) w(c)
+                                                                                            X                                   
                                                                                       =          (q − 1)    −      x        y
                                                                                         #C               ∂x    ∂y                   x=1, y=1
                                                                                               c∈C
@@ -16623,7 +16623,7 @@ By the MacWilliams identity, the equation \(0=\bigl .\dfrac {d}{dt}W_{C^\perp }(
                                                                                          1 X                                          1 X
                                                                                       =      (q − 1)(n − w(c)) − w(c) = (q − 1)n − q      w(c).
                                                                                         #C                                           #C
-                                                                                             c∈C                                                c∈C
+                                                                                             c∈C                                              c∈C
 
 
 
@@ -22782,6 +22782,2484 @@ Following the introduction of cyclic codes in 1957 by Eugene Prange, we can defi
 Briefly, one should write the 729 codewords of this perfect code \(C\) in the 729 tickets. Recall from the proof of the Hamming bound that, since \(C\) is perfect, the space \(\F _3^{11}\) is covered by spheres of radius \(t=2\) centred at codevectors
 from \(C\). Hence every vector in \(\F _3^{11}\) is at distance \(\le 2\) from a codevector of \(C\). Therefore, for every possible vector \(\ul X\) of 11 match outcomes there will be one out of the 729 tickets (codewords) which will differ from
 \(\ul X\) in at most two positions. That ticket will win the prize.
+</p>
+</section>
+
+</main>
+
+</div>
+
+
+<nav class="botnavigation"><a href="lecnotes_html.html" class="linkhome" >
+Home</a></nav>
+
+</body>
+</html>
+<!--|Start file|ch11.html|-->
+
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="UTF-8" />
+<meta name="generator" content="LaTeX Lwarp package" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<!--[if lt IE 9]>
+<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+<link rel="stylesheet" type="text/css" href="bazlovstyle.css" />
+
+<script>
+// Lwarp MathJax emulation code
+//
+// Based on code by Davide P. Cervone.
+// Equation numbering: https://github.com/mathjax/MathJax/issues/2427
+// Starred and ifnextchar macros: https://github.com/mathjax/MathJax/issues/2428
+// \left, \right delimiters: https://github.com/mathjax/MathJax/issues/2535
+//
+// Modified by Brian Dunn to adjust equation numbering and add subequations.
+//
+// LaTeX can use \seteqnumber{subequations?}{section}{number} before each equation.
+// subequations? is 0 usually, 1 if inside subequations.
+// section is a string printed as-is, or empty.
+// number is auto-incremented by MathJax between equations.
+//
+MathJax = {
+    subequations: "0",
+    section: "",
+    loader: {
+        load: ['[tex]/tagformat', '[tex]/textmacros'],
+    },
+    startup: {
+        ready() {
+            //      These would be replaced by import commands if you wanted to make
+            //      a proper extension.
+            const Configuration = MathJax._.input.tex.Configuration.Configuration;
+            const CommandMap = MathJax._.input.tex.SymbolMap.CommandMap;
+            const Macro = MathJax._.input.tex.Symbol.Macro;
+            const TexError = MathJax._.input.tex.TexError.default;
+            const ParseUtil = MathJax._.input.tex.ParseUtil.default;
+            const expandable = MathJax._.util.Options.expandable;
+
+
+            //      Insert the replacement string into the TeX string, and check
+            //      that there haven't been too many maxro substitutions (prevents
+            //      infinite loops).
+            const useArgument = (parser, text) => {
+                parser.string = ParseUtil.addArgs(parser, text, parser.string.slice(parser.i));
+                parser.i = 0;
+                if (++parser.macroCount > parser.configuration.options.maxMacros) {
+                    throw new TexError('MaxMacroSub1',
+                    'MathJax maximum macro substitution count exceeded; ' +
+                    'is there a recursive macro call?');
+                }
+            }
+
+
+            //      Create the command map for:
+            //          \ifstar, \ifnextchar, \ifblank, \ifstrequal, \gsub, \seteqnumber
+            new CommandMap('Lwarp-macros', {
+                ifstar: 'IfstarFunction',
+                ifnextchar: 'IfnextcharFunction',
+                ifblank: 'IfblankFunction',
+                ifstrequal: 'IfstrequalFunction',
+                gsubstitute: 'GsubstituteFunction',
+                seteqnumber: 'SeteqnumberFunction'
+            }, {
+                //      This function implements an ifstar macro.
+                IfstarFunction(parser, name) {
+                    const resultstar = parser.GetArgument(name);
+                    const resultnostar = parser.GetArgument(name);
+                    const star = parser.GetStar();                      // true if there is a *
+                    useArgument(parser, star ? resultstar : resultnostar);
+                },
+
+
+                //      This function implements an ifnextchar macro.
+                IfnextcharFunction(parser, name) {
+                    let whichchar = parser.GetArgument(name);
+                    if (whichchar.match(/^(?:0x[0-9A-F]+|[0-9]+)$/i)) {
+                        // $ syntax highlighting
+                        whichchar = String.fromCodePoint(parseInt(whichchar));
+                    }
+                    const resultnextchar = parser.GetArgument(name);
+                    const resultnotnextchar = parser.GetArgument(name);
+                    const gotchar = (parser.GetNext() === whichchar);
+                    useArgument(parser, gotchar ? resultnextchar : resultnotnextchar);
+                },
+
+
+                // This function implements an ifblank macro.
+                IfblankFunction(parser, name) {
+                    const blankarg = parser.GetArgument(name);
+                    const resultblank = parser.GetArgument(name);
+                    const resultnotblank = parser.GetArgument(name);
+                    const isblank = (blankarg.trim() == "");
+                    useArgument(parser, isblank ? resultblank : resultnotblank);
+                },
+
+
+                // This function implements an ifstrequal macro.
+                IfstrequalFunction(parser, name) {
+                    const strequalfirst = parser.GetArgument(name);
+                    const strequalsecond = parser.GetArgument(name);
+                    const resultequal = parser.GetArgument(name);
+                    const resultnotequal = parser.GetArgument(name);
+                    const isequal = (strequalfirst == strequalsecond);
+                    useArgument(parser, isequal ? resultequal : resultnotequal);
+                },
+
+
+                // This function implements a gsub macro.
+                GsubstituteFunction(parser, name) {
+                    const gsubfirst = parser.GetArgument(name);
+                    const gsubsecond = parser.GetArgument(name);
+                    const gsubthird = parser.GetArgument(name);
+                    let gsubresult=gsubfirst.replace(gsubsecond, gsubthird);
+                    useArgument(parser, gsubresult);
+                },
+
+
+                //      This function modifies the equation numbers.
+                SeteqnumberFunction(parser, name) {
+                        //   Get the macro parameters
+                        const star = parser.GetStar();                    // true if there is a *
+                        const optBrackets = parser.GetBrackets(name);     // contents of optional brackets
+                        const newsubequations = parser.GetArgument(name);    // the subequations argument
+                        const neweqsection = parser.GetArgument(name);    // the eq section argument
+                        const neweqnumber = parser.GetArgument(name);     // the eq number argument
+                        MathJax.config.subequations=newsubequations ;     // a string with boolean meaning
+                        MathJax.config.section=neweqsection ;             // a string with numeric meaning
+                        parser.tags.counter = parser.tags.allCounter = neweqnumber ;
+                }
+
+
+            });
+
+
+            //      Create the Lwarp-macros package
+            Configuration.create('Lwarp-macros', {
+                handler: {macro: ['Lwarp-macros']}
+            });
+
+
+            MathJax.startup.defaultReady();
+
+
+            // For forward references:
+            MathJax.startup.input[0].preFilters.add(({math}) => {
+                if (math.inputData.recompile){
+                        MathJax.config.subequations = math.inputData.recompile.subequations;
+                        MathJax.config.section = math.inputData.recompile.section;
+                }
+            });
+            MathJax.startup.input[0].postFilters.add(({math}) => {
+                if (math.inputData.recompile){
+                        math.inputData.recompile.subequations = MathJax.config.subequations;
+                        math.inputData.recompile.section = MathJax.config.section;
+                }
+            });
+
+
+                // For \left, \right with unicode-math:
+                const {DelimiterMap} = MathJax._.input.tex.SymbolMap;
+                const {Symbol} = MathJax._.input.tex.Symbol;
+                const {MapHandler} = MathJax._.input.tex.MapHandler;
+                const delimiter = MapHandler.getMap('delimiter');
+                delimiter.add('\\lBrack', new Symbol('\\lBrack', '\u27E6'));
+                delimiter.add('\\rBrack', new Symbol('\\rBrack', '\u27E7'));
+                delimiter.add('\\lAngle', new Symbol('\\lAngle', '\u27EA'));
+                delimiter.add('\\rAngle', new Symbol('\\rAngle', '\u27EB'));
+                delimiter.add('\\lbrbrak', new Symbol('\\lbrbrak', '\u2772'));
+                delimiter.add('\\rbrbrak', new Symbol('\\rbrbrak', '\u2773'));
+                delimiter.add('\\lbag', new Symbol('\\lbag', '\u27C5'));
+                delimiter.add('\\rbag', new Symbol('\\rbag', '\u27C6'));
+                delimiter.add('\\llparenthesis', new Symbol('\\llparenthesis', '\u2987'));
+                delimiter.add('\\rrparenthesis', new Symbol('\\rrparenthesis', '\u2988'));
+                delimiter.add('\\llangle', new Symbol('\\llangle', '\u2989'));
+                delimiter.add('\\rrangle', new Symbol('\\rrangle', '\u298A'));
+                delimiter.add('\\Lbrbrak', new Symbol('\\Lbrbrak', '\u27EC'));
+                delimiter.add('\\Rbrbrak', new Symbol('\\Rbrbrak', '\u27ED'));
+                delimiter.add('\\lBrace', new Symbol('\\lBrace', '\u2983'));
+                delimiter.add('\\rBrace', new Symbol('\\rBrace', '\u2984'));
+                delimiter.add('\\lParen', new Symbol('\\lParen', '\u2985'));
+                delimiter.add('\\rParen', new Symbol('\\rParen', '\u2986'));
+                delimiter.add('\\lbrackubar', new Symbol('\\lbrackubar', '\u298B'));
+                delimiter.add('\\rbrackubar', new Symbol('\\rbrackubar', '\u298C'));
+                delimiter.add('\\lbrackultick', new Symbol('\\lbrackultick', '\u298D'));
+                delimiter.add('\\rbracklrtick', new Symbol('\\rbracklrtick', '\u298E'));
+                delimiter.add('\\lbracklltick', new Symbol('\\lbracklltick', '\u298F'));
+                delimiter.add('\\rbrackurtick', new Symbol('\\rbrackurtick', '\u2990'));
+                delimiter.add('\\langledot', new Symbol('\\langledot', '\u2991'));
+                delimiter.add('\\rangledot', new Symbol('\\rangledot', '\u2992'));
+                delimiter.add('\\lparenless', new Symbol('\\lparenless', '\u2993'));
+                delimiter.add('\\rparengtr', new Symbol('\\rparengtr', '\u2994'));
+                delimiter.add('\\Lparengtr', new Symbol('\\Lparengtr', '\u2995'));
+                delimiter.add('\\Rparenless', new Symbol('\\Rparenless', '\u2996'));
+                delimiter.add('\\lblkbrbrak', new Symbol('\\lblkbrbrak', '\u2997'));
+                delimiter.add('\\rblkbrbrak', new Symbol('\\rblkbrbrak', '\u2998'));
+                delimiter.add('\\lvzigzag', new Symbol('\\lvzigzag', '\u29D8'));
+                delimiter.add('\\rvzigzag', new Symbol('\\rvzigzag', '\u29D9'));
+                delimiter.add('\\Lvzigzag', new Symbol('\\Lvzigzag', '\u29DA'));
+                delimiter.add('\\Rvzigzag', new Symbol('\\Rvzigzag', '\u29DB'));
+                delimiter.add('\\lcurvyangle', new Symbol('\\lcurvyangle', '\u29FC'));
+                delimiter.add('\\rcurvyangle', new Symbol('\\rcurvyangle', '\u29FD'));
+                delimiter.add('\\Vvert', new Symbol('\\Vvert', '\u2980'));
+        }        // ready
+    },           // startup
+
+
+    tex: {
+        packages: {'[+]': ['tagformat', 'Lwarp-macros', 'textmacros']},
+        tags: "ams",
+                tagformat: {
+                        number: function (n) {
+                             if(MathJax.config.subequations==0)
+                                 return(MathJax.config.section + n);
+                             else
+                                 return(MathJax.config.section + String.fromCharCode(96+n));
+                        },
+                },
+    }
+}
+</script>
+
+
+<script
+        id="MathJax-script"
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+></script>
+
+</head>
+<body>
+
+
+<a id="lecnotes_html-autopage-8"></a>
+<nav class="topnavigation"><a href="lecnotes_html.html" class="linkhome" >
+Home</a></nav>
+
+
+<div class="bodyandsidetoc">
+<div class="sidetoccontainer">
+
+
+<nav class="sidetoc">
+
+
+<div class="sidetoctitle">
+
+<p>
+Contents
+</p>
+</div>
+
+
+<div class="sidetoccontents">
+
+<p>
+<a href="lecnotes_html.html" class="linkhome" >
+Home</a>
+</p>
+
+</div>
+
+</nav>
+
+</div>
+
+
+<main class="bodycontainer">
+
+
+<section class="textbody">
+
+<!--MathJax customizations:-->
+
+
+<div class="hidden">
+
+\(\newcommand{\footnotename}{footnote}\)
+
+\(\def \LWRfootnote {1}\)
+
+\(\newcommand {\footnote }[2][\LWRfootnote ]{{}^{\mathrm {#1}}}\)
+
+\(\newcommand {\footnotemark }[1][\LWRfootnote ]{{}^{\mathrm {#1}}}\)
+
+\(\let \LWRorighspace \hspace \)
+
+\(\renewcommand {\hspace }{\ifstar \LWRorighspace \LWRorighspace }\)
+
+\(\newcommand {\mathnormal }[1]{{#1}}\)
+
+\(\newcommand \ensuremath [1]{#1}\)
+
+\(\newcommand {\LWRframebox }[2][]{\fbox {#2}} \newcommand {\framebox }[1][]{\LWRframebox } \)
+
+\(\newcommand {\setlength }[2]{}\)
+
+\(\newcommand {\addtolength }[2]{}\)
+
+\(\newcommand {\setcounter }[2]{}\)
+
+\(\newcommand {\addtocounter }[2]{}\)
+
+\(\newcommand {\arabic }[1]{}\)
+
+\(\newcommand {\number }[1]{}\)
+
+\(\newcommand {\noalign }[1]{\text {#1}\notag \\}\)
+
+\(\newcommand {\cline }[1]{}\)
+
+\(\newcommand {\directlua }[1]{\text {(directlua)}}\)
+
+\(\newcommand {\luatexdirectlua }[1]{\text {(directlua)}}\)
+
+\(\newcommand {\protect }{}\)
+
+\(\def \LWRabsorbnumber #1 {}\)
+
+\(\def \LWRabsorbquotenumber &quot;#1 {}\)
+
+\(\newcommand {\LWRabsorboption }[1][]{}\)
+
+\(\newcommand {\LWRabsorbtwooptions }[1][]{\LWRabsorboption }\)
+
+\(\def \mathchar {\ifnextchar &quot;\LWRabsorbquotenumber \LWRabsorbnumber }\)
+
+\(\def \mathcode #1={\mathchar }\)
+
+\(\let \delcode \mathcode \)
+
+\(\let \delimiter \mathchar \)
+
+\(\def \oe {\unicode {x0153}}\)
+
+\(\def \OE {\unicode {x0152}}\)
+
+\(\def \ae {\unicode {x00E6}}\)
+
+\(\def \AE {\unicode {x00C6}}\)
+
+\(\def \aa {\unicode {x00E5}}\)
+
+\(\def \AA {\unicode {x00C5}}\)
+
+\(\def \o {\unicode {x00F8}}\)
+
+\(\def \O {\unicode {x00D8}}\)
+
+\(\def \l {\unicode {x0142}}\)
+
+\(\def \L {\unicode {x0141}}\)
+
+\(\def \ss {\unicode {x00DF}}\)
+
+\(\def \SS {\unicode {x1E9E}}\)
+
+\(\def \dag {\unicode {x2020}}\)
+
+\(\def \ddag {\unicode {x2021}}\)
+
+\(\def \P {\unicode {x00B6}}\)
+
+\(\def \copyright {\unicode {x00A9}}\)
+
+\(\def \pounds {\unicode {x00A3}}\)
+
+\(\let \LWRref \ref \)
+
+\(\renewcommand {\ref }{\ifstar \LWRref \LWRref }\)
+
+\( \newcommand {\multicolumn }[3]{#3}\)
+
+\(\require {textcomp}\)
+
+\(\newcommand {\intertext }[1]{\text {#1}\notag \\}\)
+
+\(\let \Hat \hat \)
+
+\(\let \Check \check \)
+
+\(\let \Tilde \tilde \)
+
+\(\let \Acute \acute \)
+
+\(\let \Grave \grave \)
+
+\(\let \Dot \dot \)
+
+\(\let \Ddot \ddot \)
+
+\(\let \Breve \breve \)
+
+\(\let \Bar \bar \)
+
+\(\let \Vec \vec \)
+
+\(\newcommand {\real }{\mathbb {R}} \)
+
+\(\newcommand {\RR }{\mathbb {R}} \)
+
+\(\newcommand {\ZZ }{\mathbb Z} \)
+
+\(\newcommand {\F }{\mathbb F} \)
+
+\(\newcommand {\Ham }{\mathrm {Ham}}\)
+
+\(\newcommand {\PP }{\mathbb P}\)
+
+\(\newcommand {\co }[1]{\overline {#1}} \)
+
+\(\newcommand {\ul }[1]{\underline {#1}} \)
+
+\(\newcommand {\bo }[1]{\mathbf {#1}} \)
+
+\(\newcommand {\concat }[2]{[\, #1 \,|\, #2 \,]} \)
+
+\(\newcommand {\Encode }{\texttt {ENCODE}} \)
+
+\(\newcommand {\Decode }{\texttt {DECODE}} \)
+
+\(\newcommand {\RM }{R} \)
+
+\(\newcommand {\Rep }{\text {Rep}} \)
+
+</div>
+
+<p>
+<!--
+...... chapter ch11 ......
+-->
+<h3 id="autosec-9">Chapter&nbsp;<span class="sectionnumber">11&#x2003;</span>Reed-Muller codes</h3>
+<a id="lecnotes_html-autopage-9"></a>
+<a id="lecnotes_html-autofile-29"></a>
+
+<p>
+Version 2022-12-02. <a href="lecnotes_html.pdf" target="_blank" >To PDF version of the notes</a>
+</p>
+
+<p>
+<b>Synopsis.</b> <i>The minimum distance of a perfect code cannot exceed \(7\) unless the code is a repetition code. This is disappointingly low. In this final part of the course, we construct Reed-Muller codes, a family of codes with large minimum
+distance. Unfortunately, they are not perfect. The construction is based on Boolean functions, which arise in elementary logic as columns of truth tables and are used in cicruit design.</i>
+</p>
+
+<p>
+Fix \(m\ge 1\).
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-10"></a>
+<span class="amsthmnamedefinition">Definition</span><span class="amsthmnotedefinition"> (Boolean functions)</span>.
+</p>
+
+<p>
+Denote by \(V^m\) the set of all binary words of length&nbsp;\(m\). (It is the same as \(\F _2^m\) but viewed without any vector space structure). A <i>Boolean function</i> is a (set-theoretical) function \(f\colon V^m \to \F _2\).
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-11"></a>
+<span class="amsthmnamedefinition">Remark</span><span class="amsthmnotedefinition"> (the number of Boolean functions)</span>.
+</p>
+
+<p>
+The total number of all Boolean functions on \(V^m\) is \(|\F _2|^{|V_m|}=2^{2^m}\).
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-12"></a>
+<span class="amsthmnamedefinition">Remark</span><span class="amsthmnotedefinition"> (Boolean functions as rows of a truth table)</span>.
+</p>
+
+<p>
+One has certainly met Boolean functions when constructing truth tables for statements in basic logic. To give an illustration, let \(m=3\). Consider statements which involve variables \(x_1,x_2,x_3\), each of which can take values \(0\) (<span
+class="textsc">false</span>) or \(1\) (<span class="textsc">true</span>).
+</p>
+
+<p>
+We will represent a logical statement by a <i>row</i> (not column) in a truth table. (We use rows because it is common in Coding Theory to think of codevectors as of row vectors; and in Reed-Muller codes, codevectors arise from functions.) In our
+example (\(m=3\)), the table will have \(8\) columns:
+</p>
+
+<p>
+\[ \newcommand {\sz }{\scriptstyle 0} \newcommand {\so }{\scriptstyle 1} \begin {array}{cc|cccccccc} &amp;x_1 &amp;\sz &amp;\so &amp;\sz &amp;\so &amp;\sz &amp;\so &amp;\sz &amp;\so \\[-.5ex] &amp;x_2 &amp;\sz
+&amp;\sz &amp;\so &amp;\so &amp;\sz &amp;\sz &amp;\so &amp;\so \\[-.5ex] &amp;x_3 &amp;\sz &amp;\sz &amp;\sz &amp;\sz &amp;\so &amp;\so &amp;\so &amp;\so \\ \hline (x_1 \text {{ and }} x_2)\implies
+x_3&amp;&amp;1&amp;1&amp;1&amp; 0&amp;1&amp;1&amp;1&amp;1\\ \mathbf {0} &amp;&amp;0&amp;0&amp;0&amp;0&amp;0&amp;0&amp;0&amp;0 \\ \mathbf {1} &amp;&amp; 1&amp;1&amp;1&amp;1&amp;1&amp;1&amp;1&amp;1 \\ v_2v_3
+&amp;&amp; 0&amp;0&amp;0&amp;0&amp;0&amp;0&amp;1&amp;1 \end {array} \]
+</p>
+
+<p>
+In this table, \((x_1 \text {{ and }} x_2)\implies x_3\) is a statement whose truth value depends on the values of \(x_1\), \(x_2\) and \(x_3\). Therefore, it can be viewed as a Boolean function: its value at the binary word \(000\) is \(1\), at
+the word \(100\) the value is \(1\), and so on. The only binary word where this function takes the value \(0\) is the word \(110\): indeed, if \(x_1\) and \(x_2\) are <span class="textsc">true</span>, then \(x_1\text {{ and }}x_2\) is <span
+class="textsc">true</span>, but \(x_3\) is <span class="textsc">false</span>, and the value of the implication “<span class="textsc">true</span> \(\implies \) <span class="textsc">false</span>” is <span
+class="textsc">false</span>.
+</p>
+
+<p>
+(The other rows in the table will be explained below.)
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<!--
+...... subsection The Boolean algebra ......
+-->
+<h5 id="autosec-13">The Boolean algebra</h5>
+<a id="lecnotes_html-autopage-13"></a>
+
+
+<p>
+Because Boolean functions take values in \(\F _2=\{0,1\}\) which is a field, Boolean functions can be added and multiplied pointwise: if \(f,g\colon V^m \to \F _2\), one has the functions
+</p>
+
+<p>
+\[ f+g, fg\colon V^m\to \F _2; \quad (f+g)( x)=f(x)+g( x), \quad (fg)(x)=f( x)g(x), \quad \forall x\in V^m.                 \]
+</p>
+
+<p>
+Also, there are constant functions \(\mathbf 0\) and \(\mathbf 1\). (They are shown in the 2nd, respectively 3rd, row of the truth table above.) The Boolean function \(\mathbf {1}\) is often called <i>the tautological truth</i>.
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-14"></a>
+<span class="amsthmnamedefinition">Definition</span><span class="amsthmnotedefinition"> (Boolean algebra)</span>.   The vector space of Boolean functions \(f\colon V^m\to \F _2\), together with the operation of multiplication of
+functions, is the <b><i>Boolean algebra</i></b> on&nbsp;\(V^m\).
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-15"></a>
+<span class="amsthmnamedefinition">Example</span>.         The traditional logical operations can be written in terms of the Boolean algebra operations \(+\) and \(\times \). Clearly, multiplication is the same as AND:
+</p>
+
+<p>
+\[ fg = f \text {{ and }} g.     \]
+</p>
+
+<p>
+The addition obeys the rule \(0+0=0\), \(0+1=1+0=1\), \(1+1=0\). The logical operation which corresponds to addition is called the <i>exclusive OR</i>:
+</p>
+
+<p>
+\[ f+g = f\text {{ xor }}g = \left ((f\text {{ or }}g) \text {{ and not}}(f\text {{ and }}g)\right ).                \]
+</p>
+
+<p>
+
+
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<!--
+...... subsection How to write elements of the Boolean algebra as row vectors?              ......
+-->
+<h5 id="autosec-16">How to write elements of the Boolean algebra as row vectors?</h5>
+<a id="lecnotes_html-autopage-16"></a>
+
+
+<p>
+To write elements of the Boolean algebra on \(V^m\) as binary vectors, so that we can define the weight, the Hamming distance etc, we need to order all binary words of length \(m\) as \(b_0,\ldots ,b_{2^m-1}\).
+</p>
+
+<p>
+The standard ordering is obtained by interpreting the word \(x_1x_2\ldots x_m\) as a number written in base 2, i.e., the number \(2^{m-1} x_1 + \ldots + 2x_{m-1}+x_m\). Thus, the binary words of length \(3\) appear in the following order:
+\(000\), \(001\), \(010\), \(011\), \(100\), \(101\), \(110\), \(111\). However, the exact choice of the order is not important, as we will see.
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-17"></a>
+<span class="amsthmnamedefinition">Definition</span><span class="amsthmnotedefinition"> (value vector, weight)</span>.
+</p>
+
+<p>
+Let \(f\colon V^m\to \F _2\) be a Boolean function. The <i><b>value vector</b></i> of \(f\) is the binary vector \(\ul f = (f(b_0),\ldots ,f(b_{2^m-1}))\) of length \(2^m\), where \(b_0,\ldots ,b_{2^m-1}\) is the chosen ordering of
+\(V^m\).
+</p>
+
+<p>
+The <b><i>weight</i></b> of the Boolean function \(f\) is defined as the weight of the value vector \(\ul f\). The weight does not depend on the ordering of the binary words, because
+</p>
+
+<p>
+\[ w(f) = \#\{b\in V^m:    f(b)=1\}.    \]
+</p>
+
+<p>
+
+
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<!--
+...... subsection The monomial basis of the Boolean algebra ......
+-->
+<h5 id="autosec-18">The monomial basis of the Boolean algebra</h5>
+<a id="lecnotes_html-autopage-18"></a>
+
+
+<p>
+We will now introduce two special kinds of elements of the Boolean algebra: coordinate functions and, more generally, monomial functions.
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-19"></a>
+<span class="amsthmnamedefinition">Definition</span><span class="amsthmnotedefinition"> (coordinate function, monomial, polynomial, degree)</span>.
+</p>
+
+<p>
+The Boolean function \(v_i\colon V^m \to \F _2\) defined by \(v_i(x_1,x_2,\ldots ,x_m)=x_i\) is called the \(i\)th <b><i>coordinate function</i></b>.
+</p>
+
+<p>
+To each subset \(\{i_1,\ldots ,i_r\}\subseteq \{1,\ldots ,m\}\) there corresponds the <b><i>monomial function</i></b> (or <b><i>monomial</i></b>) \(v_{i_1}\ldots v_{i_r}\), of <i>degree</i>&nbsp;\(r\).
+</p>
+
+<p>
+Also, \(\mathbf 1\) is the monomial function corresponding to the set \(\varnothing \), of degree \(0\).
+</p>
+
+<p>
+A linear combination of monomials is a <b><i>polynomial</i></b>. The degree of a polynomial \(f\) is the highest degree of a monomial which appears in \(f\).
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-20"></a>
+<span class="amsthmnamedefinition">Remark</span><span class="amsthmnotedefinition"> (properties of monomials)</span>.
+</p>
+
+<ul style="list-style-type:none">
+
+
+<li>
+<p>
+• Observation: because the values of any Boolean function are \(0\) and \(1\), one has \(v_i=v_i^2=v_i^3=\ldots \). This is the reason why there are no higher powers of the \(v_i\) in the definition of a monomial.
+</p>
+</li>
+<li>
+
+
+<p>
+• The above also implies that the product of monomials is again a monomial, and the product of polynomials is a polynomial.
+</p>
+</li>
+<li>
+
+
+<p>
+• There are \(2^m\) monomials in the Boolean algebra on \(V^m\) (because there are \(2^m\) subsets of \(\{1,\ldots ,m\}\)).
+</p>
+</li>
+<li>
+
+
+<p>
+• The weight of a monomial is calculated in the following result.
+</p>
+</li>
+</ul>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-21"></a>
+<span class="amsthmnamedefinition">Lemma</span><span class="amsthmnumberdefinition"> <span class="textup">11.1</span></span><span class="amsthmnotedefinition"> (weight of a monomial)</span>.   <a
+id="lem:weight_monomial"></a> A monomial \(v_{i_1}v_{i_2}\dots v_{i_r}\) in the Boolean algebra on \(V^m\) has weight \(2^{m-r}\). In other words,
+</p>
+
+<p>
+\[ w(v) = 2^{m-\deg v}\quad \text {if $v$ is a monomial.} \]
+</p>
+
+<p>
+
+
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmproof">
+
+<a id="lecnotes_html-autopage-22"></a>
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<span class="amsthmproofname">Proof.</span> If \(b=x_1x_2\dots x_m\) is a binary word, \(v_{i_1}v_{i_2}\dots v_{i_r}(b)=1\) if and only if \(x_{i_1}=x_{i_2}=\dots = x_{i_r}=1\). Hence the number of binary words in \(V^m\) where
+this monomial has value \(1\) is equal to the number of ways to choose the bits \(x_j\) where \(j\notin \{i_1,\dots ,i_r\}\). There are \(2\) choices (\(0\) or \(1\)) for each one of those \(m-r\) bits, hence the total number of such binary
+words is \(2^{m-r}\), and \(w(v_{i_1}\dots v_{i_r}) = \#\{b\in V^m:        v_{i_1}\dots v_{i_r}(b)=1\} =2^{m-r}\). <span class="theoremendmark">&#x25A1;</span>
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-23"></a>
+<span class="amsthmnamedefinition">Theorem</span><span class="amsthmnumberdefinition"> <span class="textup">11.2</span></span>.   <a id="thm:monomial-basis"></a> Monomials form a basis of the Boolean algebra.
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmproof">
+
+<a id="lecnotes_html-autopage-24"></a>
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<span class="amsthmproofname">Proof.</span> First, we prove by contradiction that monomials are <i>linearly independent</i>.
+</p>
+
+<p>
+Assume for contradiction that a non-empty linear combination (i.e., a sum, as we are working over \(\F _2\)) of monomials equals the zero Boolean function:
+</p>
+
+<p>
+\[ v_{S_1}+v_{S_2}+\dots + v_{S_k}=0, \qquad k\ge 1, \]
+</p>
+
+<p>
+where \(S_1,\dots S_k\) are some subsets of the index set \(\{1,\dots ,m\}\). Without the loss of generality, assume that \(v_{S_k}\) has the highest degree:
+</p>
+
+<p>
+\[ \deg v_{S_i} \le \deg v_{S_k}, \quad \text {i.e.,}\quad \# S_i \le \#S_k \quad \text {for all $i=1,\dots ,k-1$.} \]
+</p>
+
+<p>
+Note that if \(S,T\subseteq \{1,\dots ,m\}\) then \(v_Sv_T=v_{S\cup T}\). Let now \(T=\{1,\dots ,m\}\setminus S_k\), the complement of the set \(S_k\). Multiplying both sides by \(v_T\), we obtain
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{11.}{0}\)</span>
+
+<!--
+
+
+
+                                                                                                         vS1 ∪T + vS2 ∪T + · · · + vSk ∪T = 0.                                                                                               (\(*\))
+
+-->
+
+<p>
+
+
+\begin{equation*}
+\tag {$*$} v_{S_1\cup T}+v_{S_2\cup T}+\dots + v_{S_k\cup T} = 0.
+\end{equation*}
+
+
+</p>
+
+<p>
+We have \(S_k\cup T=\{1,\dots ,m\}\). If \(i&lt;k\) then the set \(S_i\) cannot contain \(S_k\), and so \(S_i\cup T\ne \{1,\dots ,m\}\) and \(\deg v_{S_i\cup T}&lt;m\). Rewrite (\(*\)) as
+</p>
+
+<p>
+\[ v_{S_1\cup T}+v_{S_2\cup T}+\dots + v_{S_{k-1}\cup T} = v_1v_2\dots v_m.            \]
+</p>
+
+<p>
+The left-hand side is a sum of monomials of degree less than \(m\). By Lemma <a href="ch11.html#lem:weight_monomial">11.1</a>, these monomials have value vectors of even weight. A sum of vectors of even weight is a vector of even weight: we
+know that the binary even weight code is linear. But the right-hand side is the monomial \(v_1\dots v_m\) which by Lemma <a href="ch11.html#lem:weight_monomial">11.1</a> has weight \(1\), which is odd. This contradiction proves that
+monomials are linearly independent.
+</p>
+
+<p>
+It remains to show that the monomials are a <i>spanning set</i> in the Boolean algebra. There are \(2^m\) monomials, so we can form \(2^{(2^m)}\) linear combinations of monomials by putting a coefficient of \(0\) or \(1\) in front of each
+monomial. All these linear combinations are distinct, by linear independence. On the other hand, there are \(2^{(2^m)}\) Boolean functions on&nbsp;\(V^m\). Hence every Boolean function is a linear combination of monomials.
+</p>
+
+<p>
+A <i>basis</i> is a set which is linearly independent and spanning, so the Theorem is proved. <span class="theoremendmark">&#x25A1;</span>
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-25"></a>
+<span class="amsthmnamedefinition">Corollary</span><span class="amsthmnumberdefinition"> <span class="textup">11.3</span></span>.   <a id="cor:boolean-polynomials"></a> Each Boolean function on \(V^m\) is uniquely written as
+a Boolean polynomial in the coordinate functions \(v_1,\dots ,v_m\).
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-26"></a>
+<span class="amsthmnamedefinition">Remark</span>. A representation of a Boolean function \(f\colon V^m \to \F _2\) as a Boolean polynomial is sometimes referred to as the <i>algebraic normal form</i> of \(f\). This can be compared to
+<i>disjunctive</i> and <i>conjunctive</i> normal forms of a Boolean function used for other purposes. Interested readers may find the details in the literature.
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<!--
+...... subsection The Reed-Muller code ......
+-->
+<h5 id="autosec-27">The Reed-Muller code</h5>
+<a id="lecnotes_html-autopage-27"></a>
+
+
+<p>
+We now know that every element of the Boolean algebra on \(V^m\) is a polynomial, i.e., a sum of several monomials (squarefree products of coordinate functions). Recall also that the degree of a polynomial is the top degree of a monomial in that
+polynomial, which does not exceed \(m\).
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-28"></a>
+<span class="amsthmnamedefinition">Definition</span><span class="amsthmnotedefinition"> (Reed-Muller code)</span>.
+</p>
+
+<p>
+The <i>\(r\)th order Reed-Muller code on \(V^m\)</i>, denoted \(\RM (r,m)\), is the space of value vectors of polynomials of degree <i>at most</i>&nbsp;\(r\) in the Boolean algebra on \(V^m\).
+</p>
+
+<p>
+Here \(0\le r\le m\). We observe that \(\RM (r,m)\) is spanned by the value vectors of all monomials of degree at most \(r\).
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-29"></a>
+<span class="amsthmnamedefinition">Example</span><span class="amsthmnotedefinition"> (\(\RM (0,m)\))</span>.   The Reed-Muller code \(\RM (0,m)\) consists of value vectors of Boolean polynomials on \(V^m\) of degree \(\le 0\).
+There are only two such polynomials, \(\mathbf 0\) and \(\mathbf 1\), hence
+</p>
+
+<p>
+\[ \RM (0,m) = \{00\dots 0, 11\dots 1\} = \mathrm {Rep}(2^m,\F _2) \]
+</p>
+
+<p>
+is the repetition code. The length is \(2^m=\# V^m\).
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-30"></a>
+<span class="amsthmnamedefinition">Example</span><span class="amsthmnotedefinition"> (\(\RM (m,m)\))</span>.             The other extreme is \(\RM (m,m)\) which consists of value vectors of polynomials of degree \(\le m\). All Boolean
+polynomials have degree at most \(m\), and, by Corollary <a href="ch11.html#cor:boolean-polynomials">11.3</a>, every possible binary vector of length \(2^m\) is a value vector of a polynomial. Hence
+</p>
+
+<p>
+\[ \RM (m,m) = \F _2^{2^m}, \]
+</p>
+
+<p>
+the trivial code which consists of all possible vectors of length \(2^m\).
+</p>
+
+</li>
+
+</ul>
+
+</div>
+
+<p>
+The key result on Reed-Muller codes is the following theorem, which gives the parameters of these codes.
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-31"></a>
+<span class="amsthmnamedefinition">Theorem</span><span class="amsthmnumberdefinition"> <span class="textup">11.4</span></span>.   <a id="lem:RMlendim"></a> \(\RM (r,m)\) has length \(2^m\), dimension \(\binom
+{m}{0}+\binom {m}{1}+\ldots +\binom {m}{r}\) and minimum distance \(2^{m-r}\).
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmproof">
+
+<a id="lecnotes_html-autopage-32"></a>
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<span class="amsthmproofname">Proof.</span> <b>Length</b> \(=2^m\) by construction: a value vector is made up of \(2^m\) bits obtained by evaluating the given function on the \(2^m\) binary words in \(V^m\).
+</p>
+
+<p>
+Value vectors of monomials of degree \(0,1,\ldots ,r\) span \(\RM (r,m)\) by definition of \(\RM (r,m)\), and are linearly independent by Theorem&nbsp;<a href="ch11.html#thm:monomial-basis">11.2</a>, hence form a basis of \(\RM
+(r,m)\). The number of monomials of degree \(d\) is the same as the number of \(d\)-element subsets of \(\{1,\ldots ,m\}\), which is \(\binom md\), so the total number of monomials in the basis of \(\RM (r,m)\) — i.e., the <b>dimension</b>
+of \(\RM (r,m)\) — is as stated.
+</p>
+
+<p>
+<b>Minimum distance:</b> the code \(\RM (r,m)\) contains monomials of degree \(r\), for example, \(v_1v_2\dots v_r\). By Lemma <a href="ch11.html#lem:weight_monomial">11.1</a>, these have weight \(2^{m-r}\). Hence \(d(\RM
+(r,m)) = w(\RM (r,m))\) is at most \(2^{m-r}\).
+</p>
+
+<p>
+It remains to show that \(w(\RM (r,m))\ge 2^{m-r}\). We do this by <b>induction in \(m\).</b>
+</p>
+
+<p>
+<i>Base case</i> \(m=1\). According to the Examples above, the two possible codes are \(\RM (0,1)=\mathrm {Rep}(2,\F _2)\) of weight \(2=2^{1-0}\) and \(\RM (1,1)=\F _2^{2^m}\) of weight \(1=2^{1-1}\). So the inequality \(w(\RM
+(r,m))\ge 2^{m-r}\) is satisfied when \(m=1\).
+</p>
+
+<p>
+<i>Inductive step.</i> Assume that \(w(\RM (r,m-1))\ge 2^{m-1-r}\) for all \(r=0,\dots ,m-1\). This means that the weight of any non-zero polynomial of degree \(\le r\) in \(v_1,\dots ,v_{m-1}\) is at least \(2^{m-1-r}\):
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{11.}{0}\)</span>
+
+<!--
+
+
+
+                                                                                          h ̸= 0, deg h ≤ r    =⇒     #{y ∈ V m−1 : h(y) = 1} ≥ 2m−1−r .                                                                          (\(\dagger \))
+
+-->
+
+<p>
+
+
+\begin{equation*}
+\tag {$\dagger $} h\ne 0, \ \deg h \le r \quad \implies \quad \# \{ y\in V^{m-1}:            h(y)=1\}\ge 2^{m-1-r}.
+\end{equation*}
+
+
+</p>
+
+<p>
+The set \(V^m\) of binary words of length \(m\) splits into two subsets,
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{11.}{0}\)</span>
+
+<!--
+
+
+
+                                                                                       V m−1 0 = {x1 . . . xm : xm = 0}   and   V m−1 1 = {x1 . . . xm : xm = 1}
+
+-->
+
+<p>
+
+
+\begin{equation*}
+V^{m-1}0 = \{x_1\dots x_m:       x_m=0\} \quad \text {and}\quad V^{m-1}1 = \{x_1\dots x_m:        x_m=1\}
+\end{equation*}
+
+
+</p>
+
+<p>
+of words that end in \(0\) and words that end in \(1\), respectively. We need to take a polynomial \(0\ne f\colon V^m \to \F _2\) of degree \(\le r\) and prove that \(w(f)\ge 2^{m-r}\). We have
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{11.}{0}\)</span>
+
+<!--
+
+
+
+                                                                                          w(f ) = #{b ∈ V m−1 0 : f (b) = 1} + #{b ∈ V m−1 1 : f (b) = 1}.                                                                       (\(\ddagger \))
+
+-->
+
+<p>
+
+
+\begin{equation*}
+\tag {$\ddagger $} w(f) = \#\{b\in V^{m-1}0:          f(b)=1\} + \#\{b\in V^{m-1}1:   f(b)=1\}.
+\end{equation*}
+
+
+</p>
+
+<p>
+Each monomial in \(f\) contains a copy of \(v_m\) or none, so we can write
+</p>
+
+<p>
+\[ f = g + hv_m, \]
+</p>
+
+<p>
+where \(g\), \(h\) are polynomials in \(v_1,\dots ,v_{m-1}\).
+</p>
+
+<p>
+<i>The case \(h=0\).</i> Here \(g\) is a non-zero polynomial of degree \(\le r\) in \(v_1,\dots ,v_{m-1}\), and so \(r\le m-1\). By (\(\dagger \)), there are at least \(2^{m-1-r}\) words \(y\in V^{m-1}\) where \(g(y)=1\). For each such
+word \(y\) we have \(y0\in V^{m-1}0\), \(y1\in V^{m-1}1\) and \(f(y0)=f(y1)=1\), and so \(y\) contributes twice when counting the weight of \(f\) in (\(\ddagger \)). Hence \(w(f)=2w(g)\) and so \(w(f)\ge 2\times 2^{m-1-r}=2^{m-r}\).
+</p>
+
+<p>
+<i>The case \(h\ne 0\).</i> We note that the values of \(f\) on \(V^{m-1}0\) are the same as the values of \(g\) on \(V^{m-1}\), because \(hv_m|_{V^{m-1}0}=0\). Furthermore, the values of \(f\) on \(V^{m-1}1\) are the same as the values of
+\(g+h\) on \(V^{m-1}\), because on \(V^{m-1}1\) we have \(v_m=1\). Hence (\(\ddagger \)) gives \(w(f) = w(g)+w(g+h)\).
+</p>
+
+<p>
+By the triangle inequality, \(w(\ul a + \ul b)\le w(\ul a)+ w(\ul b)\) for any vectors \(\ul a,\ul b\). Hence \(w(g)+w(g+h)\ge w(g+(g+h))=w(h)\). Here \(\deg h\le r-1\) because \(\deg hv_m\le r\), so the inductive hypothesis
+(\(\dagger \)) applies and gives \(w(h)\ge 2^{m-1-(r-1)}=2^{m-r}\). We proved that \(w(f)\ge 2^{m-r}\), as required.
+</p>
+
+<p>
+To conclude, by induction \(w(\RM (r,m))\ge 2^{m-r}\) for all \(m\) and all \(r\le m\). <span class="theoremendmark">&#x25A1;</span>
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<!--
+...... subsection The key duality between Reed-Muller codes ......
+-->
+<h5 id="autosec-33">The key duality between Reed-Muller codes</h5>
+<a id="lecnotes_html-autopage-33"></a>
+
+
+<p>
+We finish the chapter by identifying the dual code of \(\RM (r,m)\), which happens to be another Reed-Muller code.
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-34"></a>
+<span class="amsthmnamedefinition">Theorem</span><span class="amsthmnumberdefinition"> <span class="textup">11.5</span></span>.   <a id="thm:rm-duality"></a> For all \(m\ge 1\) and for all \(r\) such that \(0\le r\le m-1\),
+</p>
+
+<p>
+\[\RM (m-1-r,m) =\RM (r,m)^\perp .   \]
+</p>
+
+<p>
+
+
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmproof">
+
+<a id="lecnotes_html-autopage-35"></a>
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<span class="amsthmproofname">Proof.</span> If \(f,g\colon V^m \to \F _2\) are Boolean functions, then the definition of inner product means that
+</p>
+
+<p>
+\[ \ul f \cdot \ul g = \sum _{b\in V^m} f(b)g(b) = \sum _{b\in V^m} (fg)(b).         \]
+</p>
+
+<p>
+If \(f\) is a monomial of degree \(\le r\) and \(g\) is a monomial of degree \(\le m-1-r\), then \(fg\) is a monomial of degree \(\le m-1\). By Lemma&nbsp;<a href="ch11.html#lem:weight_monomial">11.1</a>, there are exactly \(2^{m-\deg
+fg}\) words \(b\in V^m\) such that \((fg)(b)=1\). Since \(m-\deg fg\ge 1\), \(2^{m-\deg fg}\) is an even number, and so the sum \(\sum _{b\in V^m} (fg)(b)\) is zero in \(\F _2\). This shows that \(f\) is orthogonal to \(g\).
+</p>
+
+<p>
+Since monomials \(f\) of degree \(\le r\) span \(\RM (r,m)\), this shows that \(g\in \RM (r,m)^\perp \). Thus, \(\RM (m-1-r,m)\) is spanned by elements of \(\RM (r,m)^\perp \), so \(\RM (m-1-r,m) \subseteq \RM (r,m)^\perp \).
+</p>
+
+<p>
+We will now compare the dimensions. We have \(\dim \RM (m-1-r,m)= \binom m0 + \dots +\binom {m}{m-1-r}\). Using the relation \(\binom mi=\binom {m}{m-i}\), we rewrite this as \(\binom mm + \binom m{m-1}+\dots +\binom m{r+1}\).
+Finally, \(\dim \RM (m-1-r,m) + \dim \RM (r,m) = \sum _{i=0}^m\binom mi = 2^m\), the length of the Reed-Muller codes. Hence \(\dim \RM (m-1-r,m) = 2^m - \dim \RM (r,m) = \dim \RM (r,m)^\perp \).
+</p>
+
+<p>
+Thus, \(\RM (r,m)^\perp \) contains subspace \(\RM (m-1-r,m)\) of the same dimension as \(\RM (r,m)^\perp \), hence a subset \(\RM (m-1-r,m)\) of the same cardinality as \(\RM (r,m)^\perp \). We conclude that \(\RM (r,m)^\perp = \RM
+(m-1-r,m)\). <span class="theoremendmark">&#x25A1;</span>
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-36"></a>
+<span class="amsthmnamedefinition">Exercise</span>.      The code \(\RM (m,m)\) is excluded from Theorem&nbsp;<a href="ch11.html#thm:rm-duality">11.5</a>. How would you define “\(\RM (-1,m)\)” which should be the dual of \(\RM
+(m,m)\)?
+</p>
+
+</li>
+
+</ul>
+
+</div>
+
+<p>
+Theorem&nbsp;<a href="ch11.html#thm:rm-duality">11.5</a> can be used to identify particular Reed-Muller codes and to deduce their further properties. Examples of this are in the exercises to this chapter.
+</p>
+</section>
+
+</main>
+
+</div>
+
+
+<nav class="botnavigation"><a href="lecnotes_html.html" class="linkhome" >
+Home</a></nav>
+
+</body>
+</html>
+<!--|Start file|ch11ex.html|-->
+
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="UTF-8" />
+<meta name="generator" content="LaTeX Lwarp package" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<!--[if lt IE 9]>
+<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+<link rel="stylesheet" type="text/css" href="bazlovstyle.css" />
+
+<script>
+// Lwarp MathJax emulation code
+//
+// Based on code by Davide P. Cervone.
+// Equation numbering: https://github.com/mathjax/MathJax/issues/2427
+// Starred and ifnextchar macros: https://github.com/mathjax/MathJax/issues/2428
+// \left, \right delimiters: https://github.com/mathjax/MathJax/issues/2535
+//
+// Modified by Brian Dunn to adjust equation numbering and add subequations.
+//
+// LaTeX can use \seteqnumber{subequations?}{section}{number} before each equation.
+// subequations? is 0 usually, 1 if inside subequations.
+// section is a string printed as-is, or empty.
+// number is auto-incremented by MathJax between equations.
+//
+MathJax = {
+    subequations: "0",
+    section: "",
+    loader: {
+        load: ['[tex]/tagformat', '[tex]/textmacros'],
+    },
+    startup: {
+        ready() {
+            //      These would be replaced by import commands if you wanted to make
+            //      a proper extension.
+            const Configuration = MathJax._.input.tex.Configuration.Configuration;
+            const CommandMap = MathJax._.input.tex.SymbolMap.CommandMap;
+            const Macro = MathJax._.input.tex.Symbol.Macro;
+            const TexError = MathJax._.input.tex.TexError.default;
+            const ParseUtil = MathJax._.input.tex.ParseUtil.default;
+            const expandable = MathJax._.util.Options.expandable;
+
+
+            //      Insert the replacement string into the TeX string, and check
+            //      that there haven't been too many maxro substitutions (prevents
+            //      infinite loops).
+            const useArgument = (parser, text) => {
+                parser.string = ParseUtil.addArgs(parser, text, parser.string.slice(parser.i));
+                parser.i = 0;
+                if (++parser.macroCount > parser.configuration.options.maxMacros) {
+                    throw new TexError('MaxMacroSub1',
+                    'MathJax maximum macro substitution count exceeded; ' +
+                    'is there a recursive macro call?');
+                }
+            }
+
+
+            //      Create the command map for:
+            //          \ifstar, \ifnextchar, \ifblank, \ifstrequal, \gsub, \seteqnumber
+            new CommandMap('Lwarp-macros', {
+                ifstar: 'IfstarFunction',
+                ifnextchar: 'IfnextcharFunction',
+                ifblank: 'IfblankFunction',
+                ifstrequal: 'IfstrequalFunction',
+                gsubstitute: 'GsubstituteFunction',
+                seteqnumber: 'SeteqnumberFunction'
+            }, {
+                //      This function implements an ifstar macro.
+                IfstarFunction(parser, name) {
+                    const resultstar = parser.GetArgument(name);
+                    const resultnostar = parser.GetArgument(name);
+                    const star = parser.GetStar();                      // true if there is a *
+                    useArgument(parser, star ? resultstar : resultnostar);
+                },
+
+
+                //      This function implements an ifnextchar macro.
+                IfnextcharFunction(parser, name) {
+                    let whichchar = parser.GetArgument(name);
+                    if (whichchar.match(/^(?:0x[0-9A-F]+|[0-9]+)$/i)) {
+                        // $ syntax highlighting
+                        whichchar = String.fromCodePoint(parseInt(whichchar));
+                    }
+                    const resultnextchar = parser.GetArgument(name);
+                    const resultnotnextchar = parser.GetArgument(name);
+                    const gotchar = (parser.GetNext() === whichchar);
+                    useArgument(parser, gotchar ? resultnextchar : resultnotnextchar);
+                },
+
+
+                // This function implements an ifblank macro.
+                IfblankFunction(parser, name) {
+                    const blankarg = parser.GetArgument(name);
+                    const resultblank = parser.GetArgument(name);
+                    const resultnotblank = parser.GetArgument(name);
+                    const isblank = (blankarg.trim() == "");
+                    useArgument(parser, isblank ? resultblank : resultnotblank);
+                },
+
+
+                // This function implements an ifstrequal macro.
+                IfstrequalFunction(parser, name) {
+                    const strequalfirst = parser.GetArgument(name);
+                    const strequalsecond = parser.GetArgument(name);
+                    const resultequal = parser.GetArgument(name);
+                    const resultnotequal = parser.GetArgument(name);
+                    const isequal = (strequalfirst == strequalsecond);
+                    useArgument(parser, isequal ? resultequal : resultnotequal);
+                },
+
+
+                // This function implements a gsub macro.
+                GsubstituteFunction(parser, name) {
+                    const gsubfirst = parser.GetArgument(name);
+                    const gsubsecond = parser.GetArgument(name);
+                    const gsubthird = parser.GetArgument(name);
+                    let gsubresult=gsubfirst.replace(gsubsecond, gsubthird);
+                    useArgument(parser, gsubresult);
+                },
+
+
+                //      This function modifies the equation numbers.
+                SeteqnumberFunction(parser, name) {
+                        //   Get the macro parameters
+                        const star = parser.GetStar();                    // true if there is a *
+                        const optBrackets = parser.GetBrackets(name);     // contents of optional brackets
+                        const newsubequations = parser.GetArgument(name);    // the subequations argument
+                        const neweqsection = parser.GetArgument(name);    // the eq section argument
+                        const neweqnumber = parser.GetArgument(name);     // the eq number argument
+                        MathJax.config.subequations=newsubequations ;     // a string with boolean meaning
+                        MathJax.config.section=neweqsection ;             // a string with numeric meaning
+                        parser.tags.counter = parser.tags.allCounter = neweqnumber ;
+                }
+
+
+            });
+
+
+            //      Create the Lwarp-macros package
+            Configuration.create('Lwarp-macros', {
+                handler: {macro: ['Lwarp-macros']}
+            });
+
+
+            MathJax.startup.defaultReady();
+
+
+            // For forward references:
+            MathJax.startup.input[0].preFilters.add(({math}) => {
+                if (math.inputData.recompile){
+                        MathJax.config.subequations = math.inputData.recompile.subequations;
+                        MathJax.config.section = math.inputData.recompile.section;
+                }
+            });
+            MathJax.startup.input[0].postFilters.add(({math}) => {
+                if (math.inputData.recompile){
+                        math.inputData.recompile.subequations = MathJax.config.subequations;
+                        math.inputData.recompile.section = MathJax.config.section;
+                }
+            });
+
+
+                // For \left, \right with unicode-math:
+                const {DelimiterMap} = MathJax._.input.tex.SymbolMap;
+                const {Symbol} = MathJax._.input.tex.Symbol;
+                const {MapHandler} = MathJax._.input.tex.MapHandler;
+                const delimiter = MapHandler.getMap('delimiter');
+                delimiter.add('\\lBrack', new Symbol('\\lBrack', '\u27E6'));
+                delimiter.add('\\rBrack', new Symbol('\\rBrack', '\u27E7'));
+                delimiter.add('\\lAngle', new Symbol('\\lAngle', '\u27EA'));
+                delimiter.add('\\rAngle', new Symbol('\\rAngle', '\u27EB'));
+                delimiter.add('\\lbrbrak', new Symbol('\\lbrbrak', '\u2772'));
+                delimiter.add('\\rbrbrak', new Symbol('\\rbrbrak', '\u2773'));
+                delimiter.add('\\lbag', new Symbol('\\lbag', '\u27C5'));
+                delimiter.add('\\rbag', new Symbol('\\rbag', '\u27C6'));
+                delimiter.add('\\llparenthesis', new Symbol('\\llparenthesis', '\u2987'));
+                delimiter.add('\\rrparenthesis', new Symbol('\\rrparenthesis', '\u2988'));
+                delimiter.add('\\llangle', new Symbol('\\llangle', '\u2989'));
+                delimiter.add('\\rrangle', new Symbol('\\rrangle', '\u298A'));
+                delimiter.add('\\Lbrbrak', new Symbol('\\Lbrbrak', '\u27EC'));
+                delimiter.add('\\Rbrbrak', new Symbol('\\Rbrbrak', '\u27ED'));
+                delimiter.add('\\lBrace', new Symbol('\\lBrace', '\u2983'));
+                delimiter.add('\\rBrace', new Symbol('\\rBrace', '\u2984'));
+                delimiter.add('\\lParen', new Symbol('\\lParen', '\u2985'));
+                delimiter.add('\\rParen', new Symbol('\\rParen', '\u2986'));
+                delimiter.add('\\lbrackubar', new Symbol('\\lbrackubar', '\u298B'));
+                delimiter.add('\\rbrackubar', new Symbol('\\rbrackubar', '\u298C'));
+                delimiter.add('\\lbrackultick', new Symbol('\\lbrackultick', '\u298D'));
+                delimiter.add('\\rbracklrtick', new Symbol('\\rbracklrtick', '\u298E'));
+                delimiter.add('\\lbracklltick', new Symbol('\\lbracklltick', '\u298F'));
+                delimiter.add('\\rbrackurtick', new Symbol('\\rbrackurtick', '\u2990'));
+                delimiter.add('\\langledot', new Symbol('\\langledot', '\u2991'));
+                delimiter.add('\\rangledot', new Symbol('\\rangledot', '\u2992'));
+                delimiter.add('\\lparenless', new Symbol('\\lparenless', '\u2993'));
+                delimiter.add('\\rparengtr', new Symbol('\\rparengtr', '\u2994'));
+                delimiter.add('\\Lparengtr', new Symbol('\\Lparengtr', '\u2995'));
+                delimiter.add('\\Rparenless', new Symbol('\\Rparenless', '\u2996'));
+                delimiter.add('\\lblkbrbrak', new Symbol('\\lblkbrbrak', '\u2997'));
+                delimiter.add('\\rblkbrbrak', new Symbol('\\rblkbrbrak', '\u2998'));
+                delimiter.add('\\lvzigzag', new Symbol('\\lvzigzag', '\u29D8'));
+                delimiter.add('\\rvzigzag', new Symbol('\\rvzigzag', '\u29D9'));
+                delimiter.add('\\Lvzigzag', new Symbol('\\Lvzigzag', '\u29DA'));
+                delimiter.add('\\Rvzigzag', new Symbol('\\Rvzigzag', '\u29DB'));
+                delimiter.add('\\lcurvyangle', new Symbol('\\lcurvyangle', '\u29FC'));
+                delimiter.add('\\rcurvyangle', new Symbol('\\rcurvyangle', '\u29FD'));
+                delimiter.add('\\Vvert', new Symbol('\\Vvert', '\u2980'));
+        }        // ready
+    },           // startup
+
+
+    tex: {
+        packages: {'[+]': ['tagformat', 'Lwarp-macros', 'textmacros']},
+        tags: "ams",
+                tagformat: {
+                        number: function (n) {
+                             if(MathJax.config.subequations==0)
+                                 return(MathJax.config.section + n);
+                             else
+                                 return(MathJax.config.section + String.fromCharCode(96+n));
+                        },
+                },
+    }
+}
+</script>
+
+
+<script
+        id="MathJax-script"
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+></script>
+
+</head>
+<body>
+
+
+<a id="lecnotes_html-autopage-38"></a>
+<nav class="topnavigation"><a href="lecnotes_html.html" class="linkhome" >
+Home</a></nav>
+
+
+<div class="bodyandsidetoc">
+<div class="sidetoccontainer">
+
+
+<nav class="sidetoc">
+
+
+<div class="sidetoctitle">
+
+<p>
+Contents
+</p>
+</div>
+
+
+<div class="sidetoccontents">
+
+<p>
+<a href="lecnotes_html.html" class="linkhome" >
+Home</a>
+</p>
+
+</div>
+
+</nav>
+
+</div>
+
+
+<main class="bodycontainer">
+
+
+<section class="textbody">
+
+<!--MathJax customizations:-->
+
+
+<div class="hidden">
+
+\(\newcommand{\footnotename}{footnote}\)
+
+\(\def \LWRfootnote {1}\)
+
+\(\newcommand {\footnote }[2][\LWRfootnote ]{{}^{\mathrm {#1}}}\)
+
+\(\newcommand {\footnotemark }[1][\LWRfootnote ]{{}^{\mathrm {#1}}}\)
+
+\(\let \LWRorighspace \hspace \)
+
+\(\renewcommand {\hspace }{\ifstar \LWRorighspace \LWRorighspace }\)
+
+\(\newcommand {\mathnormal }[1]{{#1}}\)
+
+\(\newcommand \ensuremath [1]{#1}\)
+
+\(\newcommand {\LWRframebox }[2][]{\fbox {#2}} \newcommand {\framebox }[1][]{\LWRframebox } \)
+
+\(\newcommand {\setlength }[2]{}\)
+
+\(\newcommand {\addtolength }[2]{}\)
+
+\(\newcommand {\setcounter }[2]{}\)
+
+\(\newcommand {\addtocounter }[2]{}\)
+
+\(\newcommand {\arabic }[1]{}\)
+
+\(\newcommand {\number }[1]{}\)
+
+\(\newcommand {\noalign }[1]{\text {#1}\notag \\}\)
+
+\(\newcommand {\cline }[1]{}\)
+
+\(\newcommand {\directlua }[1]{\text {(directlua)}}\)
+
+\(\newcommand {\luatexdirectlua }[1]{\text {(directlua)}}\)
+
+\(\newcommand {\protect }{}\)
+
+\(\def \LWRabsorbnumber #1 {}\)
+
+\(\def \LWRabsorbquotenumber &quot;#1 {}\)
+
+\(\newcommand {\LWRabsorboption }[1][]{}\)
+
+\(\newcommand {\LWRabsorbtwooptions }[1][]{\LWRabsorboption }\)
+
+\(\def \mathchar {\ifnextchar &quot;\LWRabsorbquotenumber \LWRabsorbnumber }\)
+
+\(\def \mathcode #1={\mathchar }\)
+
+\(\let \delcode \mathcode \)
+
+\(\let \delimiter \mathchar \)
+
+\(\def \oe {\unicode {x0153}}\)
+
+\(\def \OE {\unicode {x0152}}\)
+
+\(\def \ae {\unicode {x00E6}}\)
+
+\(\def \AE {\unicode {x00C6}}\)
+
+\(\def \aa {\unicode {x00E5}}\)
+
+\(\def \AA {\unicode {x00C5}}\)
+
+\(\def \o {\unicode {x00F8}}\)
+
+\(\def \O {\unicode {x00D8}}\)
+
+\(\def \l {\unicode {x0142}}\)
+
+\(\def \L {\unicode {x0141}}\)
+
+\(\def \ss {\unicode {x00DF}}\)
+
+\(\def \SS {\unicode {x1E9E}}\)
+
+\(\def \dag {\unicode {x2020}}\)
+
+\(\def \ddag {\unicode {x2021}}\)
+
+\(\def \P {\unicode {x00B6}}\)
+
+\(\def \copyright {\unicode {x00A9}}\)
+
+\(\def \pounds {\unicode {x00A3}}\)
+
+\(\let \LWRref \ref \)
+
+\(\renewcommand {\ref }{\ifstar \LWRref \LWRref }\)
+
+\( \newcommand {\multicolumn }[3]{#3}\)
+
+\(\require {textcomp}\)
+
+\(\newcommand {\intertext }[1]{\text {#1}\notag \\}\)
+
+\(\let \Hat \hat \)
+
+\(\let \Check \check \)
+
+\(\let \Tilde \tilde \)
+
+\(\let \Acute \acute \)
+
+\(\let \Grave \grave \)
+
+\(\let \Dot \dot \)
+
+\(\let \Ddot \ddot \)
+
+\(\let \Breve \breve \)
+
+\(\let \Bar \bar \)
+
+\(\let \Vec \vec \)
+
+\(\newcommand {\real }{\mathbb {R}} \)
+
+\(\newcommand {\RR }{\mathbb {R}} \)
+
+\(\newcommand {\ZZ }{\mathbb Z} \)
+
+\(\newcommand {\F }{\mathbb F} \)
+
+\(\newcommand {\Ham }{\mathrm {Ham}}\)
+
+\(\newcommand {\PP }{\mathbb P}\)
+
+\(\newcommand {\co }[1]{\overline {#1}} \)
+
+\(\newcommand {\ul }[1]{\underline {#1}} \)
+
+\(\newcommand {\bo }[1]{\mathbf {#1}} \)
+
+\(\newcommand {\concat }[2]{[\, #1 \,|\, #2 \,]} \)
+
+\(\newcommand {\Encode }{\texttt {ENCODE}} \)
+
+\(\newcommand {\Decode }{\texttt {DECODE}} \)
+
+\(\newcommand {\RM }{R} \)
+
+\(\newcommand {\Rep }{\text {Rep}} \)
+
+</div>
+
+<p>
+<!--
+...... chapter ch11ex ......
+-->
+<h3 id="autosec-39">Chapter&nbsp;<span class="sectionnumber">11&#x2003;</span>Exercises to Chapter 11 </h3>
+<a id="lecnotes_html-autopage-39"></a>
+<a id="lecnotes_html-autofile-30"></a>
+
+<p>
+Version 2022-12-02. <a href="lecnotes_html.pdf" target="_blank" >To PDF version of the notes</a>
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-2"></a>
+<span class="amsthmnamedefinition">Exercise</span><span class="amsthmnumberdefinition"> <span class="textup">11.1</span></span><span class="amsthmnotedefinition"> (identification of the Reed-Muller codes with
+\(m=3\))</span>.   Let \(m=3\). Write down the value vectors (in \(\F _2^8\)) of all the monomials in the Boolean algebra. Hence find generator matrices of the codes \(\RM (r,3)\), \(0\le r \le 3\). Try to recognise the codes obtained.
+</p>
+
+</li>
+
+</ul>
+
+</div>
+
+<p>
+<b>Partial answer.</b> We use a slightly unconventional ordering of binary words in \(V^3\). The value vectors of all the monomials in the Boolean algebra with \(m=3\):
+</p>
+
+<p>
+\[ \begin {array}{lccccccccl} &amp; 001 &amp; 010 &amp; 011 &amp; 100 &amp; 101 &amp; 110 &amp; 111 &amp; \ \ 000 \\ \hline {\mathbf 1} &amp; 1&amp;1&amp;1&amp;1&amp;1&amp;1&amp;1&amp;1 &amp; \\ \hline v_1 &amp;
+0&amp; 0&amp; 0&amp; 1&amp; 1&amp; 1&amp; 1&amp; 0&amp; \\ v_2 &amp; 0&amp; 1&amp; 1&amp; 0&amp; 0&amp; 1&amp; 1&amp; 0&amp;\\ v_3 &amp; 1&amp; 0&amp; 1&amp; 0&amp; 1&amp; 0&amp; 1&amp; 0&amp;\\ \hline v_1v_2 &amp;
+0&amp; 0&amp; 0&amp; 0&amp; 0&amp; 1&amp; 1&amp; 0&amp;\\ v_1v_3 &amp; 0&amp; 0&amp; 0&amp; 0&amp; 1&amp; 0&amp; 1&amp;0&amp;\\ v_2v_3 &amp; 0&amp; 0&amp; 1&amp; 0&amp; 0&amp; 0&amp; 1&amp;0&amp;\\ \hline
+v_1v_2v_3&amp;0&amp;0&amp;0&amp;0&amp;0&amp;0&amp;1&amp;0&amp; \end {array} \]
+</p>
+
+<p>
+[<a href="ch11exans.html#.">Answers to these exercises</a>]
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-3"></a>
+<span class="amsthmnamedefinition">Exercise</span><span class="amsthmnumberdefinition"> <span class="textup">11.2</span></span><span class="amsthmnotedefinition"> (“the Mariner 9 code”)</span>.   Check that \(\RM (1,5)\)
+is a \([32,6,16]_2\) code and detects up to \(15\) errors in a \(32\)-bit codeword.
+</p>
+
+</li>
+
+</ul>
+
+</div>
+
+<p>
+[<a href="ch11exans.html#.">Answers to these exercises</a>]
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-4"></a>
+<span class="amsthmnamedefinition">Exercise</span><span class="amsthmnumberdefinition"> <span class="textup">11.3</span></span>.   Show that \(\RM (r,m)\) is a self-orthogonal code, if and only if \(r&lt;m/2\).
+</p>
+
+</li>
+
+</ul>
+
+</div>
+
+<p>
+[<a href="ch11exans.html#.">Answers to these exercises</a>]
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-5"></a>
+<span class="amsthmnamedefinition">Exercise</span><span class="amsthmnumberdefinition"> <span class="textup">11.4</span></span>.   Show that the code \(\RM (m-2,m)\) is, up to linear equivalence, an extended Hamming code
+\(\widehat {\Ham }(m,2)\).
+</p>
+
+</li>
+
+</ul>
+
+</div>
+
+<p>
+[<a href="ch11exans.html#.">Answers to these exercises</a>]
+</p>
+</section>
+
+</main>
+
+</div>
+
+
+<nav class="botnavigation"><a href="lecnotes_html.html" class="linkhome" >
+Home</a></nav>
+
+</body>
+</html>
+<!--|Start file|ch11exans.html|-->
+
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="UTF-8" />
+<meta name="generator" content="LaTeX Lwarp package" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<!--[if lt IE 9]>
+<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+<link rel="stylesheet" type="text/css" href="bazlovstyle.css" />
+
+<script>
+// Lwarp MathJax emulation code
+//
+// Based on code by Davide P. Cervone.
+// Equation numbering: https://github.com/mathjax/MathJax/issues/2427
+// Starred and ifnextchar macros: https://github.com/mathjax/MathJax/issues/2428
+// \left, \right delimiters: https://github.com/mathjax/MathJax/issues/2535
+//
+// Modified by Brian Dunn to adjust equation numbering and add subequations.
+//
+// LaTeX can use \seteqnumber{subequations?}{section}{number} before each equation.
+// subequations? is 0 usually, 1 if inside subequations.
+// section is a string printed as-is, or empty.
+// number is auto-incremented by MathJax between equations.
+//
+MathJax = {
+    subequations: "0",
+    section: "",
+    loader: {
+        load: ['[tex]/tagformat', '[tex]/textmacros'],
+    },
+    startup: {
+        ready() {
+            //      These would be replaced by import commands if you wanted to make
+            //      a proper extension.
+            const Configuration = MathJax._.input.tex.Configuration.Configuration;
+            const CommandMap = MathJax._.input.tex.SymbolMap.CommandMap;
+            const Macro = MathJax._.input.tex.Symbol.Macro;
+            const TexError = MathJax._.input.tex.TexError.default;
+            const ParseUtil = MathJax._.input.tex.ParseUtil.default;
+            const expandable = MathJax._.util.Options.expandable;
+
+
+            //      Insert the replacement string into the TeX string, and check
+            //      that there haven't been too many maxro substitutions (prevents
+            //      infinite loops).
+            const useArgument = (parser, text) => {
+                parser.string = ParseUtil.addArgs(parser, text, parser.string.slice(parser.i));
+                parser.i = 0;
+                if (++parser.macroCount > parser.configuration.options.maxMacros) {
+                    throw new TexError('MaxMacroSub1',
+                    'MathJax maximum macro substitution count exceeded; ' +
+                    'is there a recursive macro call?');
+                }
+            }
+
+
+            //      Create the command map for:
+            //          \ifstar, \ifnextchar, \ifblank, \ifstrequal, \gsub, \seteqnumber
+            new CommandMap('Lwarp-macros', {
+                ifstar: 'IfstarFunction',
+                ifnextchar: 'IfnextcharFunction',
+                ifblank: 'IfblankFunction',
+                ifstrequal: 'IfstrequalFunction',
+                gsubstitute: 'GsubstituteFunction',
+                seteqnumber: 'SeteqnumberFunction'
+            }, {
+                //      This function implements an ifstar macro.
+                IfstarFunction(parser, name) {
+                    const resultstar = parser.GetArgument(name);
+                    const resultnostar = parser.GetArgument(name);
+                    const star = parser.GetStar();                      // true if there is a *
+                    useArgument(parser, star ? resultstar : resultnostar);
+                },
+
+
+                //      This function implements an ifnextchar macro.
+                IfnextcharFunction(parser, name) {
+                    let whichchar = parser.GetArgument(name);
+                    if (whichchar.match(/^(?:0x[0-9A-F]+|[0-9]+)$/i)) {
+                        // $ syntax highlighting
+                        whichchar = String.fromCodePoint(parseInt(whichchar));
+                    }
+                    const resultnextchar = parser.GetArgument(name);
+                    const resultnotnextchar = parser.GetArgument(name);
+                    const gotchar = (parser.GetNext() === whichchar);
+                    useArgument(parser, gotchar ? resultnextchar : resultnotnextchar);
+                },
+
+
+                // This function implements an ifblank macro.
+                IfblankFunction(parser, name) {
+                    const blankarg = parser.GetArgument(name);
+                    const resultblank = parser.GetArgument(name);
+                    const resultnotblank = parser.GetArgument(name);
+                    const isblank = (blankarg.trim() == "");
+                    useArgument(parser, isblank ? resultblank : resultnotblank);
+                },
+
+
+                // This function implements an ifstrequal macro.
+                IfstrequalFunction(parser, name) {
+                    const strequalfirst = parser.GetArgument(name);
+                    const strequalsecond = parser.GetArgument(name);
+                    const resultequal = parser.GetArgument(name);
+                    const resultnotequal = parser.GetArgument(name);
+                    const isequal = (strequalfirst == strequalsecond);
+                    useArgument(parser, isequal ? resultequal : resultnotequal);
+                },
+
+
+                // This function implements a gsub macro.
+                GsubstituteFunction(parser, name) {
+                    const gsubfirst = parser.GetArgument(name);
+                    const gsubsecond = parser.GetArgument(name);
+                    const gsubthird = parser.GetArgument(name);
+                    let gsubresult=gsubfirst.replace(gsubsecond, gsubthird);
+                    useArgument(parser, gsubresult);
+                },
+
+
+                //      This function modifies the equation numbers.
+                SeteqnumberFunction(parser, name) {
+                        //   Get the macro parameters
+                        const star = parser.GetStar();                    // true if there is a *
+                        const optBrackets = parser.GetBrackets(name);     // contents of optional brackets
+                        const newsubequations = parser.GetArgument(name);    // the subequations argument
+                        const neweqsection = parser.GetArgument(name);    // the eq section argument
+                        const neweqnumber = parser.GetArgument(name);     // the eq number argument
+                        MathJax.config.subequations=newsubequations ;     // a string with boolean meaning
+                        MathJax.config.section=neweqsection ;             // a string with numeric meaning
+                        parser.tags.counter = parser.tags.allCounter = neweqnumber ;
+                }
+
+
+            });
+
+
+            //      Create the Lwarp-macros package
+            Configuration.create('Lwarp-macros', {
+                handler: {macro: ['Lwarp-macros']}
+            });
+
+
+            MathJax.startup.defaultReady();
+
+
+            // For forward references:
+            MathJax.startup.input[0].preFilters.add(({math}) => {
+                if (math.inputData.recompile){
+                        MathJax.config.subequations = math.inputData.recompile.subequations;
+                        MathJax.config.section = math.inputData.recompile.section;
+                }
+            });
+            MathJax.startup.input[0].postFilters.add(({math}) => {
+                if (math.inputData.recompile){
+                        math.inputData.recompile.subequations = MathJax.config.subequations;
+                        math.inputData.recompile.section = MathJax.config.section;
+                }
+            });
+
+
+                // For \left, \right with unicode-math:
+                const {DelimiterMap} = MathJax._.input.tex.SymbolMap;
+                const {Symbol} = MathJax._.input.tex.Symbol;
+                const {MapHandler} = MathJax._.input.tex.MapHandler;
+                const delimiter = MapHandler.getMap('delimiter');
+                delimiter.add('\\lBrack', new Symbol('\\lBrack', '\u27E6'));
+                delimiter.add('\\rBrack', new Symbol('\\rBrack', '\u27E7'));
+                delimiter.add('\\lAngle', new Symbol('\\lAngle', '\u27EA'));
+                delimiter.add('\\rAngle', new Symbol('\\rAngle', '\u27EB'));
+                delimiter.add('\\lbrbrak', new Symbol('\\lbrbrak', '\u2772'));
+                delimiter.add('\\rbrbrak', new Symbol('\\rbrbrak', '\u2773'));
+                delimiter.add('\\lbag', new Symbol('\\lbag', '\u27C5'));
+                delimiter.add('\\rbag', new Symbol('\\rbag', '\u27C6'));
+                delimiter.add('\\llparenthesis', new Symbol('\\llparenthesis', '\u2987'));
+                delimiter.add('\\rrparenthesis', new Symbol('\\rrparenthesis', '\u2988'));
+                delimiter.add('\\llangle', new Symbol('\\llangle', '\u2989'));
+                delimiter.add('\\rrangle', new Symbol('\\rrangle', '\u298A'));
+                delimiter.add('\\Lbrbrak', new Symbol('\\Lbrbrak', '\u27EC'));
+                delimiter.add('\\Rbrbrak', new Symbol('\\Rbrbrak', '\u27ED'));
+                delimiter.add('\\lBrace', new Symbol('\\lBrace', '\u2983'));
+                delimiter.add('\\rBrace', new Symbol('\\rBrace', '\u2984'));
+                delimiter.add('\\lParen', new Symbol('\\lParen', '\u2985'));
+                delimiter.add('\\rParen', new Symbol('\\rParen', '\u2986'));
+                delimiter.add('\\lbrackubar', new Symbol('\\lbrackubar', '\u298B'));
+                delimiter.add('\\rbrackubar', new Symbol('\\rbrackubar', '\u298C'));
+                delimiter.add('\\lbrackultick', new Symbol('\\lbrackultick', '\u298D'));
+                delimiter.add('\\rbracklrtick', new Symbol('\\rbracklrtick', '\u298E'));
+                delimiter.add('\\lbracklltick', new Symbol('\\lbracklltick', '\u298F'));
+                delimiter.add('\\rbrackurtick', new Symbol('\\rbrackurtick', '\u2990'));
+                delimiter.add('\\langledot', new Symbol('\\langledot', '\u2991'));
+                delimiter.add('\\rangledot', new Symbol('\\rangledot', '\u2992'));
+                delimiter.add('\\lparenless', new Symbol('\\lparenless', '\u2993'));
+                delimiter.add('\\rparengtr', new Symbol('\\rparengtr', '\u2994'));
+                delimiter.add('\\Lparengtr', new Symbol('\\Lparengtr', '\u2995'));
+                delimiter.add('\\Rparenless', new Symbol('\\Rparenless', '\u2996'));
+                delimiter.add('\\lblkbrbrak', new Symbol('\\lblkbrbrak', '\u2997'));
+                delimiter.add('\\rblkbrbrak', new Symbol('\\rblkbrbrak', '\u2998'));
+                delimiter.add('\\lvzigzag', new Symbol('\\lvzigzag', '\u29D8'));
+                delimiter.add('\\rvzigzag', new Symbol('\\rvzigzag', '\u29D9'));
+                delimiter.add('\\Lvzigzag', new Symbol('\\Lvzigzag', '\u29DA'));
+                delimiter.add('\\Rvzigzag', new Symbol('\\Rvzigzag', '\u29DB'));
+                delimiter.add('\\lcurvyangle', new Symbol('\\lcurvyangle', '\u29FC'));
+                delimiter.add('\\rcurvyangle', new Symbol('\\rcurvyangle', '\u29FD'));
+                delimiter.add('\\Vvert', new Symbol('\\Vvert', '\u2980'));
+        }        // ready
+    },           // startup
+
+
+    tex: {
+        packages: {'[+]': ['tagformat', 'Lwarp-macros', 'textmacros']},
+        tags: "ams",
+                tagformat: {
+                        number: function (n) {
+                             if(MathJax.config.subequations==0)
+                                 return(MathJax.config.section + n);
+                             else
+                                 return(MathJax.config.section + String.fromCharCode(96+n));
+                        },
+                },
+    }
+}
+</script>
+
+
+<script
+        id="MathJax-script"
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+></script>
+
+</head>
+<body>
+
+
+<a id="lecnotes_html-autopage-7"></a>
+<nav class="topnavigation"><a href="lecnotes_html.html" class="linkhome" >
+Home</a></nav>
+
+
+<div class="bodyandsidetoc">
+<div class="sidetoccontainer">
+
+
+<nav class="sidetoc">
+
+
+<div class="sidetoctitle">
+
+<p>
+Contents
+</p>
+</div>
+
+
+<div class="sidetoccontents">
+
+<p>
+<a href="lecnotes_html.html" class="linkhome" >
+Home</a>
+</p>
+
+</div>
+
+</nav>
+
+</div>
+
+
+<main class="bodycontainer">
+
+
+<section class="textbody">
+
+<!--MathJax customizations:-->
+
+
+<div class="hidden">
+
+\(\newcommand{\footnotename}{footnote}\)
+
+\(\def \LWRfootnote {1}\)
+
+\(\newcommand {\footnote }[2][\LWRfootnote ]{{}^{\mathrm {#1}}}\)
+
+\(\newcommand {\footnotemark }[1][\LWRfootnote ]{{}^{\mathrm {#1}}}\)
+
+\(\let \LWRorighspace \hspace \)
+
+\(\renewcommand {\hspace }{\ifstar \LWRorighspace \LWRorighspace }\)
+
+\(\newcommand {\mathnormal }[1]{{#1}}\)
+
+\(\newcommand \ensuremath [1]{#1}\)
+
+\(\newcommand {\LWRframebox }[2][]{\fbox {#2}} \newcommand {\framebox }[1][]{\LWRframebox } \)
+
+\(\newcommand {\setlength }[2]{}\)
+
+\(\newcommand {\addtolength }[2]{}\)
+
+\(\newcommand {\setcounter }[2]{}\)
+
+\(\newcommand {\addtocounter }[2]{}\)
+
+\(\newcommand {\arabic }[1]{}\)
+
+\(\newcommand {\number }[1]{}\)
+
+\(\newcommand {\noalign }[1]{\text {#1}\notag \\}\)
+
+\(\newcommand {\cline }[1]{}\)
+
+\(\newcommand {\directlua }[1]{\text {(directlua)}}\)
+
+\(\newcommand {\luatexdirectlua }[1]{\text {(directlua)}}\)
+
+\(\newcommand {\protect }{}\)
+
+\(\def \LWRabsorbnumber #1 {}\)
+
+\(\def \LWRabsorbquotenumber &quot;#1 {}\)
+
+\(\newcommand {\LWRabsorboption }[1][]{}\)
+
+\(\newcommand {\LWRabsorbtwooptions }[1][]{\LWRabsorboption }\)
+
+\(\def \mathchar {\ifnextchar &quot;\LWRabsorbquotenumber \LWRabsorbnumber }\)
+
+\(\def \mathcode #1={\mathchar }\)
+
+\(\let \delcode \mathcode \)
+
+\(\let \delimiter \mathchar \)
+
+\(\def \oe {\unicode {x0153}}\)
+
+\(\def \OE {\unicode {x0152}}\)
+
+\(\def \ae {\unicode {x00E6}}\)
+
+\(\def \AE {\unicode {x00C6}}\)
+
+\(\def \aa {\unicode {x00E5}}\)
+
+\(\def \AA {\unicode {x00C5}}\)
+
+\(\def \o {\unicode {x00F8}}\)
+
+\(\def \O {\unicode {x00D8}}\)
+
+\(\def \l {\unicode {x0142}}\)
+
+\(\def \L {\unicode {x0141}}\)
+
+\(\def \ss {\unicode {x00DF}}\)
+
+\(\def \SS {\unicode {x1E9E}}\)
+
+\(\def \dag {\unicode {x2020}}\)
+
+\(\def \ddag {\unicode {x2021}}\)
+
+\(\def \P {\unicode {x00B6}}\)
+
+\(\def \copyright {\unicode {x00A9}}\)
+
+\(\def \pounds {\unicode {x00A3}}\)
+
+\(\let \LWRref \ref \)
+
+\(\renewcommand {\ref }{\ifstar \LWRref \LWRref }\)
+
+\( \newcommand {\multicolumn }[3]{#3}\)
+
+\(\require {textcomp}\)
+
+\(\newcommand {\intertext }[1]{\text {#1}\notag \\}\)
+
+\(\let \Hat \hat \)
+
+\(\let \Check \check \)
+
+\(\let \Tilde \tilde \)
+
+\(\let \Acute \acute \)
+
+\(\let \Grave \grave \)
+
+\(\let \Dot \dot \)
+
+\(\let \Ddot \ddot \)
+
+\(\let \Breve \breve \)
+
+\(\let \Bar \bar \)
+
+\(\let \Vec \vec \)
+
+\(\newcommand {\real }{\mathbb {R}} \)
+
+\(\newcommand {\RR }{\mathbb {R}} \)
+
+\(\newcommand {\ZZ }{\mathbb Z} \)
+
+\(\newcommand {\F }{\mathbb F} \)
+
+\(\newcommand {\Ham }{\mathrm {Ham}}\)
+
+\(\newcommand {\PP }{\mathbb P}\)
+
+\(\newcommand {\co }[1]{\overline {#1}} \)
+
+\(\newcommand {\ul }[1]{\underline {#1}} \)
+
+\(\newcommand {\bo }[1]{\mathbf {#1}} \)
+
+\(\newcommand {\concat }[2]{[\, #1 \,|\, #2 \,]} \)
+
+\(\newcommand {\Encode }{\texttt {ENCODE}} \)
+
+\(\newcommand {\Decode }{\texttt {DECODE}} \)
+
+\(\newcommand {\RM }{R} \)
+
+\(\newcommand {\Rep }{\text {Rep}} \)
+
+</div>
+
+<p>
+<!--
+...... chapter ch11exans ......
+-->
+<h3 id="autosec-8">Chapter&nbsp;<span class="sectionnumber">11&#x2003;</span>Exercises to Chapter 11 — solutions</h3>
+<a id="lecnotes_html-autopage-8"></a>
+<a id="lecnotes_html-autofile-31"></a>
+
+<p>
+Version 2022-12-02. <a href="lecnotes_html.pdf" target="_blank" >To PDF version of the notes</a>
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-2"></a>
+<span class="amsthmnamedefinition">Exercise</span><span class="amsthmnumberdefinition"> <span class="textup">11.1</span></span><span class="amsthmnotedefinition"> (identification of the Reed-Muller codes with
+\(m=3\))</span>.   Let \(m=3\). Write down the value vectors (in \(\F _2^8\)) of all the monomials in the Boolean algebra. Hence find generator matrices of the codes \(\RM (r,3)\), \(0\le r \le 3\). Try to recognise the codes obtained.
+</p>
+
+</li>
+
+</ul>
+
+</div>
+
+<p>
+<b>Partial answer.</b> We use a slightly unconventional ordering of binary words in \(V^3\). The value vectors of all the monomials in the Boolean algebra with \(m=3\):
+</p>
+
+<p>
+\[ \begin {array}{lccccccccl} &amp; 001 &amp; 010 &amp; 011 &amp; 100 &amp; 101 &amp; 110 &amp; 111 &amp; \ \ 000 \\ \hline {\mathbf 1} &amp; 1&amp;1&amp;1&amp;1&amp;1&amp;1&amp;1&amp;1 &amp; \\ \hline v_1 &amp;
+0&amp; 0&amp; 0&amp; 1&amp; 1&amp; 1&amp; 1&amp; 0&amp; \\ v_2 &amp; 0&amp; 1&amp; 1&amp; 0&amp; 0&amp; 1&amp; 1&amp; 0&amp;\\ v_3 &amp; 1&amp; 0&amp; 1&amp; 0&amp; 1&amp; 0&amp; 1&amp; 0&amp;\\ \hline v_1v_2 &amp;
+0&amp; 0&amp; 0&amp; 0&amp; 0&amp; 1&amp; 1&amp; 0&amp;\\ v_1v_3 &amp; 0&amp; 0&amp; 0&amp; 0&amp; 1&amp; 0&amp; 1&amp;0&amp;\\ v_2v_3 &amp; 0&amp; 0&amp; 1&amp; 0&amp; 0&amp; 0&amp; 1&amp;0&amp;\\ \hline
+v_1v_2v_3&amp;0&amp;0&amp;0&amp;0&amp;0&amp;0&amp;1&amp;0&amp; \end {array} \]
+</p>
+
+<p>
+<b>Answer to E11.1. </b> [<a href="ch11ex.html#.">These exercises without answers</a>]
+</p>
+
+<p>
+A generator matrix for \(\RM (0,3)\) is formed by the value vector of \(1\), hence is \(G_0=[\, 11111111\, ]\). We conclude that
+</p>
+
+<p>
+\[ \RM (0,3) = \mathrm {Rep}(8,2).       \]
+</p>
+
+<p>
+The value vectors of \(1\), \(v_1\), \(v_2\), \(v_3\) form a generator matrix \(G_1\) of \(\RM (1,3)\). A really interesting code of length 8 and dimension 4. From the general theory of Reed-Muller codes (see exercises below) we will know that
+\(\RM (r,m)=\RM (m-1-r,m)^\perp \). In particular, \(\RM (1,3)\) is a self-dual binary code. This can be checked directly: the rows of \(G_1\) are of even weight (meaning that every row is orthogonal to itself) and are pairwise orthogonal.
+</p>
+
+<p>
+Note that rows \(v_1\), \(v_2\), \(v_3\) form a \(3\times 8\) matrix \(\widehat H\) which contains each 3-bit column once. This is the generator matrix of the simplex code \(\Sigma (3,2)\) with zero column appended — in other words, the
+extended simplex code \(\widehat \Sigma (3,2)\).
+</p>
+
+<p>
+We note that every vector \(\ul {\hat c}\) in the extended Hamming code \(\widehat \Ham (3,2)\) satisfies \(\ul {\hat c}\widehat H^T=000\), simply because the first \(7\) bits of \(\ul {\hat c}\) form a Hamming codevector, and the last
+bit of \(\ul {\hat c}\) is not used in \(\ul {\hat c}\widehat H^T\).
+</p>
+
+<p>
+We also note that \(\ul {\hat c}\cdot 11111111 = 0 \) because, by definition of an extended code, \(\ul {\hat c}\) has even weight.
+</p>
+
+<p>
+Hence \(\ul {\hat c}G_1=0000\), and the matrix \(G_1\), formed by rows \(\mathbf 1\), \(v_1\), \(v_2\), \(v_3\), is a check matrix for \(\widehat \Ham (3,2)\). But \(\widehat \Ham (3,2)\) is a self-dual code, as seen in earlier exercises. We
+conclude that \(G_1\) is also a generator matrix for this code, hence
+</p>
+
+<p>
+\[ \RM (1,3)=\widehat \Ham (3,2).       \]
+</p>
+
+<p>
+The code \(\RM (2,3)\) is generated by the top seven rows in the table above. We have
+</p>
+
+<p>
+\[ \RM (2,3)=\RM (0,3)^\perp = \mathrm {Rep}(8,2)^\perp = E_8.           \]
+</p>
+
+<p>
+Finally, \(\RM (3,3)=\F _2^8\) is the trivial binary code, of length 8 and dimension 8.
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-3"></a>
+<span class="amsthmnamedefinition">Exercise</span><span class="amsthmnumberdefinition"> <span class="textup">11.2</span></span><span class="amsthmnotedefinition"> (“the Mariner 9 code”)</span>.                    Check that \(\RM (1,5)\)
+is a \([32,6,16]_2\) code and detects up to \(15\) errors in a \(32\)-bit codeword.
+</p>
+
+</li>
+
+</ul>
+
+</div>
+
+<p>
+<b>Answer to E11.2. </b> [<a href="ch11ex.html#.">These exercises without answers</a>]
+</p>
+
+<p>
+Put \(r=1\) and \(m=5\). The length of \(\RM (1,5)\) is \(2^5=32\) and \(\dim \RM (1,5)=\binom 50+\binom 51=1+5=6\). The minimum distance of \(\RM (1,5)\) is \(2^{5-1}=16\). The code \(\RM (1,5)\) is binary, as are all Reed-Muller
+codes. Hence it is a \([32,6,16]_2\)-code as claimed.
+</p>
+
+<p>
+<b>Trivia:</b> The code \(\RM (1,5)\) was used by NASA Mariner 9 space probe to transmit greyscale images of the surface of Mars to Earth in 1972. It is a \([32,6,16]_2\) code. Each pixel was a \(6\)-bit message, representing \(64\) grey
+values, and encoded as a \(32\)-bit codeword. The code corrected up to \(7\) errors in a codeword (<i>wasn’t that an overkill?</i>..)
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-4"></a>
+<span class="amsthmnamedefinition">Exercise</span><span class="amsthmnumberdefinition"> <span class="textup">11.3</span></span>.         Show that \(\RM (r,m)\) is a self-orthogonal code, if and only if \(r&lt;m/2\).
+</p>
+
+</li>
+
+</ul>
+
+</div>
+
+<p>
+<b>Answer to E11.3. </b> [<a href="ch11ex.html#.">These exercises without answers</a>]
+</p>
+
+<p>
+\(\RM (r,m)\) is self-orthogonal \(\iff \) \(\RM (r,m)\subseteq \RM (r,m)^\perp =\RM (m-1-r,m)\) \(\iff \) \(r\le m-1-r\) \(\iff \) \(2r \le m-1\) \(\iff \) \(2r&lt;m\) \(\iff \) \(r&lt;m/2\).
+</p>
+<div class="amsthmbodydefinition">
+
+<ul style="list-style-type:none">
+
+
+
+<li>
+<p>
+<a id="lecnotes_html-autopage-5"></a>
+<span class="amsthmnamedefinition">Exercise</span><span class="amsthmnumberdefinition"> <span class="textup">11.4</span></span>.               Show that the code \(\RM (m-2,m)\) is, up to linear equivalence, an extended Hamming code
+\(\widehat {\Ham }(m,2)\).
+</p>
+
+</li>
+
+</ul>
+
+</div>
+
+<p>
+<b>Answer to E11.4. </b> [<a href="ch11ex.html#.">These exercises without answers</a>]
+</p>
+
+<p>
+<i>Sketch of proof.</i> Order the binary words in \(V^m\) so that the zero word \(00\dots 0\) comes last.
+</p>
+
+<p>
+The value vectors of \(v_1,\dots ,v_m\) form a matrix whose last column is zero, preceded by \(2^{m}-1\) distinct non-zero \(m\)-bit columns. This is the generator matrix of \(\widehat \Sigma (m,2)\).
+</p>
+
+<p>
+Hence any \(\ul {\hat c}\in \widehat {\mathrm {Ham}}(m,2)\) is orthogonal to rows \(v_1,\dots ,v_m\). Note that \(\ul {\hat c}\) has even weight, hence is orthogonal to row \(\mathbf 1\) which consists of all ones.
+</p>
+
+<p>
+This shows that \(\widehat {\mathrm {Ham}}(m,2)\) lies inside the dual code to the code spanned by \(\mathbf 1,v_1,\dots ,v_m\). That is, \(\widehat {\mathrm {Ham}}(m,2)\subseteq \RM (1,m)^\perp \). The dimension of both sides is
+\(2^m-(m+1)\), so we conclude that \(\widehat {\mathrm {Ham}}(m,2)=\RM (1,m)^\perp \). It remains to note that \(\RM (1,m)^\perp = \RM (m-2,m)\) by an earlier result.
 </p>
 <a id="lecnotes_html-autofile-last"></a>
 </section>
