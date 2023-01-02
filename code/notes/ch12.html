@@ -235,7 +235,7 @@ MathJax = {
 <body>
 
 
-<a id="lecnotes_html-autopage-35"></a>
+<a id="lecnotes_html-autopage-7"></a>
 <nav class="topnavigation"><a href="lecnotes_html.html" class="linkhome" >
 Home</a></nav>
 
@@ -431,227 +431,317 @@ Home</a>
 
 <p>
 <!--
-...... chapter ch1ex ......
+...... chapter ch12 ......
 -->
-<h3 id="autosec-36">Chapter&nbsp;<span class="sectionnumber">1&#x2003;</span>Exercises </h3>
-<a id="lecnotes_html-autopage-36"></a>
-<a id="lecnotes_html-autofile-2"></a>
+<h3 id="autosec-8">Chapter&nbsp;<span class="sectionnumber">12&#x2003;</span>MATH32031 Coding Theory: end-of-semester revision 2023</h3>
+<a id="lecnotes_html-autopage-8"></a>
+<a id="lecnotes_html-autofile-32"></a>
 
 <p>
-Version 2023-01-02. <a href="lecnotes_html.pdf" target="_blank" >To PDF version of the notes</a>
+Version 2022-12-12. <a href="lecnotes_html.pdf" target="_blank" >To PDF version of the notes</a>
 </p>
-<div class="amsthmbodydefinition">
-
-<ul style="list-style-type:none">
-
-
-
-<li>
-<p>
-<a id="lecnotes_html-autopage-2"></a>
-<span class="amsthmnamedefinition">Exercise</span><span class="amsthmnumberdefinition"> <span class="textup">1.1</span></span>.                    The <b>Manchester code</b> was first used in the Manchester Mark 1 computer at the University
-of Manchester in 1949 and is still used in low-speed data transfer: e.g. TV remote sending signals via infrared. This binary code consists of two codewords: \(10\) and \(01\). The codeword \(10\) is interpreted by the recipient as the message \(0\),
-and \(01\) is understood to mean \(1\); whereas the received word \(00\) or \(11\) indicates a detected error.
-</p>
+<div class="center">
 
 <p>
-The following error-free fragment of a bit stream encoded by Manchester code (that is: the stream is a sequence of codewords) had been intercepted: \(\dots 010101x01011010\dots \) What was the bit \(x\)?
+<b>See suggested answers and hints at end<br />
+This list is not guaranteed to cover all possible topics that may arise in the exam. Your questions and suggestions are welcome; please post them to the Piazza discussion board or contact the lecturer during the
+revision period.</b>
 </p>
-
-</li>
-
-</ul>
-
 </div>
 
 <p>
-[<a href="ch1exans.html#.">Answers to these exercises</a>]
+Suggested revision format: ask yourself <b><i>Can I...</i></b> followed by a question below. In case of difficulty/lack of confidence, revise the relevant part of the course material. Brief comments on a suggested approach are available below for
+most questions. Questions marked (*) are more challenging: they have not been covered in the course but follow from lecture material or exercises.
 </p>
-<div class="amsthmbodydefinition">
+<!--
+...... section General codes ......
+-->
+<h4 id="autosec-10"><span class="sectionnumber">12.1&#x2003;</span>General codes</h4>
+<a id="lecnotes_html-autopage-10"></a>
 
-<ul style="list-style-type:none">
 
-
-
-<li>
 <p>
-<a id="lecnotes_html-autopage-3"></a>
-<span class="amsthmnamedefinition">Exercise</span><span class="amsthmnumberdefinition"> <span class="textup">1.2</span></span>.               Consider the alphabet \(\mathbb Z_{10}=\{0,1,2,3,4,5,6,7,8,9\}\). The <b>Luhn
-checksum</b> of a word \(x_1x_2\dots x_{16}\in (\mathbb Z_{10})^{16}\) is \(\pi (x_1)+x_2+\pi (x_3)+x_4+\pi (x_5)+\dots +x_{16}\text { mod } 10\), viewed as an element of \(\mathbb Z_{10}\). Here \(\pi \colon \mathbb
-Z_{10}\to \mathbb Z_{10}\) is defined by the rule “\(\pi (a)\) is the sum of digits of \(2a\)”. The <b>Luhn code</b> consists of all words in \((\mathbb Z_{10})^{16}\) whose Luhn checksum is \(0\).
+• <b>find the Hamming distance between two words</b>
 </p>
 
 <p>
-(i) Write down all values of \(\pi \) and check that \(\pi \) is a permutation of the alphabet \(\mathbb Z_{10}\).
+• <b>find the minimum distance of a code with a small number of codewords</b>
 </p>
 
 <p>
-(ii) Find the total number of codewords of the Luhn code.
+• <b>given parameters \((n,M,d)_q\) of a code \(C\), find \([n,k,d]_q\) and the rate \(R\)</b>
 </p>
 
 <p>
-(iii) Prove that a single digit error is detected by the Luhn code.
+• <b>given a code \(C\) as a list of codewords, decode a received word \(\ul y\)</b>
 </p>
 
 <p>
-(iv) Look at your 16-digit debit/credit card numbers. Are they codewords of the Luhn code? If you have a card with a number which is <b>not</b> a codeword of the Luhn code, can you bring it to the tutorial? Thanks!
-</p>
-
-</li>
-
-</ul>
-
-</div>
-
-<p>
-[<a href="ch1exans.html#.">Answers to these exercises</a>]
-</p>
-<div class="amsthmbodydefinition">
-
-<ul style="list-style-type:none">
-
-
-
-<li>
-<p>
-<a id="lecnotes_html-autopage-4"></a>
-<span class="amsthmnamedefinition">Exercise</span><span class="amsthmnumberdefinition"> <span class="textup">1.3</span></span>. (<i>based on a question from a past exam. Not done in the tutorial.</i>). Alice transmitted the same
-binary word of length 6 to Bob three times, but Bob received three different words: \(101010\), \(011100\), \(110001\). Engineer Clara told Bob that at most two bit errors could have occurred in each word during transmission. Help Bob to recover
-the word transmitted by Alice.
-</p>
-
-</li>
-
-</ul>
-
-</div>
-
-<p>
-[<a href="ch1exans.html#.">Answers to these exercises</a>]
-</p>
-<div class="amsthmbodydefinition">
-
-<ul style="list-style-type:none">
-
-
-
-<li>
-<p>
-<a id="lecnotes_html-autopage-5"></a>
-<span class="amsthmnamedefinition">Exercise</span><span class="amsthmnumberdefinition"> <span class="textup">1.4</span></span>.   (<i>not done in the tutorial.</i>) <a id="ex:simplex"></a>Recall that the binary alphabet is \(\F
-_2=\{0,1\}\). Let the code \(\Sigma \subseteq \F _2^7\) consist of the following eight words:
-</p>
-<table>
-
-<tr style="display:none"><th>.</th></tr>
-
-
-<tr>
-<td class="tdc">0</td>
-<td class="tdc">0</td>
-<td class="tdc">0</td>
-<td class="tdc">0</td>
-<td class="tdc">0</td>
-<td class="tdc">0</td>
-<td class="tdc">0,</td>
-</tr>
-
-
-<tr>
-<td class="tdc">1</td>
-<td class="tdc">0</td>
-<td class="tdc">0</td>
-<td class="tdc">1</td>
-<td class="tdc">1</td>
-<td class="tdc">1</td>
-<td class="tdc">0,</td>
-</tr>
-
-
-<tr>
-<td class="tdc">0</td>
-<td class="tdc">1</td>
-<td class="tdc">0</td>
-<td class="tdc">0</td>
-<td class="tdc">1</td>
-<td class="tdc">1</td>
-<td class="tdc">1,</td>
-</tr>
-
-
-<tr>
-<td class="tdc">1</td>
-<td class="tdc">0</td>
-<td class="tdc">1</td>
-<td class="tdc">0</td>
-<td class="tdc">0</td>
-<td class="tdc">1</td>
-<td class="tdc">1,</td>
-</tr>
-
-
-<tr>
-<td class="tdc">1</td>
-<td class="tdc">1</td>
-<td class="tdc">0</td>
-<td class="tdc">1</td>
-<td class="tdc">0</td>
-<td class="tdc">0</td>
-<td class="tdc">1,</td>
-</tr>
-
-
-<tr>
-<td class="tdc">1</td>
-<td class="tdc">1</td>
-<td class="tdc">1</td>
-<td class="tdc">0</td>
-<td class="tdc">1</td>
-<td class="tdc">0</td>
-<td class="tdc">0,</td>
-</tr>
-
-
-<tr>
-<td class="tdc">0</td>
-<td class="tdc">1</td>
-<td class="tdc">1</td>
-<td class="tdc">1</td>
-<td class="tdc">0</td>
-<td class="tdc">1</td>
-<td class="tdc">0,</td>
-</tr>
-
-
-<tr>
-<td class="tdc">0</td>
-<td class="tdc">0</td>
-<td class="tdc">1</td>
-<td class="tdc">1</td>
-<td class="tdc">1</td>
-<td class="tdc">0</td>
-<td class="tdc">1.</td>
-</tr>
-</table>
-
-<p>
-Show that the Hamming distance between each pair of codewords is the same. (You will probably have to use brute force as we are yet to describe an algebraic structure behind this code.)
+• <b>write down the parameters of a trivial code, of a repetition code</b>
 </p>
 
 <p>
-What is \(\Decode (0001110)\)? Give an example of a word which has more than one nearest neighbour in \(\Sigma \). Try to see if there are words with three, four etc. nearest neighbours. Try to write a word with a maximum possible number of
-nearest neighbours in \(\Sigma \).
+• <b>given the minimum distance \(d\) of a code, write down the number of errors (per codeword) that the code can detect/correct</b>
 </p>
-
-</li>
-
-</ul>
-
-</div>
 
 <p>
-[<a href="ch1exans.html#.">Answers to these exercises</a>]
+• <b>write down the probability that \(i\) errors occur in a binary word of length \(n\) sent via BSC(\(p\))</b>
 </p>
+<!--
+...... section Bounds ......
+-->
+<h4 id="autosec-11"><span class="sectionnumber">12.2&#x2003;</span>Bounds</h4>
+<a id="lecnotes_html-autopage-11"></a>
+<!--
+...... subsection ...write down: ......
+-->
+<h5 id="autosec-12">...write down:</h5>
+<a id="lecnotes_html-autopage-12"></a>
+
+
+<p>
+• <b>the Hamming bound for \(q\)-ary codes of length \(n\) and minimum distance \(d\)</b>
+</p>
+
+<p>
+• <b>the Singleton bound?</b>
+</p>
+<!--
+...... subsection ...calculate: ......
+-->
+<h5 id="autosec-13">...calculate:</h5>
+<a id="lecnotes_html-autopage-13"></a>
+
+
+<p>
+• <b>the Hamming and Singleton bounds for a code with given parameters — and use these to check if the code is perfect/MDS?</b>
+</p>
+<!--
+...... subsection ...give an example of: ......
+-->
+<h5 id="autosec-14">...give an example of:</h5>
+<a id="lecnotes_html-autopage-14"></a>
+
+
+<p>
+• <b>perfect codes of minimum distance \(1\), \(3\), \(5\), \(7\), \(9\), \(\dots \)</b>
+</p>
+<!--
+...... section Linear codes I ......
+-->
+<h4 id="autosec-15"><span class="sectionnumber">12.3&#x2003;</span>Linear codes I</h4>
+<a id="lecnotes_html-autopage-15"></a>
+<!--
+...... subsection ...write down: ......
+-->
+<h5 id="autosec-16">...write down:</h5>
+<a id="lecnotes_html-autopage-16"></a>
+
+
+<p>
+• <b>the parameters of \(E_n\) (with explanation)?</b>
+</p>
+
+<p>
+• <b>the parameters of ISBN-10 (with explanation)?</b>
+</p>
+
+<p>
+• <b>the weight enumerators of the trivial code, the repetition code, the code \(E_n\)?</b>
+</p>
+
+<p>
+• <b>the special values of the weight enumerator: \(W_C(0,0)\), \(W_C(1,0)\), \(W_C(1,1)\)?</b>
+</p>
+<!--
+...... section Linear codes II: encoding and decoding ......
+-->
+<h4 id="autosec-17"><span class="sectionnumber">12.4&#x2003;</span>Linear codes II: encoding and decoding</h4>
+<a id="lecnotes_html-autopage-17"></a>
+
+
+<p>
+• <b>given a generator matrix \(G\) of a code \(C\), encode a message vector \(\ul u\). What is the number of rows/columns of \(G\)? What must be the length of \(\ul u\)? What do you get as the output of the
+encoder?</b>
+</p>
+<!--
+...... subsection ...calculate: ......
+-->
+<h5 id="autosec-18">...calculate:</h5>
+<a id="lecnotes_html-autopage-18"></a>
+
+
+<p>
+• <b>a generator matrix in standard form for a given code?</b>
+</p>
+
+<p>
+• <b>all the codevectors, and the weight enumerator of the linear code, if a generator matrix is given?</b>
+</p>
+
+<p>
+• <b>\(P_{\text {undetect}}(C)\)? (what do you need to know to find it? for what codes and channels?)</b>
+</p>
+
+<p>
+• <b>\(P_{\text {corr}}(C)\)? (what do you need to know to find it? for what codes and channels?)</b>
+</p>
+<!--
+...... section Dual codes ......
+-->
+<h4 id="autosec-19"><span class="sectionnumber">12.5&#x2003;</span>Dual codes</h4>
+<a id="lecnotes_html-autopage-19"></a>
+<!--
+...... subsection ...calculate: ......
+-->
+<h5 id="autosec-20">...calculate:</h5>
+<a id="lecnotes_html-autopage-20"></a>
+
+
+<p>
+• <b>the inner product of two vectors?</b>
+</p>
+
+<p>
+• <b>a check matrix of a given code? (what data do you need?)</b>
+</p>
+
+<p>
+• <b>the dual code of the trivial/repetition/even weight/ISBN-10 code?</b>
+</p>
+
+<p>
+• <b>the length and dimension of \(C^\perp \) if \(C\) has length \(n\), dimension \(k\)?</b>
+</p>
+<!--
+...... subsection ...check: ......
+-->
+<h5 id="autosec-21">...check:</h5>
+<a id="lecnotes_html-autopage-21"></a>
+
+
+<p>
+• <b>whether a given code is self-orthogonal? self-dual? (what data do you need?)</b>
+</p>
+
+<p>
+• <b>calculate the syndrome of a vector? (what data do you need?)</b>
+</p>
+
+<p>
+• <b>check if a given vector belongs to the code?</b>
+</p>
+
+<p>
+• <b>construct a table of syndromes, and decode a received vector using your table?</b>
+</p>
+
+<p>
+• <b>use the Average Weight Equation?</b>
+</p>
+<!--
+...... section Hamming codes and simplex codes ......
+-->
+<h4 id="autosec-22"><span class="sectionnumber">12.6&#x2003;</span>Hamming codes and simplex codes</h4>
+<a id="lecnotes_html-autopage-22"></a>
+<!--
+...... subsection ...write down: ......
+-->
+<h5 id="autosec-23">...write down:</h5>
+<a id="lecnotes_html-autopage-23"></a>
+
+
+<p>
+• <b>the parameters of Ham(\(r,q\))?</b>
+</p>
+
+<p>
+• <b>the weight of any non-zero codevector and the parameters of \(\Sigma (r,q)\)?</b>
+</p>
+
+<p>
+• <b>the weight enumerator of \(\Sigma (r,q)\)?</b>
+</p>
+<!--
+...... subsection ...construct: ......
+-->
+<h5 id="autosec-24">...construct:</h5>
+<a id="lecnotes_html-autopage-24"></a>
+
+
+<p>
+• <b>a check matrix for \(\Ham (r,q)\) (\(q\) is a prime)? A generator matrix?</b>
+</p>
+
+<p>
+• <b>given a check matrix for a Hamming code, decode a received vector?</b>
+</p>
+<!--
+...... section Cyclic codes ......
+-->
+<h4 id="autosec-25"><span class="sectionnumber">12.7&#x2003;</span>Cyclic codes</h4>
+<a id="lecnotes_html-autopage-25"></a>
+
+
+<p>
+• <b>write the given vector in \(\F _q^n\) as a polynomial, and a polynomial as a vector?</b>
+</p>
+
+<p>
+• <b>given a (small) cyclic code \(C\), find the generator polynomial of \(C\)?</b>
+</p>
+
+<p>
+• <b>carry out long division of polynomials?</b>
+</p>
+<!--
+...... subsection ...calculate: ......
+-->
+<h5 id="autosec-26">...calculate:</h5>
+<a id="lecnotes_html-autopage-26"></a>
+
+
+<p>
+• <b>the dimension of a cyclic code with a given generator polynomial?</b>
+</p>
+
+<p>
+• <b>the check polynomial of a given cyclic code? (what do you need to know?)</b>
+</p>
+
+<p>
+• <b>generator polynomials, check polynomials, generator matrices, check matrices of all possible cyclic codes in \(\mathbb F_q^n\)? (what do you need to know?)</b>
+</p>
+<!--
+...... section Classification of perfect codes ......
+-->
+<h4 id="autosec-27"><span class="sectionnumber">12.8&#x2003;</span>Classification of perfect codes</h4>
+<a id="lecnotes_html-autopage-27"></a>
+
+
+<p>
+• <b>write down the parameters of the Golay codes, and prove that the codes are perfect?</b>
+</p>
+
+<p>
+• <b>use the Classification Theorem for perfect codes where \(q\) is a prime power?</b>
+</p>
+<!--
+...... section Reed-Muller codes ......
+-->
+<h4 id="autosec-28"><span class="sectionnumber">12.9&#x2003;</span>Reed-Muller codes</h4>
+<a id="lecnotes_html-autopage-28"></a>
+<!--
+...... subsection ...write down: ......
+-->
+<h5 id="autosec-29">...write down:</h5>
+<a id="lecnotes_html-autopage-29"></a>
+
+
+<p>
+• <b>the parameters of \(\RM (r,m)\)?</b>
+</p>
+<a id="lecnotes_html-autofile-last"></a>
 </section>
 
 </main>
