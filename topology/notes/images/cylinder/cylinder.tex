@@ -1,0 +1,89 @@
+%\documentclass{article}
+%\usepackage{tikz}
+%\usetikzlibrary{arrows.meta,intersections}
+%%\usepackage{verbatim}
+%%\usepackage[active,tightpage]{preview}
+%%\PreviewEnvironment{tikzpicture}
+%%\setlength\PreviewBorder{10pt}%
+%\begin{document}
+\tikzset{
+	MyPersp/.style={scale=1.8,x={(-0.8cm,-0.4cm)},y={(0.8cm,-0.4cm)},
+		z={(0cm,1cm)}},
+	% MyPersp/.style={scale=1.5,x={(0cm,0cm)},y={(1cm,0cm)},
+		%    z={(0cm,1cm)}}, % uncomment the two lines to get a lateral view
+	% MyPoints/.style={fill=white,draw=black,thick}
+}
+\begin{tikzpicture}[MyPersp,scale=0.8]
+	\def\h{2}% Heigth of the ellipse center (on the axis of the cylinder)
+	\coordinate (A) at (2,2,0);
+	\coordinate (B) at (-2,2,0);
+	\coordinate (E) at (2,-2,0);
+	\coordinate (F) at (-2,-2,0);
+	\coordinate (DB) at (-2,2,-4);
+	\coordinate (DE) at (2,-2,-4);
+
+	\path[name path=EF] (E) -- (F);
+	\path[name path=LeftGeneratrice] ({cos(-40)},{sin(-40)},0) -- ({cos(-40)},{sin(-40)},5);
+	\path[name intersections={of=EF and LeftGeneratrice,by=ZEF}];
+	\path[name path=FB] (F) -- (B);	
+	\path[name path=RightGeneratrice] ({cos(140)},{sin(140)},0) -- ({cos(140)},{sin(140)},5);
+	\path[name intersections={of=FB and RightGeneratrice,by=ZFB}];
+	\draw (A)--(E) -- (ZEF); 
+	\draw[opacity=0.25,dashed] (ZEF) -- (F) -- (ZFB);
+	\draw (ZFB) -- (B) -- (A);
+
+	\coordinate (O) at (0,0,0);
+	\draw[gray,opacity=0.5] (-1,0,0)--(1,0,0);
+	\draw[-{LaTeX}] (1,0,0)--(2,0,0)node[below left]{x};
+	\path[name path=TailofX] (O) -- (-2,0,0);
+	\path[name intersections={of=TailofX and RightGeneratrice,by=TX}];
+	\draw[gray, opacity=0.5, dashed] (-1,0,0) -- (TX);
+	\draw (TX) -- (-2,0,0);
+	
+	\draw[gray,opacity=0.5] (0,-1,0)--(0,1,0);
+	\path[name path=TailofY] (O) -- (0,-2,0);
+	\path[name intersections={of=TailofY and LeftGeneratrice,by=TY}];
+	\draw[-{LaTeX}] (0,1,0)--(0,2,0)node[below right]{y};
+	\draw[gray, opacity=0.5, dashed] (0,-1,0) -- (TY);
+	\draw (TY) -- (0,-2,0);
+
+	\draw[-{LaTeX},gray,opacity=0.5] (O)--(0,0,5)node[left]{z};
+
+\foreach \t in {-40,-20,...,140}{% generatrices
+  \draw[magenta!50] ({cos(\t)},{sin(\t)},0)
+    --({cos(\t)},{sin(\t)},{2.0*\h+0.5*cos(\t-50)}) coordinate (temp);
+  \foreach \i in {50,49,...,0}
+    \draw[magenta!\i] (temp) -- ++(0,0,0.02) coordinate (temp);
+}
+\foreach \t in {160,180,...,300}{% rear generatrices
+	\draw[magenta!50,opacity=0.5] ({cos(\t)},{sin(\t)},0)
+	--({cos(\t)},{sin(\t)},{2.0*\h}) coordinate (temp);
+	\foreach \i in {49,...,0}
+	\draw[magenta!\i,opacity=0.5] (temp) -- ++(0,0,0.02) coordinate (temp);
+}
+
+	\draw[magenta,very thick] ({cos(-40)},{sin(-40)},0) % lower circle
+		%\foreach \t in {5,10,...,360} % diam. opp. points 140, 320
+		\foreach \t in {-35,-30,...,140} % diam. opp. points 140, 320
+			{--({cos(\t)},{sin(\t)},0)};
+	\draw[magenta,very thick,dashed,opacity=0.5] ({cos(140)},{sin(140)},0) % lower circle
+\foreach \t in {145,150,...,320} % diam. opp. points 140, 320
+{--({cos(\t)},{sin(\t)},0)};
+\begin{scope} % Draw the z<0 part of the cylinder
+	\clip (DB) -- (B) -- (A) -- (E) -- (DE) -- cycle;
+	\foreach \t in {-40,-20,...,140}{% generatrices
+		\draw[magenta!50] ({cos(\t)},{sin(\t)},0)
+		--({cos(\t)},{sin(\t)},{-2.0*\h-0.5*cos(\t-50)+3}) coordinate (temp);
+		\foreach \i in {50,49,...,0}
+		\draw[magenta!\i] (temp) -- ++(0,0,-0.02) coordinate (temp);
+	}
+	\foreach \t in {160,180,...,300}{% rear generatrices
+		\draw[magenta!50,opacity=0.5] ({cos(\t)},{sin(\t)},0)
+		--({cos(\t)},{sin(\t)},{-2.0*\h+3}) coordinate (temp);
+		\foreach \i in {49,...,0}
+		\draw[magenta!\i,opacity=0.5] (temp) -- ++(0,0,-0.02) coordinate (temp);
+	}
+\end{scope}
+
+\end{tikzpicture}
+%\end{document}

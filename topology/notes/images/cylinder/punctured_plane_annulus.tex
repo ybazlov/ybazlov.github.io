@@ -1,0 +1,83 @@
+% The boundary of an open annulus should be shown as dashed circles, not solid circles. This indicates that the boundary is not contained in the set being drawn.
+% A puncture is usually marked as a hollow circle not a solid circle.
+% The angular directions should really be between 0 and 360 degrees, not just between 0 and 180.
+% It is better for a visual representation of the annulus that only the parts of the radial lines which are within the annulus are shown.
+% I commented out the sample points which, in my opinion, created visual clutter.
+% Instead of the sample points I added color-coded concentric circles around the origin in the punctured plane.
+% The images of the concentric circles are shown in the annulus - the colors match.
+% The correct notation for the new-style arrow tips in TikZ is like this: \draw[-{Latex}, ... ]
+%
+%
+%\documentclass{standalone}
+%\usepackage{tikz}
+%\usetikzlibrary{decorations.pathreplacing, arrows.meta}
+%\usepackage{amsfonts}
+%
+%\begin{document}
+%
+\begin{tikzpicture}[declare function = {F(\r) = (\r+2)/(\r+1);}, 
+	baseline={(0,0)}]
+
+% Left diagram: Punctured Euclidean plane
+\begin{scope}[shift={(-6,0)}]  % Shift left by 6 units
+    % Draw concentric circles to represent the punctured plane
+    \draw[thin,orange] (0,0) circle (0.5);
+    \draw[thin,green] (0,0) circle (1);
+    \draw[thin,cyan] (0,0) circle (1.5);
+    \draw[thin,blue] (0,0) circle (2);
+    \draw[thin,violet] (0,0) circle (2.5);
+    
+    % Draw radial lines to represent angular directions
+    \foreach \angle in {0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330} {
+	    \draw[gray, thin] (\angle:2pt) -- (\angle:3);
+    }
+    
+    % Label the plane and mark the origin as a puncture
+    \node[above] at (-1.5, 2.75) {$\mathbb{R}^2 \setminus \{(0,0)\}$};
+    \draw[thick, red] (0,0) circle (2pt) node[below right] {$O$};  % Origin
+
+%    % Sample points
+%    \filldraw[blue] (0.5,0) circle (2pt) node[below left] {$(0.5, 0)$};
+%    \filldraw[blue] (1,0) circle (2pt) node[below left] {$(1, 0)$};
+%    \filldraw[blue] (2.5,0) circle (2pt) node[below left] {$(2.5, 0)$};
+
+\end{scope}
+
+% Right diagram: Open annulus
+\begin{scope}[shift={(3,0)}]  % Shift right by 3 units
+    % Draw the annulus
+    \draw[thick, dashed] (0,0) circle (1);    % Inner circle
+    \draw[thick, dashed, red] (0,0) circle (2);    % Outer circle
+    
+    % Draw the images of the concentric circles in the punctured plane, using the color for visual matching
+	\draw[thin,orange] (0,0) circle ({F(0.5)});
+	\draw[thin,green] (0,0) circle ({F(1)});
+	\draw[thin,cyan] (0,0) circle ({F(1.5)});
+	\draw[thin,blue] (0,0) circle ({F(2)});
+	\draw[thin,violet] (0,0) circle ({F(2.5)});
+
+    % Draw radial lines to show angular directions
+    \foreach \angle in {0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330} {
+        \draw[gray, thin] (\angle:1) -- (\angle:2);
+    }
+
+    % Label the annulus
+    \node[above] at (-1, 2.3) {$\{ (x, y): 1 < \sqrt{x^2 + y^2} < 2 \}$};
+    
+%    % Mark images of sample points
+%    \filldraw[blue] (2,0) circle (2pt) node[below right] {$(2, 0)$};  % Image of (0.5, 0)
+%    \filldraw[blue] (1.5,0) circle (2pt) node[below right] {$(1.5, 0)$};  % Image of (1, 0)
+%    \filldraw[blue] (1.1,0) circle (2pt) node[below right] {$(1.1, 0)$};  % Image of (2.5, 0)
+\end{scope}
+
+% Draw an arrow representing the mapping
+\draw[-{Latex}, thick, red] (-2.7, 0) -- (0.7, 0) node[midway, above] {$f(r, \theta) = \left( \frac{r+2}{r+1}, \theta \right)$};
+
+% % Draw mapping for each sample point
+% \draw[-{Latex}, thick, blue] (-5.5, 0) -- (3.5, 0);  % Mapping for (0.5, 0) -> (2, 0)
+% \draw[-{Latex}, thick, blue ] (-5, 0) -- (3, 0);      % Mapping for (1, 0) -> (1.5, 0)
+% \draw[-{Latex}, thick, blue] (-3.5, 0) -- (1.6, 0);  % Mapping for (2.5, 0) -> (1.1, 0)
+
+\end{tikzpicture}%
+%
+%\end{document}

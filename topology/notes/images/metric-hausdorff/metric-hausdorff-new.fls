@@ -1,0 +1,6 @@
+PWD /home/mbbssyb2/Seafile/teaching/topology/notes/images/metric-hausdorff
+INPUT /opt/texlive/2026/texmf.cnf
+INPUT /opt/texlive/2026/texmf-dist/web2c/texmf.cnf
+INPUT /opt/texlive/2026/texmf-var/web2c/pdftex/latex.fmt
+INPUT metric-hausdorff-new.tex
+OUTPUT metric-hausdorff-new.log

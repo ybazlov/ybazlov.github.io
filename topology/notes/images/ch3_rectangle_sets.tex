@@ -1,0 +1,64 @@
+\documentclass[12pt]{standalone}
+\usepackage{tikz}
+\usetikzlibrary{patterns, calc} % , arrows.meta, decorations.pathreplacing}
+
+\begin{document}
+\newcommand{\mya}{0.8}
+		\newcommand{\myb}{1.4}
+		\newcommand{\mys}{4.0}
+		\newcommand{\mysa}{2.7}
+		\newcommand{\mysb}{1.3}
+		\newcommand{\myx}{4}
+		\newcommand{\myy}{3.6}
+		
+		%lwarp%\begin{lateximage}[sets shown inside a square X times Y][][width: 75\%;]
+		\begin{tikzpicture}[scale=1.25]
+		\path[use as bounding box] (-0.5,-0.5) -- (6.5,-0.5) -- (6.5,6.5) -- (-0.5,6.5) -- cycle; 
+		
+			
+			% Draw x and y axes
+			\draw[->] (0,0.5) -- ++(6.5,0); % node[anchor=north] {$x$};
+			\draw[->] (0,0.5) -- ++(0,6); % node[anchor=west] {$y$};
+			
+			\filldraw[green, pattern=vertical lines, pattern color=green, opacity=0.75] (5,0.5) rectangle (5.8,6);
+			\node[rotate=90, green!50!black] at (5.4,3.25) {another rectangle};
+			
+			\draw[ %-|, 
+			very thick, blue] (0,0.5) -- (6,0.5) node[midway, anchor=north, yshift=-15pt]{\Large $X$};
+			\draw[ %-|, 
+			very thick, blue] (0,0.5) -- (0,6) node[midway, anchor=east, xshift=-15pt]{\Large $Y$};
+			\draw[blue] (0,6) -- (6,6) -- (6,0.5);
+			
+			% Draw and label the subset A of X
+			\draw[line width=7pt, opacity=0.5, red] (\mya,0.5) -- ++(\mysa,0);
+			\node[anchor=south, red, yshift=3.5pt] at ($(\mya,0.5)+0.5*(\mysa,0)$) {$A$};
+			
+			% Draw and label the subset B of Y
+			\draw[line width=7pt, opacity=0.5, yellow!75!black] (0,\myb) -- ++(0,\mysb);
+			\node[anchor=west, yellow!50!black, xshift=3.5pt] at ($(0,\myb)+0.5*(0,\mysb)$) {$B$};
+			
+			% Draw and label the rectangle A x B
+			\filldraw[yellow!50!red, pattern color=yellow!50!red, pattern=north east lines, opacity=0.5] (\mya,\myb) rectangle ++(\mysa,\mysb);
+			\node[orange!50!black] at ($(\mya,\myb)+0.5*(\mysa,\mysb)$) {rectangle $A\times B$};
+			
+			% Draw smaller squares inside the large square (with rational coordinates)
+			
+			% Extend lines from the sides of the rectangle to the axes and add ticks
+			% Extend for x-axis
+			\draw[dotted, red] (\mya,0.5) -- (\mya,\myb); % a
+			\draw[dotted, red] ($(\mya,0.5)+(\mysa,0)$) -- ($(\mya,0)+(\mysa,\myb)$); % a
+			% \draw[thin] ($(\mya,\myb)+(\mys,0)$) -- ($(\mya,0)+(\mys,0)$); % a+s
+			\draw[dotted, yellow!50!black] (0,\myb) -- ++(\mya,0); % b
+			\draw[dotted, yellow!50!black] ($(0,\myb)+(0,\mysb)$) -- ++(\mya,0); % b
+			
+			% Add labels for the ticks
+			\node[anchor=north] at (\myx,0.5) {$x$};
+			\node[anchor=east] at (0,\myy) {$y$};
+			\draw[dotted] (\myx,0.5) -- (\myx,\myy) -- (0,\myy);	
+			\filldraw (\myx,\myy) circle(2pt) node[anchor=west]{$(x,y)$};
+			
+			\filldraw[gray, pattern color=gray, pattern=north east lines, opacity=0.5] (2.0,4) rectangle ++(2, 1.3);
+			\filldraw[gray, pattern color=gray, pattern=north west lines, opacity=0.5] (3.3,4.3) rectangle ++(1, 1.4);
+			
+		\end{tikzpicture}
+\end{document}

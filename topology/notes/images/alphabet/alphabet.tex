@@ -1,0 +1,168 @@
+%\documentclass{standalone}
+%\usepackage{tikz}
+%\usetikzlibrary{calc}
+%\begin{document}
+   	\newcommand{\srad}{0.207106781186548}
+\begin{tikzpicture}[line width=1.2pt, line cap=round, line join=round, scale=1.4]
+
+% Define spacing
+\def\dx{1.5} % x-spacing
+\def\dy{1.8} % y-spacing
+
+% Row 1: Letters A - G
+\begin{scope}[xshift=0*\dx cm, yshift=0*\dy cm]
+    % A
+    \draw (0,0) -- (0.4,1) -- (0.8,0) (0.2,0.5) -- (0.6,0.5);
+    % \node[below] at (0.5,-0.2) {A};
+    
+    % B
+    \begin{scope}[xshift=0.8*\dx cm]
+        \draw (0,0) -- (0,1) arc[start angle=75, end angle=-75, radius=0.26] -- (0,0.5) arc[start angle=75, end angle=-75, radius=0.26] -- (0,0);
+    %    \node[below] at (0.3,-0.2) {B};
+    \end{scope}
+    
+    % C
+    \begin{scope}[xshift=1.5*\dx cm]
+        \draw (0,1) arc[start angle=90, end angle=270, radius=0.5];
+      %  \node[below] at (0.5,-0.2) {C};
+    \end{scope}
+    
+    % D
+    \begin{scope}[xshift=1.8*\dx cm]
+        \draw (0,0) -- (0,1) arc[start angle=90, end angle=-90, radius=0.5];
+    %    \node[below] at (0.3,-0.2) {D};
+    \end{scope}
+    
+    % E
+    \begin{scope}[xshift=2.35*\dx cm]
+        \draw (0.5,0) -- (0,0) -- (0,1) -- (0.5,1) 
+        (0,0.5) -- (0.4,0.5);
+    %       \node[below] at (0.3,-0.2) {E};
+    \end{scope}
+    
+    % F
+    \begin{scope}[xshift=2.85*\dx cm]
+	\draw (0,0) -- (0,1) -- (0.5,1) (0,0.5) -- (0.4,0.5);
+	%       \node[below] at (0.3,-0.2) {E};
+	\end{scope}
+
+    % G
+    \begin{scope}[xshift=3.35*\dx cm]
+        \draw (0.5,0.5) ++(60:0.5) arc[start angle=60, end angle=300, radius=0.5] -- ++(0,0.3) -- ++(-0.3,0);
+ %       \node[below] at (0.5,-0.2) {G};
+    \end{scope}
+    % H
+    \begin{scope}[xshift=4.15*\dx cm]
+    	\draw (0,0) -- (0,1) (0.5,0) -- (0.5,1) (0,0.5) -- (0.5,0.5);
+    %\node[below] at (0.5,-0.2) {H};
+	\end{scope}
+    % I
+\begin{scope}[xshift=4.35*\dx cm]
+	\draw (0.5,0) -- (0.5,1);
+	% \node[below] at (0.5,-0.2) {I};
+\end{scope}
+% J
+\begin{scope}[xshift=4.85*\dx cm]
+	\draw (0.5,1) -- (0.5,0.2) arc[start angle=0, end angle=-180, radius=0.25];
+%	\node[below] at (0.5,-0.2) {J};
+\end{scope}
+    % K
+\begin{scope}[xshift=5.35*\dx cm]
+	\draw (0,0) -- (0,1) (0.5,1) -- ($(0,0.5)+(0.6pt,0)$) -- (0.5,0);
+	%\node[below] at (0.5,-0.2) {K};
+\end{scope}
+
+% L
+\begin{scope}[xshift=5.9*\dx cm]
+	\draw (0,1) -- (0,0) -- (0.5,0);
+	%  \node[below] at (0.3,-0.2) {L};
+\end{scope}
+
+% M
+\begin{scope}[xshift=6.35*\dx cm]
+	\draw (0,0) -- (0,1) -- (0.4,0.25) -- (0.8,1) -- (0.8,0);
+	% \node[below] at (0.5,-0.2) {M};
+\end{scope}
+    % N
+\begin{scope}[xshift=7*\dx cm]
+	\draw (0,0) -- (0,1) -- (0.6,0) -- (0.6,1);
+	%\node[below] at (0.5,-0.2) {N};
+\end{scope}
+
+
+\end{scope}
+% Row 2: Letters H - N
+\begin{scope}[xshift=-0.65*\dx cm, yshift=-\dy cm]    
+    
+        % O
+    \begin{scope}[xshift=0.65*\dx cm]
+    \draw (0.5,0.5) circle(0.5);
+    % \node[below] at (0.5,-0.2) {O};
+    \end{scope}
+
+    % P
+	\begin{scope}[xshift=1.6*\dx cm]
+	\draw (0,0) -- (0,1) arc[start angle=90, end angle=-90, radius=0.25];
+	% \node[below] at (0.3,-0.2) {P};
+	\end{scope}
+
+    % Q
+	\begin{scope}[xshift=2*\dx cm]
+	\draw (0.5,0.5) circle(0.5);
+	\draw (0.65,0.35) -- (1,0);
+	%\node[below] at (0.5,-0.2) {Q};
+	\end{scope}
+% R
+\begin{scope}[xshift=2.95*\dx cm]
+	\draw (0,0) -- (0,1) arc[start angle=90, end angle=-90, radius=0.25] -- (0.35,0);
+	%\node[below] at (0.3,-0.2) {R};
+\end{scope}
+    % S
+    \begin{scope}[xshift=3.5*\dx cm]
+    	\draw (0,\srad) arc[start angle=-180, end angle=45, radius=\srad] 
+    	-- ($(\srad, 1-\srad)+(225:\srad)$) arc[start angle=225, end angle=0, radius=\srad];
+    \end{scope}
+    % T
+    \begin{scope}[xshift=4*\dx cm]
+        \draw (0,1) -- (0.5,1) (0.25,1) -- (0.25,0);
+        % \node[below] at (0.5,-0.2) {T};
+    \end{scope}
+    % U
+    \begin{scope}[xshift=4.6*\dx cm]
+        \draw (0,1) -- (0,0.25) arc[start angle=-180, end angle=0, radius=0.25] -- (0.5,1);
+       % \node[below] at (0.5,-0.2) {U};
+    \end{scope}
+    % V
+\begin{scope}[xshift=5.2*\dx cm]
+	\draw (0,1) -- (0.25,0) -- (0.5,1); 
+	% \node[below] at (0.5,-0.2) {V};
+\end{scope}
+    % W
+    \begin{scope}[xshift=5.75*\dx cm]
+    	\draw (0,1) -- (0.25,0) -- (0.4,0.5) -- (0.55,0) -- (0.8,1); 
+    	% \node[below] at (0.5,-0.2) {V};
+    \end{scope}
+
+    % X
+\begin{scope}[xshift=6.5*\dx cm]
+	\draw (0,0) -- (0.5,1) (0,1) -- (0.5,0);
+	%\node[below] at (0.5,-0.2) {X};
+\end{scope}
+
+% Y
+\begin{scope}[xshift=7.1*\dx cm]
+	\draw (0,0) -- (0.5,1) (0,1) -- (0.25,0.5);
+	%\node[below] at (0.5,-0.2) {X};
+\end{scope}
+
+% Z
+
+\begin{scope}[xshift=7.65*\dx cm]
+	\draw (0,1) -- (0.5,1) -- (0,0) -- (0.5,0);
+	%\node[below] at (0.5,-0.2) {X};
+\end{scope}
+
+
+\end{scope}
+\end{tikzpicture}
+%\end{document}

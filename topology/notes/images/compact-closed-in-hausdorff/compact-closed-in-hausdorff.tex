@@ -1,0 +1,72 @@
+%\documentclass{standalone}
+%\usepackage{tikz}
+%\usetikzlibrary{patterns,calc}
+%\begin{document}
+\begin{tikzpicture}[scale=1.25]
+
+% Draw the ambient space X as a rectangle
+\draw[thick, gray] (-2.9,-2.8) rectangle (5.9,3.2) node[anchor=north east] {$X$};
+
+% Draw the compact set K as a closed irregular shape
+
+\draw[very thick, black] plot [smooth cycle] coordinates {(-0.3,0.1) (-1,0)  (-1,-0.5) (-1.5,-1) (-0.5,-1.3) (0,-0.6) (1,-1.3) (1.4,-0.9) (0.6,0) (0.7,0.8) (-0.1,1)};
+\node at (1.05,-1) {$K$};
+
+% Points x_1, x_2, x_3 inside K
+\node[name=x1] at (-0.9,-0.85) {};
+\node[name=x2] at (0.73,-0.635) {};
+\node[name=x3] at (0.2,0.6) {};
+\filldraw[black]  (x1) circle (2pt); 
+\filldraw[black]  (x2) circle (2pt); 
+\filldraw[black]  (x3) circle (2pt); 
+
+% Point z outside K
+\node[name=z]  at (3,1.6) {};
+\filldraw[black] (z) circle (2pt);
+
+% Open neighborhoods U(x_1), U(x_2), U(x_3) covering K,
+% and their counterparts - 
+% open neighborhoods V_{x_1}(z),  V_{x_2}(z), V_{x_3}(z)
+% such that U(x_i) is disjoint from V_{x_i}(z).
+% We draw, shade and label these open neighborhoods
+\path[save path=\Uxone] (x1) circle[x radius=1.3, y radius=0.82, rotate=45];
+\path[save path=\Vxone] (z)  circle[x radius=1.3, y radius=0.82, rotate=45];
+
+\draw[use path=\Uxone, blue, thick, dashed];
+\fill[use path=\Uxone, pattern=north east lines, pattern color=blue, opacity=0.2];
+\draw[use path=\Vxone, blue, thick, dashed];
+\fill[use path=\Vxone, pattern=north east lines, pattern color=blue, opacity=0.1];
+\node[anchor=north, blue] at ($(x1)+(0,-1.2)$) {$U(x_1)$};
+\node[anchor=north, blue] at ($(z)+(0,-1.2)$) {$V_{x_1}(z)$};
+
+
+\path[save path=\Uxtwo] (x2) circle[x radius=1.2, y radius=0.6, rotate=145];
+\path[save path=\Vxtwo] (z) circle[x radius=1.2, y radius=0.6, rotate=145];
+\draw[use path=\Uxtwo, red, thick, dashed];
+\fill[use path=\Uxtwo, pattern=north west lines, pattern color=red, opacity=0.1];
+\draw[use path=\Vxtwo, red, thick, dashed];
+\fill[use path=\Vxtwo, pattern=north west lines, pattern color=red, opacity=0.1];
+\node[anchor=north west, red] at ($(x2)+(1.05,-0.7)$) {$U(x_2)$};
+\node[anchor=north west, red] at ($(z)+(1.05,-0.7)$) {$V_{x_2}(z)$};
+
+
+\path[save path=\Uxthree] (x3) circle[x radius=2.1, y radius=0.55]; 
+\path[save path=\Vxthree] (z) circle[x radius=2.1, y radius=0.55]; 
+\draw[use path=\Uxthree, green!50!black, thick, dashed] ;
+\fill[use path=\Uxthree, pattern=horizontal lines, pattern color=green!50!black, opacity=0.2];
+\node[anchor=south east, green!50!black] at ($(x3)+(-1.6,0.3)$) {$U(x_3)$}; 
+\draw[use path=\Vxthree, green!50!black, thick, dashed] ;
+\fill[use path=\Vxthree, pattern=horizontal lines, pattern color=green!50!black, opacity=0.2];
+\node[anchor=south east, green!50!black] at ($(z)+(-1.6,0.3)$) {$V_{x_3}(z)$}; 
+
+% The open neighborhood V(z) is defined as V_{x_1}(z) ∩ V_{x_2}(z) ∩ V_{x_3}(z)
+\begin{scope}
+	\clip[use path=\Vxone];
+	\clip[use path=\Vxtwo];
+	\fill[use path=\Vxthree, gray, opacity=0.5];
+\end{scope}
+
+% Label the neighborhood V(z)
+\node[black,anchor=south] at (z) {$V(z)$};
+\end{tikzpicture}
+%\end{document}

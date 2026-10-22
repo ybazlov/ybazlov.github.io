@@ -1,0 +1,15 @@
+\documentclass{standalone}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta}
+\begin{document}		
+\begin{tikzpicture}
+	\useasboundingbox (-1.2, -0.5) rectangle (6.2, 0.5); 
+	\draw (-1,0) -- (0,0);
+	\draw [very thick, {Circle[open,length=5pt]}-{Circle[open,length=5pt]}] (0,0) -- (1,0);
+	\draw (1,0) -- (2,0);
+	\draw [very thick, {Circle[length=5pt]}-{Circle[length=5pt]}] (2,0) -- (3,0); 
+	\draw (3,0) -- (4,0);
+	\draw [very thick, {Circle[length=5pt]}-{Circle[open,length=5pt]}] (4,0) -- (5,0); 
+	\draw (5,0) -- (6,0);
+\end{tikzpicture}
+\end{document}

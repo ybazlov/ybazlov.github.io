@@ -1,0 +1,54 @@
+\documentclass[12pt,tikz,border=6pt]{standalone}
+\usepackage{amsmath}
+\usetikzlibrary{arrows.meta,calc,positioning, decorations.markings}
+
+\begin{document}
+\begin{tikzpicture}[
+  >=Stealth,
+  every node/.style={font=\small},
+  setlabel/.style={font=\normalsize},
+  parameter/.style={line width=1.1pt},
+  circlepath/.style={line width=1.1pt},
+  approach/.style={blue!70!black,line width=2pt,-{Stealth[length=2.5mm]}},
+mid arrow/.style={
+        postaction={decorate},
+        decoration={
+            markings,
+            mark=at position 0.5 with {\arrow{stealth}}
+        }
+    }
+]
+  % Domain
+  %\draw[->] (0,0) -- (4.2,0);
+  \draw[parameter, mid arrow, shorten <= 2pt, shorten >= 2pt] (0.7,0) -- (3.5,0);
+  \fill (0.7,0) circle (2pt);
+  \draw[fill=white,line width=0.8pt] (3.5,0) circle (2pt);
+  \node[setlabel,above=5pt] at (2.1,0) {$[0,1)$};
+  \node[below=4pt] at (0.7,0) {$0$};
+  \node[below=4pt] at (3.5,0) {$1$};
+  %\node[below=17pt,align=center] at (2.1,0)
+  %  {$t=0$ included \qquad $t=1$ omitted};
+
+  % The function arrow
+  \draw[-{Stealth[length=2.5mm]},line width=0.9pt, dashed]
+    (4.35,0.2) .. controls (5.3,1.8) and (6.3,1.8) .. (7.05,0.85);
+  \node[above] at (5.7,1.55) {$f$};
+
+  % Image: a circle traversed once counterclockwise.
+  \coordinate (C) at (9,0);
+  \def\r{1.55}
+  \draw[circlepath, mid arrow] (C) circle (\r);
+  %\draw[approach] (C) ++(290:\r) arc[start angle=290,end angle=350,radius=\r];
+  % \draw[-{Stealth[length=2.5mm]},line width=1.1pt] (C) ++(35:\r) arc[start angle=35,end angle=95,radius=\r];
+  \fill (C) ++(0:\r) circle (2.4pt);
+  \node[above right=1pt] at ($(C)+(0:\r)$) {$(1,0)=f(0)$};
+  %\node[below right=8pt,blue!70!black,align=left] at ($(C)+(350:\r)$) {$f(t)\to(1,0)$\\[-2pt]as $t\to1^-$};
+  \node[setlabel] at (C) {$S^1$};
+  % \node[above=2pt] at ($(C)+(65:\r)$) {$t$ increases};
+
+  %\node[below=1.95cm,align=center,text width=10cm] at (5.4,0)
+  %  {$t_n\to1^-$ but $f(t_n)\to(1,0)$, while
+  %   $f^{-1}((1,0))=0$.\\
+  %   Thus $f^{-1}$ is discontinuous at $(1,0)$.};
+\end{tikzpicture}
+\end{document}

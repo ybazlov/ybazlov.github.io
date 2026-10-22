@@ -1,0 +1,44 @@
+%\documentclass{standalone}
+%\usepackage{tikz}
+%\usetikzlibrary{patterns}
+%\begin{document}
+\begin{tikzpicture}[scale=1.5]
+
+% Draw the compact space X as a rectangle
+\draw[very thick, gray] (-3,-2) rectangle (3,2) node[anchor=south east] {$X$};
+\path[save path=\pathY] (-2.95,-1.95) rectangle (2.95,1.95) (0,0) ellipse (1.54 and 0.54);
+\draw[use path=\pathY, densely dotted, very thick, opacity=0.8, color=green!50!black];
+
+
+
+\begin{scope}[even odd rule]
+	\fill[pattern=dots, pattern color=green!50!black, opacity=0.6, use path=\pathY];
+% Draw the closed subset F inside X as an oval
+	\draw[thick, black] (0,0) ellipse (1.5 and 0.5) node[anchor=north west] {$F$};
+\end{scope}
+
+
+% Open sets covering F
+	\path[save path=\Uone, rounded corners]  (-1.8,-0.8) rectangle (-0.2,1);
+	\draw[thick, densely dotted, blue, use path=\Uone];
+	\fill[pattern=north east lines, pattern color=blue, opacity=0.15, use path=\Uone];
+	\node[anchor=north, blue] at (-1,1) {$U_1$};
+	
+	\path[save path=\Utwo, rounded corners]  (-0.5,-1) rectangle (0.7,1.6);
+	\draw[thick, densely dotted, red, use path=\Utwo];
+	\fill[pattern=north west lines, pattern color=red, opacity=0.25, use path=\Utwo];
+	\node[anchor=north, red] at (0.1,1.6) {$U_2$};
+
+	\path[save path=\Uthree, rounded corners]  (0.5,-0.9) rectangle (2.6,0.8);
+	\draw[thick, densely dotted, violet, use path=\Uthree];
+	\fill[pattern=north east lines, pattern color=violet, opacity=0.15, use path=\Uthree];
+	\node[anchor=north, violet] at (1.55,0.8) {$U_3$};
+
+
+%\draw[thick, dashed, purple] (0,-0.7) circle (1.2) node[anchor=north east] {$U_2$};
+%\draw[thick, dashed, red] (1,0.3) circle (0.9) node[anchor=south] {$U_2$};
+%\draw[thick, dashed, cyan] (0,0.7) circle (1) node[anchor=north east] {$U_4$};
+
+	\node[color=green!50!black] at (1,-1.5) {the open set $X \setminus F$};
+\end{tikzpicture}
+%\end{document}

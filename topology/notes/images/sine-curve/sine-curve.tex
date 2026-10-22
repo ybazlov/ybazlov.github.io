@@ -1,0 +1,25 @@
+\begin{tikzpicture}
+	\begin{axis}[width=1.6*\axisdefaultwidth,
+		height=\axisdefaultheight,
+		y axis line style = black,
+		axis lines = middle,
+		axis equal = true,
+		xtick=\empty, 
+		ytick = \empty,
+		% legend pos={(8,1)},
+		legend style={at={(0.8,0.9)}},
+		ymax = 2.0,
+		ymin=-2.0
+		]
+		\addplot [
+		domain=0.12:10,
+		samples=2000,
+		color=red,
+		thin
+		]
+		{2*sin(deg(20/sqrt(x/2+0.05)))};
+		\addlegendentry{\(\sin\frac1x\)};
+		\addplot[domain=0:0, mark=*, mark size=2pt, color=blue]{0};
+		\addlegendentry{\((0,0)\)}
+	\end{axis}
+\end{tikzpicture}
