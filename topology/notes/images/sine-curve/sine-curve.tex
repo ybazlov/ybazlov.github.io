@@ -1,25 +1,41 @@
+% !TeX program = lualatex
+\documentclass[12pt]{standalone}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+%\usetikzlibrary{calc, arrows.meta, decorations.pathreplacing}
+
+\begin{document}
+
 \begin{tikzpicture}
 	\begin{axis}[width=1.6*\axisdefaultwidth,
 		height=\axisdefaultheight,
 		y axis line style = black,
 		axis lines = middle,
 		axis equal = true,
+		ytick=\empty, 
 		xtick=\empty, 
-		ytick = \empty,
 		% legend pos={(8,1)},
-		legend style={at={(0.8,0.9)}},
-		ymax = 2.0,
-		ymin=-2.0
+		legend style={at={(1.0,0.2)}},
+		xmin=-1.0,
+		ymax = 2.05,
+		ymin=-2.05,
+		xmax = 9 
 		]
 		\addplot [
-		domain=0.12:10,
+		domain=0.07:7.45,
 		samples=2000,
 		color=red,
-		thin
+		%thin
+		thick
 		]
-		{2*sin(deg(20/sqrt(x/2+0.05)))};
+		{-2*sin(deg(20/sqrt((x+0.05)/2+0.05)))};
 		\addlegendentry{\(\sin\frac1x\)};
 		\addplot[domain=0:0, mark=*, mark size=2pt, color=blue]{0};
-		\addlegendentry{\((0,0)\)}
+		\node[below left, blue] at (axis cs:0,0) {$(0,0)$};
+		\fill[red] (axis cs: 7.45, {-2*sin(deg(20/sqrt((7.45+0.05)/2+0.05)))}) 
+		   circle (2pt) node[below right] {$(1, \sin 1)$};
+		% \addlegendentry{\((0,0)\)}
 	\end{axis}
 \end{tikzpicture}
+\end{document}
