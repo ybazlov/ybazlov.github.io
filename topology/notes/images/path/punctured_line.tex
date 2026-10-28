@@ -1,0 +1,12 @@
+
+\documentclass[12pt]{standalone}
+\usepackage{tikz}
+%\usetikzlibrary{calc, arrows.meta, decorations.pathreplacing}
+
+\begin{document}
+\begin{tikzpicture}
+	\draw (0,0) circle(3pt) node[anchor=north, yshift=-2pt] {$p$};
+	\draw[shorten >= 3pt] (-5,0) -- (0,0);
+	\draw[shorten >= 3pt] (5,0) -- (0,0);
+\end{tikzpicture}
+\end{document}
