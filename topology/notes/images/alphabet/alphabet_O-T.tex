@@ -1,0 +1,39 @@
+\documentclass{standalone}
+\usepackage{tikz}
+\usetikzlibrary{calc}
+\begin{document}
+\newcommand{\srad}{0.207106781186548}
+\begin{tikzpicture}[line width=1.2pt, line cap=round, line join=round, scale=1.4]
+\def\dx{1.5}
+
+% O
+\draw (0.5,0.5) circle(0.5);
+
+% P
+\begin{scope}[xshift=0.95*\dx cm]
+    \draw (0,0) -- (0,1) arc[start angle=90, end angle=-90, radius=0.25];
+\end{scope}
+
+% Q
+\begin{scope}[xshift=1.35*\dx cm]
+    \draw (0.5,0.5) circle(0.5);
+    \draw (0.65,0.35) -- (1,0);
+\end{scope}
+
+% R
+\begin{scope}[xshift=2.3*\dx cm]
+    \draw (0,0) -- (0,1) arc[start angle=90, end angle=-90, radius=0.25] -- (0.35,0);
+\end{scope}
+
+% S
+\begin{scope}[xshift=2.85*\dx cm]
+    \draw (0,\srad) arc[start angle=-180, end angle=45, radius=\srad]
+    -- ($(\srad, 1-\srad)+(225:\srad)$) arc[start angle=225, end angle=0, radius=\srad];
+\end{scope}
+
+% T
+\begin{scope}[xshift=3.35*\dx cm]
+    \draw (0,1) -- (0.5,1) (0.25,1) -- (0.25,0);
+\end{scope}
+\end{tikzpicture}
+\end{document}

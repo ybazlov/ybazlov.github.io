@@ -1,0 +1,36 @@
+\documentclass{standalone}
+\usepackage{tikz}
+\usetikzlibrary{calc}
+\begin{document}
+\begin{tikzpicture}[line width=1.2pt, line cap=round, line join=round, scale=1.4]
+\def\dx{1.5}
+
+% U
+\draw (0,1) -- (0,0.25) arc[start angle=-180, end angle=0, radius=0.25] -- (0.5,1);
+
+% V
+\begin{scope}[xshift=0.6*\dx cm]
+    \draw (0,1) -- (0.25,0) -- (0.5,1);
+\end{scope}
+
+% W
+\begin{scope}[xshift=1.15*\dx cm]
+    \draw (0,1) -- (0.25,0) -- (0.4,0.5) -- (0.55,0) -- (0.8,1);
+\end{scope}
+
+% X
+\begin{scope}[xshift=1.9*\dx cm]
+    \draw (0,0) -- (0.5,1) (0,1) -- (0.5,0);
+\end{scope}
+
+% Y
+\begin{scope}[xshift=2.5*\dx cm]
+    \draw (0,0) -- (0.5,1) (0,1) -- (0.25,0.5);
+\end{scope}
+
+% Z
+\begin{scope}[xshift=3.05*\dx cm]
+    \draw (0,1) -- (0.5,1) -- (0,0) -- (0.5,0);
+\end{scope}
+\end{tikzpicture}
+\end{document}
