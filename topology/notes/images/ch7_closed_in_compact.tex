@@ -1,12 +1,12 @@
-%\documentclass{standalone}
-%\usepackage{tikz}
-%\usetikzlibrary{patterns}
-%\begin{document}
-\begin{tikzpicture}[scale=1.5]
+\documentclass[12pt]{standalone}
+\usepackage{tikz}
+\usetikzlibrary{patterns}
+\begin{document}
+\begin{tikzpicture}[xscale=1.5, yscale=1.25]
 
 % Draw the compact space X as a rectangle
-\draw[very thick, gray] (-3,-2) rectangle (3,2) node[anchor=south east] {$X$};
-\path[save path=\pathY] (-2.95,-1.95) rectangle (2.95,1.95) (0,0) ellipse (1.54 and 0.54);
+\draw[very thick, gray] (-3,-1.8) rectangle (3,1.8) node[anchor=north west] {$X$};
+\path[save path=\pathY] (-2.95,-1.75) rectangle (2.95,1.75) (0,0) ellipse (1.54 and 0.54);
 \draw[use path=\pathY, densely dotted, very thick, opacity=0.8, color=green!50!black];
 
 
@@ -41,4 +41,4 @@
 
 	\node[color=green!50!black] at (1,-1.5) {the open set $X \setminus F$};
 \end{tikzpicture}
-%\end{document}
+\end{document}
