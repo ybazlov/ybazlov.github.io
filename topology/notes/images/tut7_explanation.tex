@@ -1,0 +1,44 @@
+\documentclass[12pt]{standalone}
+\usepackage{amssymb} % for \ncong
+\usepackage{tikz}
+%\usetikzlibrary{calc, arrows.meta, decorations.pathreplacing}
+
+\begin{document}
+
+\newcommand{\circleone}{(1,0.5) circle (2pt)} 
+\newcommand{\circletwo}{(2.5, 0.28) circle (2pt)} 
+\newcommand{\circlethree}{(2.5, 0) circle (2pt)}      
+\newcommand{\circlefour}{(0.25cm, 1) circle (2pt)}      
+\begin{tikzpicture}[line width=1.2pt, line join=round,scale=1.5]
+	\begin{scope}[even odd rule]
+		\clip (-0.1,-0.2) rectangle (3.45,1.2) 
+		\circleone \circletwo \circlethree \circlefour;
+		\begin{scope}[xshift=1cm]
+		\draw (0.5,0.5) circle(0.5);
+		\end{scope}
+		%\draw ($(0.5,0.5)+(165:0.5)$) arc[start angle=165, end angle=-165, radius=0.5];
+		% \node[below] at (0.5,-0.2) {O};
+		% P
+		\begin{scope}[xshift=2.5 cm]
+			\draw (0,0) -- (0,1) arc[start angle=90, end angle=-90, radius=0.25];
+			% \node[below] at (0.3,-0.2) {P};
+		\end{scope}
+		\begin{scope}[xshift=0 cm]
+		    % T
+			\draw (0,1) -- (0.5,1) (0.25,1) -- (0.25,0);
+			% \node[below] at (0.5,-0.2) {T};
+		\end{scope}
+	\end{scope}
+	\draw[line width=0.6pt, blue] \circleone node[anchor=east]{\small 1};
+	\draw[line width=0.6pt, red] \circletwo node[anchor=east]{\small 2};
+	\draw[line width=0.6pt, blue] \circlethree node[anchor=east]{\small 1};
+	\draw[line width=0.6pt, green!50!black] \circlefour node[anchor=south]{\small 3};
+\end{tikzpicture}	
+%\begin{minipage}{.5\textwidth}
+%\textbf{O $\ncong$ P:} O has no points of connectivity 2 but P has them;
+%
+%\textbf{T $\ncong$ O and T $\ncong$ P:} T has a point of connectivity 3 
+%while O, P have no such points.
+%\end{minipage}
+%
+\end{document}
