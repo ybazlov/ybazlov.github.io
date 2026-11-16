@@ -1,0 +1,14 @@
+\documentclass[12pt]{standalone}
+\usepackage{tikz}
+%\usetikzlibrary{calc, arrows.meta, decorations.pathreplacing}
+
+\begin{document}
+
+\begin{tikzpicture}[line width=1.2pt, line cap=round, line join=round, scale=1.4]
+		\draw[shorten >= 3.2pt] (0,0) -- (0.25, 0.5);
+		\draw[shorten >= 3.2pt] (0.5,0) -- (0.25, 0.5);
+		\draw[shorten >= 3.2pt] (0.5,1) -- (0.25, 0.5);
+		\draw[shorten >= 3.2pt] (0,1) -- (0.25, 0.5);
+		\draw[brown] (0.25, 0.5) circle(2pt) node[anchor=west]{4};
+\end{tikzpicture}
+\end{document}
